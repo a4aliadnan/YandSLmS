@@ -1,0 +1,48 @@
+﻿@using YandS.UI.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Y & S Associates - Login";
+    Layout = "~/Views/Shared/_Layout_Login.cshtml";
+}
+<style>
+    .login-page {
+        background: #dedede !important;
+    }
+</style>
+<p class="login-box-msg">PLEASE PROVIDE CREDENTIALS</p>
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    <div class="form-group has-feedback">
+        @*@Html.LabelFor(m => m.UserName, "Username")*@
+        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "User Name", @Value="2" })@*Admin*@
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+        @Html.ValidationMessageFor(m => m.UserName, "")
+
+    </div>
+    <div class="form-group has-feedback">
+        @*@Html.LabelFor(m => m.Password)*@
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password", @Value = "Oman123" })@*Oneic@123*@
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        @Html.ValidationMessageFor(m => m.Password, "")
+
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="icheck-primary">
+                @Html.CheckBoxFor(m => m.RememberMe)
+                @Html.LabelFor(m => m.RememberMe)
+            </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">LOG IN</button>
+        </div>
+        <!-- /.col -->
+    </div>
+}
+
+@*@Html.ActionLink("Forgot your password?", "ForgotPassword")<br>
+    @Html.ActionLink("Register as a new user", "Register", new { @class = "text-center" })*@

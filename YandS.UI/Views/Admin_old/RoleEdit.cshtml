@@ -1,0 +1,135 @@
+﻿@model YandS.UI.Models.ApplicationRole
+@{
+    ViewBag.Title = "Edit " + Model.RoleDescription + " Role";
+}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Manage
+            <small>Roles</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Admin</a></li>
+            <li class="active">Edit Roles</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Title</h3>
+                <div class="box-tools pull-right">
+                    @Html.ActionLink("Go to Roles", "RoleIndex", "Admin")
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                @{if (Model != null)
+                    {
+                        <div class="panel">
+                            @using (Html.BeginForm())
+                            {
+                                @Html.ValidationSummary(true)
+                                @Html.HiddenFor(model => model.Id)
+                                <fieldset>
+                                    <legend>
+                                        <h3 style="font-weight:bold; font-size:x-large">
+                                            Role Details
+                                        </h3>
+                                    </legend>
+                                    <div>
+                                        <table style='width: 100%'>
+                                            <tr>
+                                                <td style='width: 120px;font-weight: bold'>
+                                                    @Html.LabelFor(model => model.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.Name, new { @class = "singlelinetextinput" })
+                                                    @Html.ValidationMessageFor(model => model.Name)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-weight: bold'>
+                                                    @Html.LabelFor(model => model.RoleDescription, new { style = "vertical-align:top" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextAreaFor(model => model.RoleDescription, new { @class = "multilinetextinput" })
+                                                    @Html.ValidationMessageFor(model => model.RoleDescription)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-weight: bold'>
+                                                    @Html.LabelFor(model => model.IsSysAdmin, "System Role")
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.IsSysAdmin)
+                                                    @Html.ValidationMessageFor(model => model.IsSysAdmin)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <br />
+                                    </div>
+                                    <input class="btn btn-default" type="submit" value="Save" />
+                                </fieldset>
+                            }
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        Users Associated with this Role
+                                    </h3>
+                                </legend>
+                                <div id="UsersTable">
+                                    @Html.Partial("_ListUsersTable4Role", Model)
+                                    <br />
+                                </div>
+                                <div>
+                                    @Html.Partial("_AddUserToUsersTable4Role", Model)
+                                </div>
+                                <br />
+                                <div>
+                                    @Html.ActionLink("Go to Users", "Index", "Admin")
+                                </div>
+                            </fieldset>
+                            <br />
+                            <br />
+                            <fieldset>
+                                <legend>
+                                    <h3>
+                                        Permissions Associated with this Role
+                                    </h3>
+                                </legend>
+
+                                <div id="PermissionsTable">
+                                    @Html.Partial("_ListPermissions", Model)
+                                    <br />
+                                </div>
+                                <div>
+                                    @Html.Partial("_AddPermission2PermissionsTable4Role", Model)
+                                </div>
+                                <br />
+                                <div>
+                                    @Html.ActionLink("Go to Permissions", "PermissionIndex", "Admin")
+                                </div>
+                            </fieldset>
+                        </div>
+                    }}
+                <!-- /.box-body -->
+                <div class="box-footer">
+
+                </div>
+                <!-- /.box-footer-->
+            </div>
+            <!-- /.box -->
+    </section>
+    <!-- /.content -->
+</div>

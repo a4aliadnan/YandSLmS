@@ -1,0 +1,49 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+@{
+    YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+    var FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+    var CaseLevelName = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && m.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+    string FeeNameDetail = string.Empty;
+    string DetailNumber = string.Empty;
+    string FeesDescription = string.Empty;
+
+    if (Model.FeeTypeCascadeDetail != null)
+    {
+        FeeNameDetail = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && m.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+    }
+
+    if (Model.FeeTypeDetail != null)
+    {
+        DetailNumber = " - " + Model.FeeTypeDetail;
+    }
+
+    if (string.IsNullOrEmpty(FeeNameDetail))
+    {
+        FeesDescription = string.Format("{0} - {1}{2}", CaseLevelName, FeeName, DetailNumber);
+
+    }
+    else
+    {
+        FeesDescription = string.Format("{0} - {1} - {2}{3}", CaseLevelName, FeeName, FeeNameDetail, DetailNumber);
+
+    }
+
+    var FeeAmount = Model.FeeAmount.ToString("0.###");
+
+}
+<tr style="mso-yfti-irow:8;height:.4in">
+    <td style="width:45pt;border:none;border-right:solid windowtext 2.25pt; padding:0in 0in 0in 0in;height:.4in" valign="top" width="111">
+    </td>
+    <td colspan="3" style="width:334.15pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;mso-border-top-alt:solid windowtext 2.25pt;mso-border-left-alt:solid windowtext 2.25pt;mso-border-top-alt:2.25pt;mso-border-left-alt:2.25pt;mso-border-bottom-alt:.5pt;mso-border-right-alt:.25pt;mso-border-color-alt:windowtext;mso-border-style-alt:solid;padding:.7pt .7pt .7pt .7pt;height:.4in" width="428">
+        <p class="MsoNormal" style="margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:8.0pt;margin-bottom:.0001pt;line-height:normal">
+            <span style="font-size:12.0pt;line-height:107%;mso-ascii-font-family:Calibri;mso-fareast-font-family:Times New Roman;mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;color:black">@FeesDescription</span>
+        </p>
+    </td>
+    <td style="width:129.35pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 2.25pt;mso-border-left-alt:solid windowtext .25pt;mso-border-top-alt:2.25pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:.5pt;mso-border-right-alt:2.25pt;mso-border-color-alt:windowtext;mso-border-style-alt:solid;padding:.7pt .7pt .7pt .7pt;height:.4in" width="168">
+        <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;text-align:center;line-height:normal">
+            <b>
+                <span style="mso-ascii-font-family:Calibri;mso-fareast-font-family:Times New Roman;mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;color:black">@FeeAmount OMR</span>
+            </b>
+        </p>
+    </td>
+</tr>

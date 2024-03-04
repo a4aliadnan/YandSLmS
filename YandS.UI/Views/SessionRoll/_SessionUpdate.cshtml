@@ -1,0 +1,183 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        $('textarea').autoResize();
+
+
+
+        $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+        $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_TRSOURCE").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            console.log($("#Requirements").val());
+            console.log($("#FirstEmailDate").val());
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            console.log($("#hidRequirement").val());
+            console.log($("#hidFirstEmailDate").val());
+
+            $('textarea').autoResize();
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+        }
+
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                $('textarea').autoResize();
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+        });
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+
+        $('#CourtDecision').bind('input propertychange', function () {
+            $("#hidCourtDecisionChange").val("N");
+
+            if (this.value.length) {
+                $("#hidCourtDecisionChange").val("Y");
+            }
+        });
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@Html.HiddenFor(model => model.SessionClientId)
+@Html.HiddenFor(model => model.SessionRollDefendentName)
+@Html.HiddenFor(model => model.TransportationFee)
+<input type="hidden" id="hidNextHearingDate" value="" />
+<input type="hidden" id="hidCurrentHearingDate" value="" />
+<input type="hidden" id="hidCourtDecisionChange" value="" />
+
+<div id="DIV_UPDATE" class="row">
+    <div class="col-sm-12">
+        <div style="padding-bottom:0px !important;padding-top:10px;" class="UpdateBoxBar">
+            <div class="row">
+                <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                        @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group">
+                        <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group AppHidden">
+                        <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+                        @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ClientReply)
+                        @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group" id="txtRequirement">
+                        <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control", @dir = "auto" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group" id="txtFirstEmailDate">
+                        @Html.LabelFor(model => model.FirstEmailDate)
+                        @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div id="DIV_TRSOURCE" class="form-group">
+                        @Html.LabelFor(model => model.TransportationSource)
+                        @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="card-footer text-right col-sm-11">
+        <a title="PRINT FORM" id="RequirementPrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintRequirementForm">REPORT</a>
+    </div>
+</div>
+<input type="hidden" id="hid_SessionRollId" value="@ViewBag.hid_SessionRollId" />

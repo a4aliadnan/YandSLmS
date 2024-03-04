@@ -1,0 +1,670 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+@{
+    ViewBag.Title = "Y & S Associates - Tobe Register";
+}
+<script type="text/javascript">
+    var _parameters = {};
+    var GetClientClassificationURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CreateClientMasterURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var LoadClientByClassificationURL = '@Url.Action("LoadClientByClassification", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    var DefendentTable;
+    var DDLToAppend;
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                $("#PartialViewContainerBox").removeClass("AppHidden");
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function LoadPartialView(data, container) {
+        console.log(container);
+        container.empty();
+        container.append("Loading...");
+        container.html(data);
+
+        if ($('#ClientClassificationCode').val() == "1") {
+            if ($('#ClientCode').val() == "10") {
+                $(".ClientODB").removeClass("AppHidden");
+            }
+            else {
+                $(".ClientODB").removeClass("AppHidden").addClass("AppHidden");
+            }
+        }
+    }
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+
+            var url = "";
+            var _MstDesc = ""
+            var _MstParentId = 0;
+            var _Remarks = "";
+            console.log($("#ClientClassificationCode").val());
+
+            if (parseInt($("#MstParentId").val()) == 241) {
+                if ($("#ClientClassificationCode").val() == "0") {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: "Please Select Client Classification"
+                    });
+                    return false;
+                }
+
+                url = CreateMasterTableDetailForPayToURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _Remarks = $("#ClientClassificationCode").val();
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+
+
+            }
+            else {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: url,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+    function generate_modal_body(ModalToGenerateId) {
+        //var ModalToGenerateId = this.id.split('-')[1] ;
+        var ModalToGenerate = $("#" + ModalToGenerateId).val();
+
+        if (ModalToGenerate != "") {
+            console.log(ModalToGenerate);
+
+            if (typeof DefendentTable != 'undefined')
+                DefendentTable.destroy();
+
+            DefendentTable = $('#tblDefaulterDetail').DataTable({
+                lengthChange: false,
+                ajax: {
+                    url: GetDefaulterDetailURL,
+                    "dataSrc": "",
+                    type: 'POST',
+                    data: function (d) {
+                        d.P_DataParameter = ModalToGenerate;
+                        d.P_DataFor = ModalToGenerateId;
+                    }
+                },
+                "columns": [
+                    { data: 'OfficeFileNo' },
+                    { data: 'AccountContractNo' },
+                    { data: 'ClientFileNo' },
+                    { data: 'Defendant' },
+                    { data: 'CaseStatusName' }
+                ],
+                initComplete: function () {
+                    $('#modal-ViewDefendent').modal('show');
+                }
+            });
+
+        }
+        else {
+            // Failed show errors
+            console.log("Failed ModalToGenerate is null");
+            //$('#modal-ViewDefendent').modal('hide');
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter ' + ModalToGenerateId
+            });
+        }
+    }
+    function LoadClientByClassification(p_ClassificationId) {
+        console.log(p_ClassificationId);
+
+        _parameters = { ClientClassificationId: p_ClassificationId };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadClientByClassificationURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+                    var $select = $('#ClientCode');
+                    $select.find('option').remove();
+                    var newOption = new Option("PLEASE SELECT", "0", true, true);
+                    $select.append(newOption).trigger('change');
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        //$select.append('<option value=' + key + '>' + value + '</option>');
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption).trigger('change');
+
+                        console.log("key :: " + key);
+                        console.log("value :: " + value);
+                    }
+                    $select.val("0").trigger('change');
+
+                }
+                else {
+                    var $select = $('#ClientCode');
+                    $select.find('option').remove();
+
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Error...',
+                    //    html: Result.ErrorMessage
+                    //});
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        MANAGE FILE DATA
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">COURT CASE</li>
+                        <li class="breadcrumb-item active"><a href="#">MANAGE FILE DATA</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "return onPreSubmit(this);" }))
+        {
+            <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-center">
+                        <h4>@Html.DisplayFor(model => model.OfficeFileNo)<span class="YandSTitleSpacing">-</span>@ViewBag.ClientName<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.Defendant)</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.CaseId)
+                        @Html.HiddenFor(model => model.ClientClassificationCode)
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.OfficeFileNo)
+                                        @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ReceiveLevelCode)
+                                        @Html.DropDownList("ReceiveLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            @Html.LabelFor(model => model.ClientCode)
+                                            <div class="input-group mb-3">
+                                                @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "6" })
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-info AddNewMaster" id="241">
+                                                        ADD
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ClientCode, "", new { @class = "text-danger" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ClientClassificationCode)
+                                        @*@Html.DropDownList("ClientClassificationCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "1" })
+                                            @Html.ValidationMessageFor(model => model.ClientClassificationCode, "", new { @class = "text-danger" })*@
+                                        <input type="text" class="form-control" value="@ViewBag.ClientClassName" readonly="readonly" />
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CaseTypeCode)
+                                        @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "4" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label id="divDefClient" class="AppHidden" for="Defendant">PLAINTIFF NAME</label>
+                                        <label id="divDefendant" class="" for="Defendant">DEFENDANT NAME</label>
+                                        @Html.EditorFor(model => model.Defendant, new { htmlAttributes = new { @class = "form-control", @tabindex = "7" } })
+                                        @Html.ValidationMessageFor(model => model.Defendant, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ReceptionDate)
+                                        @Html.EditorFor(model => model.ReceptionDate, new { htmlAttributes = new { @class = "form-control datepicker", @tabindex = "2" } })
+                                        @Html.ValidationMessageFor(model => model.ReceptionDate, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.AgainstCode)
+                                        @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CaseLevelCode)
+                                        @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "8" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="PartialViewContainerBox" class="card card-info AppHidden">
+                            <div class="card-header">
+                                <div class="text-center">
+                                    <span class="h3" id="ClassificationText"></span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="PartialViewContainer">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer text-center">
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+                    <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("Index","CourtCases")';return false;" id=@Model.CaseId> <i class="fas fa-home"></i> BACK TO LIST</button>
+                    <button id=@Model.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "1" })';return false;"> <i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+                    <button id=@Model.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "2" })';return false;"> <i class="fas fa-globe-europe"></i> TO APPEAL</button>
+                    <button id=@Model.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "3" })';return false;"> <i class="fas fa-globe-europe"></i> TO SUPREME</button>
+                    <button id=@Model.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageEnforcementDetail", "CourtCases", new { CaseId = Model.CaseId })';return false;"> <i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+                    <button id=@Model.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = Model.CaseId })';return false;"> <i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+                    <button id=@Model.CaseId title="Create Case" class="btn btn-secondary" onclick="location.href='@Url.Action("Create", "CourtCases")';return false;"> <i class="fas fa-plus-circle"></i> CREATE CASE</button>
+                    @*<button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="location.href='@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = "",ClosureDate = Model.CaseStatusDate })';return false;"><i class="fas fa-file-invoice-dollar"></i> FORM CLOSURE</button>*@
+
+                </div>
+
+            </div>
+        }
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="modal-ViewDefendent">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title">CHECK DETAIL</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table id="tblDefaulterDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Office File No</th>
+                                <th>Account Contract No</th>
+                                <th>Client File No</th>
+                                <th>Defendant</th>
+                                <th>Case Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <input type="hidden" id="hidAllowCloseCase" value="@ViewBag.AllowCloseCase" />
+    <input type="hidden" id="hidAllowAddClient" value="@ViewBag.AllowAddClient" />
+
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+        var DefendentTable;
+        var DDLToAppend;
+
+        function onPreSubmit(item) {
+            //$("#SelectedBeforeCourt").val($('input[name=r1]:checked').val());
+            console.log("PreSubmit");
+            console.log(item);
+        }
+
+        $(document).ready(function () {
+            console.log("Tobe Register Document Page");
+
+            if ($("#hidAllowAddClient").val() == "N") {
+                $("#241").prop("disabled", true);
+            }
+
+            //if ($("#hidAllowCloseCase").val() == "N") {
+            //    $("#CaseLevelCode").find("option[value='7']").attr('disabled', 'disabled');
+            //    $("#CaseLevelCode").select2();
+            //}
+
+
+            bsCustomFileInput.init();
+
+            var AgainstCode = $('#AgainstCode').val();
+            var ClientClassificationCode = $('#ClientClassificationCode').val();
+            var PartialContainer = $("#PartialViewContainer");
+            var CaseTypeCode = $('#CaseTypeCode').val();
+            var AllowChangeCaseType = true;
+
+            if (CaseTypeCode == "6") {
+                AllowChangeCaseType = false;
+                ClientClassificationCode = "7";
+            }
+
+            if (AgainstCode == "3") {
+                $("#divDefClient").removeClass("AppHidden");
+                $("#divDefendant").removeClass("AppHidden").addClass("AppHidden");
+
+            }
+            else {
+                $("#divDefClient").removeClass("AppHidden").addClass("AppHidden");
+                $("#divDefendant").removeClass("AppHidden");
+            }
+
+            $('#AgainstCode').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                if ($(this).val() == "3") {
+                    $("#divDefClient").removeClass("AppHidden");
+                    $("#divDefendant").removeClass("AppHidden").addClass("AppHidden");
+
+                    //$("#DefClientCode").val("0").trigger('change');
+                    //$("#Defendant").val("");
+
+
+                }
+                else {
+                    $("#divDefClient").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divDefendant").removeClass("AppHidden");
+
+                    //$("#DefClientCode").val("0").trigger('change');
+                    //$("#Defendant").val("");
+
+                }
+            });
+
+            $('#ClientCode').on("change", function () {
+                if ($('#ClientClassificationCode').val() == "1") {
+                    console.log(this.id);
+                    console.log($(this).val());
+
+                    if ($(this).val() == "10") {
+                        $(".ClientODB").removeClass("AppHidden");
+                    }
+                    else {
+                        $(".ClientODB").removeClass("AppHidden").addClass("AppHidden");
+                        $('#ODBBankBranch').val("0").trigger('change');
+                        $('#LoanManager').val("0").trigger('change');
+                    }
+                }
+            });
+
+            $('#CaseLevelCode').on("change", function () {
+                if ($(this).val() == "7") {
+                    if ($("#hidAllowCloseCase").val() == "N") {
+
+                        Swal.fire({
+                            type: "error",
+                            title: 'UnAuthorize Access!!',
+                            html: "You are not Authorize to Close the Case"
+                        });
+                        return false;
+                    }
+                }
+            });
+
+            if (ClientClassificationCode == "1") {
+                $("#ClassificationText").text("BANKS");
+            }
+            else if (ClientClassificationCode == "2") {
+                $("#ClassificationText").text("FINANCE");
+            }
+            else if (ClientClassificationCode == "3") {
+                $("#ClassificationText").text("REAL ESTATE");
+            }
+            else if (ClientClassificationCode == "4") {
+                $("#ClassificationText").text("INSURANCE");
+            }
+            else if (ClientClassificationCode == "5") {
+                $("#ClassificationText").text("COMPANIES");
+            }
+            else if (ClientClassificationCode == "6") {
+                $("#ClassificationText").text("INDIVIDUALS");
+            }
+
+            if (CaseTypeCode == "6") {
+                
+                $("#ClassificationText").text("CORPORATE");
+            }
+
+            _parameters = { ClassificationId: ClientClassificationCode, Mode: $('#CaseId').val() };
+
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+            $('#ClientClassificationCode').on("change", function () {
+                $("#PartialViewContainerBox").removeClass("AppHidden").addClass("AppHidden");
+                console.log(this.id);
+                console.log($(this).val());
+
+                var PartialContainer = $("#PartialViewContainer");
+
+                if ($('#CaseTypeCode').val() == "6") {
+                    $('#CaseTypeCode').select2().trigger('change');
+                }
+                else {
+                    if ($(this).val() == "0") {
+                        PartialContainer.empty();
+                        var $select = $('#ClientCode');
+                        $select.find('option').remove();
+
+                    }
+                    else {
+                        LoadClientByClassification($(this).val())
+
+                        _parameters = { ClassificationId: $(this).val(), Mode: "C" };
+
+                        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+                    }
+
+                    if ($(this).val() == "1") {
+                        $("#ClassificationText").text("BANKS");
+                    }
+                    else if ($(this).val() == "2") {
+                        $("#ClassificationText").text("FINANCE");
+                    }
+                    else if ($(this).val() == "3") {
+                        $("#ClassificationText").text("REAL ESTATE");
+                    }
+                    else if ($(this).val() == "4") {
+                        $("#ClassificationText").text("INSURANCE");
+                    }
+                    else if ($(this).val() == "5") {
+                        $("#ClassificationText").text("COMPANIES");
+                    }
+                    else if ($(this).val() == "6") {
+                        $("#ClassificationText").text("INDIVIDUALS");
+                    }
+                    else if ($(this).val() == "7") {
+                        $("#ClassificationText").text("CORPORATE");
+                    }
+                }
+            });
+
+            $('#CaseTypeCode').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                if (AllowChangeCaseType) {
+                    if ($(this).val() == "6") {
+                        Swal.fire({
+                            type: "info",
+                            title: 'Not Allowed',
+                            html: 'Case Type CONSULTANCY is not allowed to change'
+                        });
+
+                        $('#CaseTypeCode').val(CaseTypeCode).trigger('change');
+                    }
+                }
+                else {
+                    Swal.fire({
+                        type: "info",
+                        title: 'Not Allowed',
+                        html: 'Case Type CONSULTANCY is not allowed to change'
+                    });
+                    $('#CaseTypeCode').val("6").trigger('change');
+                }
+            });
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "241") {
+                    ModalTitle = "Add Client";
+                    DDLToAppend = $("#ClientCode");
+                }
+                else if (this.id == "285") {
+                    ModalTitle = "Add Client Case Type";
+                    DDLToAppend = $("#ClientCaseType");
+                }
+                else if (this.id == "16") {
+                    ModalTitle = "Add ODB Loan";
+                    DDLToAppend = $("#ODBLoanCode");
+                }
+                else if (this.id == "18") {
+                    ModalTitle = "Add ODB Bank Branch";
+                    DDLToAppend = $("#ODBBankBranch");
+                }
+                else if (this.id == "428") {
+                    ModalTitle = "Add Loan Manager";
+                    DDLToAppend = $("#LoanManager");
+                }
+                else if (this.id == "532") {
+                    ModalTitle = "Add Case Subject";
+                    DDLToAppend = $("#CaseSubject");
+                }
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+
+            });
+
+            $('#ClaimAmount').on("blur", function () {
+                if (parseInt(this.value) >= 100000) {
+                    Swal.fire({
+                        type: "info",
+                        title: 'Enter Special Instruction',
+                        html: 'Make sure to Enter Special Instruction or Commission for amount ' + this.value
+                    });
+                }
+
+            });
+        });
+    </script>
+}

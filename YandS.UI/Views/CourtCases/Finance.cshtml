@@ -1,0 +1,256 @@
+﻿@model YandS.UI.Models.FinanceVM
+@{
+    ViewBag.Title = "Y & S Associates - FINANCE";
+}
+<style>
+    .above100K{
+        color:red;
+        font-weight:bolder;
+    }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        FINANCE
+                    </h1>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+        {
+            <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-center">
+                        <h4>@ViewBag.OfficeFileNo<span class="YandSTitleSpacing">-</span>@ViewBag.ClientName<span class="YandSTitleSpacing">-</span>@ViewBag.Defendant</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.CaseId)
+
+                        <div class="card card-info card-outline card-outline-tabs">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" id="CourtCase-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="SpecialInstruction-tab" data-toggle="pill" href="#tabs-SpecialInstruction" role="tab" aria-controls="tabs-SpecialInstruction" aria-selected="true">SPECIAL INSTRUCTIONS</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="ManageFinance-tab" data-toggle="pill" href="#tabs-ManageFinance" role="tab" aria-controls="tabs-ManageFinance" aria-selected="false">MANAGE FINANCE</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="ReceiptVoucher-tab" data-toggle="pill" href="#tabs-ReceiptVoucher" role="tab" aria-controls="tabs-ReceiptVoucher" aria-selected="false">RECEIPT VOUCHER</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="CourtCase-tabContent">
+                                    <div class="tab-pane fade show active" id="tabs-SpecialInstruction" role="tabpanel" aria-labelledby="SpecialInstruction-tab">
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ClaimAmount)
+                                                    @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-sm-8">
+                                                            <div class="form-group">
+                                                                <label for="UploadedFile">
+                                                                    UPLOD AGREEMENT
+                                                                </label>
+                                                                <div class="input-group">
+                                                                    <div class="custom-file">
+                                                                        <input type="file" class="custom-file-input" id="upload" name="upload">
+                                                                        <label class="custom-file-label" for="upload">CHOOSE AGREEMENT</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="Div-ViewAgreement" class="col-sm-4 AppHidden" style="padding-top:30px;">
+                                                            <a target="_blank" class="btn btn-warning" title="VIEW DOCUMENT" href="~/Uploads/CaseAgreement/@ViewBag.SupportingDoc"> <i class="fas fa-file-pdf"> </i> VIEW AGREEMENT</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <label class="" for="StatusCode">TRANSPORTATION FEES</label>
+                                                @Html.DropDownList("TransportationFee", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <label class="" for="StatusCode">TRANSELATION</label>
+                                                @Html.DropDownList("Translation", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="row p-1">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SpecialInstructions)
+                                                        @Html.TextAreaFor(model => model.SpecialInstructions, 5, 200, new { @class = "form-control", @placeholder = "Please Enter Finance Notes" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(Model.ClosingNotes))
+                                        {
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="row p-1">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.ClosingNotes)
+                                                            @Html.TextAreaFor(model => model.ClosingNotes, 5, 200, new { @class = "form-control", @placeholder = "Please Enter Special Instructions" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(model => model.ClosingNotes)
+
+                                        }
+
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="form-group lastinvoice AppHidden">
+                                                    @Html.LabelFor(model => model.DateOfLastInvoice)
+                                                    @Html.EditorFor(model => model.DateOfLastInvoice, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                            <div style="padding-top:30px;" class="col-sm-2">
+                                                <input type="text" class="form-control lastinvoice AppHidden" value="Last Invoice" readonly="readonly" />
+                                            </div>
+                                            <div class="col-sm-6">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="tabs-ManageFinance" role="tabpanel" aria-labelledby="SpecialInstruction-tab">
+                                        <div class="row">
+
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="tabs-ReceiptVoucher" role="tabpanel" aria-labelledby="SpecialInstruction-tab">
+                                        <div class="row">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+
+                        <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("Index","CourtCases")';return false;" id=@Model.CaseId> <i class="fas fa-home"></i> BACK TO LIST</button>
+                        <button id=@Model.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "1" })';return false;"> <i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+                        <button id=@Model.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "2" })';return false;"> <i class="fas fa-globe-europe"></i> TO APPEAL</button>
+                        <button id=@Model.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "3" })';return false;"> <i class="fas fa-globe-europe"></i> TO SUPREME</button>
+                        <button id=@Model.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageEnforcementDetail", "CourtCases", new { CaseId = Model.CaseId })';return false;"> <i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+                        <button id=@Model.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = Model.CaseId })';return false;"> <i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+                        <button id=@Model.CaseId title="Create Case" class="btn btn-secondary" onclick="location.href='@Url.Action("Create", "CourtCases")';return false;"> <i class="fas fa-plus-circle"></i> CREATE CASE</button>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </section>
+    <input type="hidden" id="IsAgreementAttached" value="@ViewBag.SupportingDoc" />
+
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var P_CaseId = 0;
+
+        function onPreSubmit(item) {
+            var Message = "";
+
+            if ($("#CurrentCaseLevel").val() == "7") {
+
+                if ($("#ClosureLevel").val() == "0") {
+                    Message = Message == "" ? "Please Select Closure Level" : Message + "<br />" + "Please Select Closure Level";
+                }
+
+                if ($("#ReasonCode").val() == "0") {
+                    Message = Message == "" ? "Please Select Reason" : Message + "<br />" + "Please Select Reason";
+                }
+
+                if ($("#FileAllocation").val() == "0") {
+                    Message = Message == "" ? "Please Select File Allocation" : Message + "<br />" + "Please Select File Allocation";
+
+                }
+
+                if ($("#StatusDate").val() == "") {
+                    Message = Message == "" ? "Please Enter Status Date" : Message + "<br />" + "Please Enter Status Date";
+
+                }
+            }
+            else if ($("#CurrentCaseLevel").val() == "6") {
+                var Message = "";
+
+                if ($("#LitigationFileClosureDate").val() == "") {
+                    Message = Message == "" ? "Please Enter Litigation File Closure Date" : Message + "<br />" + "Please Enter Litigation File Closure Date";
+
+                }
+            }
+
+            if (Message == "") {
+
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'Missing Fields !!',
+                    html: Message
+                });
+                return false;
+            }
+        }
+
+        $(document).ready(function () {
+            console.log("Finance Page");
+            bsCustomFileInput.init();
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+
+            P_CaseId = parseInt($("#CaseId").val());
+
+            console.log("P_CaseId");
+            console.log(P_CaseId);
+            if ($("#DateOfLastInvoice").val() != "") {
+                $(".lastinvoice").removeClass("AppHidden");
+            }
+
+            if ($("#IsAgreementAttached").val() != "#") {
+                $("#Div-ViewAgreement").removeClass("AppHidden");
+            }
+            
+            if (parseFloat($("#ClaimAmount").val()) > 100000) {
+                $("#ClaimAmount").addClass("above100K");
+            }
+            
+        });
+    </script>
+
+}

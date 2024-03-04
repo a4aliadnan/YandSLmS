@@ -1,0 +1,125 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+@{
+    YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+    var FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+    var CaseLevelName = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && m.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+    string FeeNameDetail = string.Empty;
+    string DetailNumber = string.Empty;
+    string FeesDescription = string.Empty;
+
+    if (Model.FeeTypeCascadeDetail != null)
+    {
+        FeeNameDetail = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && m.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+    }
+
+    if (Model.FeeTypeDetail != null)
+    {
+        DetailNumber = " - " + Model.FeeTypeDetail;
+    }
+
+    if (string.IsNullOrEmpty(FeeNameDetail))
+    {
+        FeesDescription = string.Format("{0} - {1}{2}", CaseLevelName, FeeName, DetailNumber);
+
+    }
+    else
+    {
+        FeesDescription = string.Format("{0} - {1} - {2}{3}", CaseLevelName, FeeName, FeeNameDetail, DetailNumber);
+
+    }
+
+    var FeeAmount = Model.FeeAmount.ToString("0.###");
+
+    if (Model.VATPct != null)
+    {
+        var FeeAmVAT = (decimal)(Model.FeeAmount * (Model.VATPct / 100));
+        ViewBag.FeeAmountVAT = FeeAmVAT.ToString("0.###");
+
+        decimal TTLlFeeAmount = (FeeAmVAT + Model.FeeAmount);
+        ViewBag.TotalFeeAmount = TTLlFeeAmount.ToString("0.###");
+        ViewBag.VATPct = Model.VATPct?.ToString("0.###") + "%";
+
+    }
+    else
+    {
+        ViewBag.FeeAmountVAT = "";
+        ViewBag.TotalFeeAmount = FeeAmount;
+        ViewBag.VATPct = "";
+
+    }
+
+
+
+}
+<tr style="mso-yfti-irow:1;height:.3in">
+    <td style="width:49.5pt;border:none;border-right:solid windowtext 1.5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:.3in" width="66">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <o:p>&nbsp;</o:p>
+        </p>
+    </td>
+    <td style="width:251.85pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-left-alt:solid windowtext 1.5pt;
+  mso-border-alt:solid windowtext 1.5pt;mso-border-right-alt:solid windowtext .25pt;
+  padding:0in 5.4pt 0in 5.4pt;height:.3in" width="336">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-ascii-font-family:Calibri;mso-hansi-font-family:
+  Calibri;mso-bidi-font-family:Calibri;color:black">@FeesDescription</span><span style="font-size:12.0pt;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin;color:black"><o:p></o:p></span>
+</p>
+</td>
+<td style="width:1.0in;border-top:none;border-left:none;border-bottom:
+  solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;mso-border-top-alt:
+  solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;mso-border-top-alt:
+  1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:1.5pt;mso-border-right-alt:
+  .25pt;mso-border-color-alt:windowtext;mso-border-style-alt:solid;padding:
+  0in 5.4pt 0in 5.4pt;height:.3in" width="96">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        @FeeAmount<o:p></o:p>
+    </p>
+</td>
+<td colspan="2" style="width:58.5pt;border-top:none;border-left:none;
+  border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;
+  mso-border-top-alt:1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:
+  1.5pt;mso-border-right-alt:.25pt;mso-border-color-alt:windowtext;mso-border-style-alt:
+  solid;padding:0in 5.4pt 0in 5.4pt;height:.3in" width="78">
+    <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:center;line-height:normal">
+        <span style="font-size:12.0pt;
+  mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@ViewBag.VATPct<o:p></o:p></span>
+</p>
+</td>
+<td style="width:63.0pt;border-top:none;border-left:none;border-bottom:
+  solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;mso-border-top-alt:
+  solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;mso-border-top-alt:
+  1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:1.5pt;mso-border-right-alt:
+  .25pt;mso-border-color-alt:windowtext;mso-border-style-alt:solid;padding:
+  0in 5.4pt 0in 5.4pt;height:.3in" width="84">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        @ViewBag.FeeAmountVAT<o:p></o:p>
+    </p>
+</td>
+<td style="width:71.9pt;border-top:none;border-left:none;border-bottom:
+  solid windowtext 1.5pt;border-right:solid windowtext 1.5pt;mso-border-top-alt:
+  solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;padding:
+  0in 5.4pt 0in 5.4pt;height:.3in" width="96">
+    <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:center;line-height:normal">
+        <span style="font-size:12.0pt;
+  mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@ViewBag.TotalFeeAmount<o:p></o:p></span>
+</p>
+</td>
+<td style="width:28.1pt;border:none;mso-border-left-alt:solid windowtext 1.5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:.3in" width="37">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        <o:p>&nbsp;</o:p>
+    </p>
+</td>
+</tr>

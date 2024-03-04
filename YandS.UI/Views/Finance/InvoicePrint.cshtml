@@ -1,0 +1,24 @@
+﻿@model YandS.UI.Models.CaseInvoice
+@{
+    ViewBag.Title = "Y & S Associates - Print Case Invoice";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Y & S Associates - Print Case Invoice</title>
+</head>
+<body>
+    @if (Model.CourtType == "8")
+    {
+        @Html.Partial("_CaseInvoicePrintFormatB", Model)
+
+    }
+    else
+    {
+        @Html.Partial("_CaseInvoicePrintFormatA", Model)
+
+    }
+</body>
+</html>

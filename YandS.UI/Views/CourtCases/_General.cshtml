@@ -1,0 +1,334 @@
+﻿<script type="text/javascript">
+    var table;
+    function LoadResultTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 25,
+            "lengthMenu": [[5, 10, 25, 50, 100, 500], [5, 10, 25, 50, 100, 500]],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "GENERAL";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                    d.CaseLevel = $('#SEARCH_CaseLevel').val();
+                    d.Governorate = $('#SEARCH_GovernorateId').val();
+                    d.CourtLocation = $('#SEARCH_CourtLocationid').val();
+                    d.ClientCode = $('#SEARCH_ClientCode').val();
+                    d.AgainstCode = $('#SEARCH_AgainstCode').val();
+                    d.CaseStatus = $('#SEARCH_CaseStatus').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                { data: 'DefClientName', name: 'DefClientName', autoWidth: true },
+                {
+                    /*data: 'CaseLevelName', name: 'CaseLevelName', autoWidth: true*/
+                    data: null, autoWidth: false,
+                    render: function (data, type, row) {
+                        var Court = "";
+                        var CaseLevel = data.CaseLevelName;
+
+                        if (data.COURT !== null)
+                            Court = data.COURT;
+
+                        if (data.CaseStatus == "2") {
+                            return 'CLOSE<br />' + Court;
+                        }
+                        else {
+                            return CaseLevel + '<br />' + Court;
+                        }
+
+                    }
+                },
+                //{ data: 'COURT', name: 'COURT', autoWidth: false },
+                { data: 'CourtRefNo', name: 'CourtRefNo', autoWidth: false, render: function (data) { if (data) return data.split("^ ").join("<br/>"); else return ""; } },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false, render: function (data, type, row) { return FormatAccount_ClientFileNo(row); } },
+                { data: 'FileStatusName', name: 'FileStatusName', autoWidth: false },
+                { data: 'CurrentHearingDate', name: 'CurrentHearingDate', autoWidth: false },
+                { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
+                { data: 'NextHearingDate', name: 'NextHearingDate', autoWidth: false },
+                {
+                    data: null, autoWidth: false,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            var RetButtonSet = "";
+                            ///<a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a> 
+
+                            if (data.CaseStatus == "2") {
+                                var AllowedUsers = ["1", "2"];
+                                if (AllowedUsers.indexOf($("#hidUserName").val()) >= 0) {
+                                    return '<a style="color: black !important;" class="btn btn-sm btnLink" title="Enter Close Reason" id="CR_' + row.CaseId + '" href="javascript:void(0)" ><i class="fas fa-edit"> </i>CLOSE REASON</a> ';
+                                }
+                                else {
+                                    return null;
+                                }
+                            }
+                            else {
+                                if (data.CaseStatus == "1" && data.CaseLevelCode == "7") {
+                                    if ($("#hid_IsAccountTeam").val() == "Y") {
+                                        return null;
+                                        //return '<a style="color: black !important;" class="btn btn-sm btnLink" title="Re Open Closed Case" id="CL_' + row.CaseId + '" href="javascript:void(0)" ><i class="fas fa-edit"> </i>Re Open Case</a> ';
+                                    }
+                                    else {
+                                        return null;
+                                    }
+                                }
+                                else {
+                                    //if ($("#hid_IsAccountTeam").val() == "Y") {
+                                    //    return '<a style="color: black !important;" class="btn btn-sm btnLink" title="Modify and Add Case Details" id="E_' + row.CaseId + '" href="javascript:void(0)" ><i class="fas fa-edit"></i></a> <a style="background-color: #b8d8a0 !important;color: black !important;" class="btn btn-sm" title="BEFORE COURT INFORMATION" href="/CourtCases/BeforeCourt?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" ><strong>B</strong></a> <a style="background-color: #ffff8b !important;color: black !important;" class="btn btn-sm" title="Primary Court Management" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&Courtid=1"><strong>P</strong></a> <a style="background-color:#f4b183 !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=2" id="' + row.CaseId + '" data-original-title="Apeal Court Management"><strong>A</strong></a> <a style="background-color: #cc99ff !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=3" id="' + row.CaseId + '" data-original-title="Supreme Court Management"><strong>S</strong></a> <a style="background-color: #69d8ff !important;color: black !important;" class="btn btn-sm btnLink" title="" id="M_' + row.CaseId + '" href="javascript:void(0)" data-original-title="Enforcement Management"><strong>E</strong></a> <a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm btnLink" title="" id="CL_' + row.CaseId + '" href="javascript:void(0)" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a>';
+                                    //}
+                                    //else {
+                                    //    // <a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a>
+                                    //}
+
+                                    return '<a style="color: black !important;" class="btn btn-sm btnLink" title="Modify and Add Case Details" id="E_' + row.CaseId + '" href="javascript:void(0)" ><i class="fas fa-edit"></i></a> <a style="background-color: #b8d8a0 !important;color: black !important;" class="btn btn-sm" title="BEFORE COURT INFORMATION" href="/CourtCases/BeforeCourt?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" ><strong>B</strong></a> <a style="background-color: #ffff8b !important;color: black !important;" class="btn btn-sm" title="Primary Court Management" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&Courtid=1"><strong>P</strong></a> <a style="background-color:#f4b183 !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=2" id="' + row.CaseId + '" data-original-title="Apeal Court Management"><strong>A</strong></a> <a style="background-color: #cc99ff !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=3" id="' + row.CaseId + '" data-original-title="Supreme Court Management"><strong>S</strong></a> <a style="background-color: #69d8ff !important;color: black !important;" class="btn btn-sm btnLink" title="" id="M_' + row.CaseId + '" href="javascript:void(0)" data-original-title="Enforcement Management"><strong>E</strong></a> <a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm btnLink" title="" id="CL_' + row.CaseId + '" href="javascript:void(0)" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a>';
+                                }
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': "_all" },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: [1, 2, 3, 4, 5, 6]
+                },
+                {
+                    targets: 8, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: [7, 9]
+                }
+            ],
+            "drawCallback": function (settings) {
+                //alert('DataTables has redrawn the table');
+
+                $("#ENF_ModificationContainer").empty();
+            },
+            //"createdRow": function (row, data, dataIndex) {
+            //    var rowColor = "";
+            //    if (data.ToBeRegisterDays > 40) {
+            //        rowColor = "IsUrgentCase";
+            //    }
+            //    else {
+            //        if (data.CaseStatus == "-1") {
+            //            rowColor = "CaseCancel";
+            //        }
+            //        else if (data.CaseStatus == "2") {
+            //            rowColor = "CaseClose";
+            //        }
+            //        else {
+            //            if (data.CaseLevelCode == "1") {
+            //                rowColor = "";
+
+            //            }
+            //            else if (data.CaseLevelCode == "2") {
+            //                rowColor = "CaseBeforeCourt";
+
+            //            }
+            //            else if (data.CaseLevelCode == "3") {
+            //                rowColor = "CaseInPrimaryCourt";
+
+            //            }
+            //            else if (data.CaseLevelCode == "4") {
+            //                rowColor = "CaseInApealCourt";
+
+            //            }
+            //            else if (data.CaseLevelCode == "5") {
+            //                rowColor = "CaseInSupremeCourt";
+
+            //            }
+            //            else if (data.CaseLevelCode == "6") {
+            //                rowColor = "CaseInEnforcementCourt";
+            //            }
+            //            else if (data.CaseLevelCode == "7" && data.CaseStatus == "1") {
+            //                rowColor = "CaseClose";
+            //            }
+            //        }
+            //    }
+            //    $(row).addClass(rowColor);
+            //},
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                $('.btn').bstooltip();
+
+                var info = table.page.info();
+
+                var MCTRecords = table.ajax.json().MuscatTotal;
+                var SLLRecords = table.ajax.json().SalalahTotal;
+                var recordsTotal = table.ajax.json().recordsTotal;
+
+
+
+                console.log("MUSCAT TOTAL " + MCTRecords);
+                console.log("SALALAH TOTAL " + SLLRecords);
+
+
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                    $('#TTL').text(recordsTotal);
+                }
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+        $('.table tbody').on('click', '.btnLink', function () {
+            var _Mode = this.id.split('_')[0];
+            var _id = parseInt(this.id.split('_')[1]);
+
+            var data = table.row($(this).parents('tr')).data();
+
+            console.log(data);
+            console.log(_id);
+            console.log(data.CaseId);
+
+            processbtnLinkClick(_Mode, data);
+            return false;
+        });
+
+        $('#HtmlTable').on('draw.dt', function () {
+            console.log('Table redraw');
+        });
+    }
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('#btnPrintResult').on("click", function () {
+            LoadResultTable();
+        });
+
+        $('#SEARCH_GovernorateId').on("change", function () {
+            LoadCourtByGovernorate($('#SEARCH_GovernorateId').val(), $('#SEARCH_CourtLocationid'));
+        });
+
+
+        LoadResultTable();
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+<input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+<input type="hidden" id="txtLocationId" value="@ViewBag.LocationId" />
+
+<div style="padding-bottom:0px;padding-top:10px;" class="row GeneralActive">
+    <div class="col-sm-3 text-left text-white"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>MANAGMENT إدارة القضايا</h3></div>
+    <div class="col-sm-3 text-right text-white"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row GeneralActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row">
+    <div class="col">
+        <div class="form-group">
+            <label>LEVEL درجة المحكمة</label>
+            @Html.DropDownList("SEARCH_CaseLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label>GOVERNORATE المحافظة</label>
+            @Html.DropDownList("SEARCH_GovernorateId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label>COURT المحكمة</label>
+            @Html.DropDownList("SEARCH_CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label for="ClientCode">CLIENT NAME</label>
+            @Html.DropDownList("SEARCH_ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AgainstCode)
+            @Html.DropDownList("SEARCH_AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label for="ClientCode">CASE STATUS</label>
+            @Html.DropDownList("SEARCH_CaseStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col" style="padding-top:30px;">
+        <button id="btnPrintResult" type="button" class="btn btn-success"><i class="fas fa-file"></i> SHOW</button>
+    </div>
+</div>
+<div class="row">
+    <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+        <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:35px !important;" class="all">FILE NO.</th>
+                    <th style="width:150px !important;">CLIENT NAME</th>
+                    <th style="width:150px !important;">DEFENDANT/PLAINTIFF NAME</th>
+                    <th style="width:100px !important;">COURT</th>
+                    <th style="width:80px !important;">CASE NO</th>
+                    <th style="width:200px !important;" class="VMiddle text-center">CLIENT REF</th>
+                    <th style="width:150px !important;" class="VMiddle text-center">FILE STATUS</th>
+                    <th style="width:50px !important;" class="VMiddle text-center">UPDATE DATE<br />تاريخ التحديث</th>
+                    <th class="VMiddle text-center">COURT DECISION<br />قرار المحكمة</th>
+                    <th style="width:50px !important;" class="VMiddle text-center">NEXT HEARING DATE<br />موعد الجلسة القادمة</th>
+                    <th style="width:100px !important;" class="all"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+

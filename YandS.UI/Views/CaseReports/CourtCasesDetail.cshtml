@@ -1,0 +1,310 @@
+﻿@model YandS.DAL.RepCaseParameterForm
+@{
+    ViewBag.Title = "Y & S Associates - Reporting";
+}
+<style>
+    .beforeCourt {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .beforeCourt:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .beforeCourtActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .litigation {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .litigation:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .litigationActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .enforcement {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .enforcement:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .enforcementActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .consultants {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .consultants:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .consultantsActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .arabicReport {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .arabicReport:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .arabicReportActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .closed {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .closed:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .closedActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
+    .text-wrap {
+        white-space: normal;
+    }
+
+    .width-400 {
+        width: 400px;
+    }
+
+    .width-300 {
+        width: 300px;
+    }
+
+    .width-200 {
+        width: 200px;
+    }
+
+    .width-100 {
+        width: 100px;
+    }
+
+    .VMiddle {
+        vertical-align: middle !important;
+    }
+</style>
+<script>
+    var GetPartialViewURL = '@Url.Action("GetPartialView", "CaseReports", new { area = string.Empty })';
+    var GetPartialView = function (divToLoad, p_url, p_parameters) {
+
+        if (divToLoad.attr("id") != "PartialViewContainer")
+            $("#PartialViewContainer").empty();
+
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+        console.log(divToLoad.attr("id"));
+        
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                divToLoad.html(data);
+                //$('html, body').animate({
+                //    scrollTop: divToLoad.offset().top
+                //}, 1000);
+            }
+        });
+    };
+</script>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>CASES REPORT</h1>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div style="padding-bottom:10px;" class="col-sm-12">
+            <div class="row">
+                <div class="col">
+                    <button type="button" id="_beforeCourt" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg beforeCourt beforeCourtActive navButton">SHORT DATA</button>
+                </div>
+                <div class="col">
+                    <button type="button" id="_litigation" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg litigation navButton">LITIGATION</button>
+                </div>
+                <div class="col">
+                    <button type="button" id="_enforcement" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg enforcement navButton">ENFORCEMENT</button>
+                </div>
+                <div class="col">
+                    <button type="button" id="_consultants" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg consultants navButton" disabled>CONSULTANTS</button>
+                </div>
+                <div class="col">
+                    <button type="button" id="_arabicReport" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg arabicReport navButton" disabled>ARABIC REPORT</button>
+                </div>
+                <div class="col">
+                    <button type="button" id="_closed" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg closed navButton">CLOSED</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content" id="CourtCase-tabContent">
+            <div class="tab-pane fade show active" id="tabs-CaseInformaton" role="tabpanel" aria-labelledby="CaseInformaton-tab">
+                @using (Html.BeginForm("CourtCasesDetail", "CaseReports", FormMethod.Post, new { id = "frm_CourtCasesReports" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.PartialViewName)
+                    @Html.HiddenFor(model => model.ClickedButtonName)
+                    <div class="form-horizontal">
+                        <div id="PartialViewDetail"></div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="PartialViewContainer" class="card-body"></div>
+
+
+    </section>
+    <input type="hidden" id="txtViewContainer" value="PartialViewDetail" />
+    <input type="hidden" id="txtDataTableFilter" value="CASEREP" />
+    <input type="hidden" id="txtCaseLevel" value="1" />
+    <input type="hidden" id="txtViewToLoad" value="@ViewBag.ViewToLoad" />
+
+</div>
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            console.log("Reporting Case Detail form ");
+            var _PartialViewName = $("#txtViewToLoad").val();// "_litigation";
+            console.log(_PartialViewName);
+            $("#PartialViewName").val(_PartialViewName);
+
+            if (_PartialViewName == "_beforeCourt") {
+                _parameters = { PartialViewName: _PartialViewName };
+
+                GetPartialView($("#PartialViewDetail"), GetPartialViewURL, _parameters);
+            }
+            else {
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                var btnClickedId = _PartialViewName;
+                var btnClickedClass = _PartialViewName.split('_')[1];
+                var btnClickedActiveClass = _PartialViewName.split('_')[1] + "Active";
+                $(this).addClass(btnClickedActiveClass);
+
+                console.log(btnClickedId);
+                console.log(btnClickedClass);
+                console.log(btnClickedActiveClass);
+                $("#PartialViewName").val(_PartialViewName);
+
+                _parameters = { PartialViewName: _PartialViewName };
+
+                GetPartialView($("#PartialViewDetail"), GetPartialViewURL, _parameters);
+
+                //$("#" + _PartialViewName).click();
+            }
+
+            $('.navButton').click(function () {
+                var dtToLoad = "";
+                var btnClickedId = $(this).attr("id");
+
+                switch (btnClickedId) {
+                    case "_beforeCourt":
+                        dtToLoad = "CASEREP_BC";
+                        break;
+                    case "_litigation":
+                        dtToLoad = "CASEREP";
+                        break;
+                    case "_enforcement":
+                        dtToLoad = "CASEREP_ENF";
+                        break;
+                    case "_consultants":
+                        dtToLoad = "CASEREP_CONS";
+                        break;
+                    case "_arabicReport":
+                        dtToLoad = "CASEREP_AR";
+                        break;
+                    case "_closed":
+                        dtToLoad = "CLOSEREP";
+                        break;
+                }
+
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).addClass(btnClickedActiveClass);
+
+                console.log(btnClickedId);
+                console.log(btnClickedClass);
+                console.log(btnClickedActiveClass);
+                $("#PartialViewName").val($(this).attr("id"));
+
+                _parameters = { PartialViewName: $(this).attr("id") };
+
+                GetPartialView($("#PartialViewDetail"), GetPartialViewURL, _parameters);
+
+                $("#txtDataTableFilter").val(dtToLoad);
+            });
+        });
+    </script>
+}

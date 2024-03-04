@@ -1,0 +1,189 @@
+﻿@model YandS.UI.Models.CourtCasesDetail
+@{
+    ViewBag.Title = "Y & S Associates - Case List";
+}
+<script type="text/javascript">
+        var CourtDetailContainer = "";
+        var ListFollowupContainer = "";
+        var CreateFollowupContainer = "";
+        var P_Courtid = "0";
+        var P_CaseId = 0;
+        var P_Detail = 0;
+        var _parameters = {};
+
+        var GetCourtDetailURL = '@Url.Action("_ManageCourtInfo", "CourtCases", new { area = string.Empty })';
+        var GetListFollowupURL = '@Url.Action("GetHearingDetail", "CourtCases", new { area = string.Empty })';
+        var CreateFollowupURL = '@Url.Action("CreateCourtFollowup", "CourtCases", new { area = string.Empty })';
+
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+
+    function LoadPartialView(data, container) {
+        console.log(container);
+        container.empty();
+        container.append("Loading...");
+        container.html(data);
+    }
+
+    function LoadCreateHearingForm(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(CreateFollowupContainer, CreateFollowupURL, _parameters);
+    }
+    function LoadHearingList(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(ListFollowupContainer, GetListFollowupURL, _parameters);
+    }
+
+    function LoadHearings(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(CreateFollowupContainer, CreateFollowupURL, _parameters);
+        GetTab(ListFollowupContainer, GetListFollowupURL, _parameters);
+    }
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Case Registration</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Court Case</li>
+                        <li class="breadcrumb-item active"><a href="#">Court Cases Main</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="card @ViewBag.CourtClass">
+            <div class="card-header">
+                <h3 class="card-title">@ViewBag.CourtName</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="div-CourtDetail"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="div-CreateFollowup"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="div-ListFollowup"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+</div>
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var GetCourtDetailURL = '@Url.Action("_ManageCourtInfo", "CourtCases", new { area = string.Empty })';
+        var GetListFollowupURL = '@Url.Action("GetHearingDetail", "CourtCases", new { area = string.Empty })';
+        var CreateFollowupURL = '@Url.Action("CreateCourtFollowup", "CourtCases", new { area = string.Empty })';
+
+        var _parameters = {};
+        var P_Courtid = 0;
+        var P_Detail = 0;
+        var CourtDetailContainer = $("#div-CourtDetail");
+        var ListFollowupContainer = $("#div-ListFollowup");
+        var CreateFollowupContainer = $("#div-CreateFollowup");
+
+        var count = 0;
+        var CollectionCount = 0;
+        function onPreSubmit(item) {
+
+        }
+
+        $(function () {
+            console.log("Manage Case Info");
+            bsCustomFileInput.init();
+        });
+        jQuery(function ($) {
+            $.validator.addMethod('date',
+                function (value, element) {
+                    $.culture = Globalize.culture("en-AU");
+                    var date = Globalize.parseDate(value, "dd/MM/yyyy", "en-AU");
+                    return this.optional(element) ||
+                        !/Invalid|NaN/.test(new Date(date).toString());
+                });
+        });
+
+        $(document).ready(function () {
+            P_CaseId = parseInt($("#CaseId").val());
+            P_Courtid = parseInt($("#Courtid").val());
+            P_Detail = parseInt($("#DetailId").val());
+
+
+            console.log("P_CaseId");
+            console.log(P_CaseId);
+
+            console.log("P_Courtid");
+            console.log(P_Courtid);
+
+            console.log("P_Detail");
+            console.log(P_Detail);
+
+            if (P_Detail == 0) {
+                console.log("No Court Detail found! :: _CourtPView_Apeal Partial Page");
+            }
+            GetTab(CourtDetailContainer, GetCourtDetailURL,)
+            LoadHearings(P_Detail);
+
+            $('#addCourtFollowUps').on('click', function (e) {
+                e.preventDefault();
+                _parameters = { DetailId: P_Detail, Courtid: P_Courtid };
+
+                $.ajax({
+                    url: CreateFollowupURL,
+                    type: "GET",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#CaseFollowupDetail').append(data);
+
+                        CollectionCount = CollectionCount + 1;
+                        console.log(CollectionCount);
+
+                        var form = $('form');
+                        form.data('validator', null);
+                        $.validator.unobtrusive.parse(form);
+                    }
+                });
+
+                return false;
+            });
+
+            $(".deleteRow").on("click", function () {
+                $(this).parents(".divCollectionRow:first").remove();
+                CollectionCount = CollectionCount - 1;
+                return false;
+            });
+        });
+
+    </script>
+}

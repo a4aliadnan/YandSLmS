@@ -1,0 +1,414 @@
+﻿@model YandS.UI.Models.PayVoucher
+<style type="text/css">
+
+    table.MsoTableGrid {
+        border: solid black 1.0pt;
+        font-size: 11.0pt;
+        font-family: "Calibri",sans-serif;
+    }
+
+    p.MsoNoSpacing {
+        margin-bottom: .0001pt;
+        font-size: 11.0pt;
+        font-family: "Calibri",sans-serif;
+        margin-left: 0in;
+        margin-right: 0in;
+        margin-top: 0in;
+    }
+
+    p.MsoNormal {
+        margin-top: 0in;
+        margin-right: 0in;
+        margin-bottom: 8.0pt;
+        margin-left: 0in;
+        line-height: 107%;
+        font-size: 11.0pt;
+        font-family: "Calibri",sans-serif;
+    }
+</style>
+<table border="1" cellpadding="0" cellspacing="0" class="MsoTableGrid" style="border-collapse:collapse;border:none;mso-border-alt:solid black .5pt;
+ mso-border-themecolor:text1;mso-yfti-tbllook:1184;mso-padding-alt:0in 5.4pt 0in 5.4pt">
+    <tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes;height:15.9pt">
+        <td colspan="4" style="width:467.5pt;border:none;
+  border-bottom:solid windowtext 1.0pt;mso-border-bottom-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="623">
+            <p align="right" class="MsoNoSpacing" style="text-align:right">
+                <span style="font-size:9.0pt;color:black;mso-themecolor:text1;mso-bidi-font-weight:
+  bold">Printed Date:@DateTime.Now.ToString("dd/MM/yyyy HH:mm")<o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:1;height:15.9pt">
+    <td colspan="4" style="width:467.5pt;border:solid windowtext 1.0pt;
+  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;
+  padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="623">
+        <p align="center" class="MsoNoSpacing" style="text-align:center">
+            <b style="mso-bidi-font-weight:normal">
+                <span style="font-size:23.0pt;mso-bidi-font-size:
+  11.0pt;color:black;mso-themecolor:text1">Payment Voucher<o:p></o:p></span>
+            </b>
+        </p>
+    </td>
+</tr>
+<tr style="mso-yfti-irow:2;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid windowtext .5pt;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">PV Number :<o:p></o:p></span>
+        </p>
+    </td>
+    <td style="width:148.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:
+  text1;mso-border-alt:solid black .5pt;mso-border-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="198">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">@Html.DisplayFor(model => model.PV_No)<o:p></o:p></span>
+</p>
+</td>
+<td style="width:103.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:
+  text1;mso-border-alt:solid black .5pt;mso-border-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="138">
+    <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+        <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">PV Date :<o:p></o:p></span>
+    </p>
+</td>
+<td style="width:116.75pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:
+  text1;mso-border-alt:solid black .5pt;mso-border-themecolor:text1;mso-border-top-alt:
+  solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="156">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">@Html.DisplayFor(model => model.Voucher_Date)<o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:3;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Payment Type :<o:p></o:p></span>
+        </p>
+    </td>
+    <td style="width:148.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="198">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;
+  color:black">@Html.DisplayFor(model => model.PaymentTypeName)</span><span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin"><o:p></o:p></span>
+</p>
+</td>
+<td style="width:103.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="138">
+    <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+        <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Voucher Type :<o:p></o:p></span>
+    </p>
+</td>
+<td style="width:116.75pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="156">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="color:black">@Html.DisplayFor(model => model.VoucherTypeName)</span><o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:4;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Cheque/Trans # :<o:p></o:p></span>
+        </p>
+    </td>
+    <td style="width:148.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="198">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;
+  color:black"><o:p>&nbsp;</o:p>@Html.DisplayFor(model => model.Cheque_Number)</span>
+</p>
+</td>
+<td style="width:103.5pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="138">
+    <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+        <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Cheque/Trans Date :<o:p></o:p></span>
+    </p>
+</td>
+<td style="width:116.75pt;border-top:none;border-left:
+  none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:text1;
+  border-right:solid black 1.0pt;mso-border-right-themecolor:text1;mso-border-top-alt:
+  solid black .5pt;mso-border-top-themecolor:text1;mso-border-left-alt:solid black .5pt;
+  mso-border-left-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="156">
+    <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+        <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="color:black">@Html.DisplayFor(model => model.Cheque_Date)</span><o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:5;height:15.9pt">
+    <td colspan="4" style="width:467.5pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="623">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast"><o:p>&nbsp;</o:p></span>
+        </p>
+    </td>
+</tr>
+<tr style="mso-yfti-irow:6;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">W/D Bank :<o:p></o:p></span>
+        </p>
+    </td>
+    <td colspan="3" style="width:368.75pt;border-top:none;
+  border-left:none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:
+  text1;border-right:solid black 1.0pt;mso-border-right-themecolor:text1;
+  mso-border-top-alt:solid black .5pt;mso-border-top-themecolor:text1;
+  mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:text1;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;padding:0in 5.4pt 0in 5.4pt;
+  height:15.9pt" valign="top" width="492">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="color:black">@Html.DisplayFor(model => model.DebitAccountName)</span><o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:7;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Beneficiary :<o:p></o:p></span>
+        </p>
+    </td>
+    <td colspan="3" style="width:368.75pt;border-top:none;
+  border-left:none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:
+  text1;border-right:solid black 1.0pt;mso-border-right-themecolor:text1;
+  mso-border-top-alt:solid black .5pt;mso-border-top-themecolor:text1;
+  mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:text1;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;padding:0in 5.4pt 0in 5.4pt;
+  height:15.9pt" valign="top" width="492">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><span style="color:black">@Html.DisplayFor(model => model.Beneficiary)</span><o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:8;height:15.9pt">
+    <td style="width:98.75pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:15.9pt" valign="top" width="132">
+        <p align="right" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;
+  text-align:right;line-height:normal">
+            <span style="mso-fareast-font-family:
+  &quot;Times New Roman&quot;;mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:
+  Calibri;mso-bidi-theme-font:minor-latin">Amount :<o:p></o:p></span>
+        </p>
+    </td>
+    <td colspan="3" style="width:368.75pt;border-top:none;
+  border-left:none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:
+  text1;border-right:solid black 1.0pt;mso-border-right-themecolor:text1;
+  mso-border-top-alt:solid black .5pt;mso-border-top-themecolor:text1;
+  mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:text1;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;padding:0in 5.4pt 0in 5.4pt;
+  height:15.9pt" valign="top" width="492">
+        <p class="MsoNoSpacing">
+            <b style="mso-bidi-font-weight:normal">
+                <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin;color:black;mso-themecolor:text1">@Html.DisplayFor(model => model.Amount)</span>
+</b><b>
+    <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin"><o:p></o:p></span>
+</b>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:9;height:32.3pt">
+    <td colspan="4" style="width:467.5pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:32.3pt" valign="top" width="623">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">Remarks<o:p></o:p></span>
+        </p>
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">@Html.DisplayFor(model => model.Remarks)<o:p></o:p></span>
+</p>
+<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+    <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin"><o:p>&nbsp;</o:p></span>
+</p>
+<p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+    <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin">
+        <span style="mso-spacerun:yes">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </span>
+    </span><span style="mso-fareast-font-family:&quot;Times New Roman&quot;;
+  mso-fareast-theme-font:minor-fareast"><o:p></o:p></span>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:10;height:34.1pt">
+    <td colspan="2" style="width:247.25pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:34.1pt" valign="top" width="330">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <b>
+                <span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times New Roman&quot;;
+  mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin">Created by:<o:p></o:p></span>
+            </b>
+        </p>
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <b>
+                <span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times New Roman&quot;;
+  mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin">
+                    <span style="color:black">@Html.DisplayFor(model => model.CreatedByName)</span><br style="mso-special-character:line-break" />
+                    <![if !supportLineBreakNewLine]>
+                    <br style="mso-special-character:line-break" />
+                    <![endif]><o:p></o:p>
+                </span>
+            </b>
+        </p>
+    </td>
+    <td colspan="2" style="width:220.25pt;border-top:none;
+  border-left:none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:
+  text1;border-right:solid black 1.0pt;mso-border-right-themecolor:text1;
+  mso-border-top-alt:solid black .5pt;mso-border-top-themecolor:text1;
+  mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:text1;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;padding:0in 5.4pt 0in 5.4pt;
+  height:34.1pt" valign="top" width="294">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <b>
+                <span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times New Roman&quot;;
+  mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin">Approved by:<o:p></o:p></span>
+            </b>
+        </p>
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <b>
+                <span style="font-size:12.0pt;mso-fareast-font-family:&quot;Times New Roman&quot;;
+  mso-fareast-theme-font:minor-fareast;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
+  minor-latin"><span style="color:black">@Html.DisplayFor(model => model.AuthorizeByLoginId)</span><o:p></o:p></span>
+</b>
+</p>
+</td>
+</tr>
+<tr style="mso-yfti-irow:11;mso-yfti-lastrow:yes;height:61.6pt">
+    <td colspan="2" style="width:247.25pt;border:solid black 1.0pt;
+  mso-border-themecolor:text1;border-top:none;mso-border-top-alt:solid black .5pt;
+  mso-border-top-themecolor:text1;mso-border-alt:solid black .5pt;mso-border-themecolor:
+  text1;padding:0in 5.4pt 0in 5.4pt;height:61.6pt" valign="top" width="330">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast"><o:p>&nbsp;</o:p></span>
+        </p>
+    </td>
+    <td colspan="2" style="width:220.25pt;border-top:none;
+  border-left:none;border-bottom:solid black 1.0pt;mso-border-bottom-themecolor:
+  text1;border-right:solid black 1.0pt;mso-border-right-themecolor:text1;
+  mso-border-top-alt:solid black .5pt;mso-border-top-themecolor:text1;
+  mso-border-left-alt:solid black .5pt;mso-border-left-themecolor:text1;
+  mso-border-alt:solid black .5pt;mso-border-themecolor:text1;padding:0in 5.4pt 0in 5.4pt;
+  height:61.6pt" valign="top" width="294">
+        <p class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;line-height:
+  normal">
+            <span style="mso-fareast-font-family:&quot;Times New Roman&quot;;mso-fareast-theme-font:
+  minor-fareast"><o:p>&nbsp;</o:p></span>
+        </p>
+    </td>
+</tr>
+</table>
+<script type="text/javascript">
+
+    window.addEventListener("load", window.print());
+</script>

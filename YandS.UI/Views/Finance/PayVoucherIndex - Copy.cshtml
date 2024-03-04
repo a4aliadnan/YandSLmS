@@ -1,0 +1,1539 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Payment Voucher List";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    @if (ViewBag.DataFor == "NONREF" || ViewBag.DataFor == "REF")
+                    {
+                        <h1>PAYMENT VOUCHER</h1>
+                    }
+                    else if (ViewBag.DataFor == "INTRA")
+                    {
+                        <h1>
+                            INTRA TRANSACTION
+                        </h1>
+
+                    }
+                </div>
+                <div class="col-sm-6">
+                    @if (ViewBag.DataFor == "NONREF" || ViewBag.DataFor == "REF")
+                    {
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">Finance</li>
+                            <li class="breadcrumb-item">Payment Voucher</li>
+                            <li class="breadcrumb-item active"><a href="#">Payment Voucher List</a></li>
+                        </ol>
+                    }
+                    else if (ViewBag.DataFor == "INTRA")
+                    {
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">Finance</li>
+                            <li class="breadcrumb-item">Payment Voucher</li>
+                            <li class="breadcrumb-item active"><a href="#">Intra Transaction List</a></li>
+                        </ol>
+
+                    }
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @if (ViewBag.DataFor == "NONREF" || ViewBag.DataFor == "REF")
+        {
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">PAYMENT VOUCHER LIST</h3>
+                    <div class="card-tools">
+                        <button title="CREATE PAYMENT VOUCHER" class="btn btn-primary btn-sm bg-maroon" onclick="location.href='@Url.Action("PayVoucherCreateRefunable", "Finance")';return false;">CREATE PAYMENT VOUCHER</button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div style="padding-bottom:10px;" class="row">
+                        @if (User.IsInRole("VoucherApproval"))
+                        {
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">MUSCAT&nbsp;:&nbsp;<span id="MCTTotal">@ViewBag.MCTTotal</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">REFUNDABLE - PENDING</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">SALALAH&nbsp;:&nbsp;<span id="SLLTotal">@ViewBag.SLLTotal</span></h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">REFUNDABLE - PENDING</h3>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+
+                    <table id="IndexREFUNDABLE" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">DATE</th>
+                                <th>BRANCH</th>
+                                <th>PV NO.</th>
+                                <th>Y&S NO</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>CASE LEVEL</th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    REF PAID
+                                </th>
+                                <th>FUTURE DATE</th>
+
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        @if (User.IsInRole("VoucherApproval"))
+                        {
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">MUSCAT&nbsp;:&nbsp;<span id="NMCTTotal">@ViewBag.REFMCTTotal</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">NON REFUNDABLE - PENDING</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">SALALAH&nbsp;:&nbsp;<span id="NSLLTotal">@ViewBag.REFSLLTotal</span></h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">NON REFUNDABLE - PENDING</h3>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+
+                    <table id="IndexNONREFUNDABLE" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">
+                                    DATE
+                                </th>
+                                <th>
+                                    BRANCH
+                                </th>
+                                <th>
+                                    PV NO.
+                                </th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    FUTURE DATE
+                                </th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        @if (User.IsInRole("VoucherApproval"))
+                        {
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalApr">@ViewBag.MCTTotalApr</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">REFUNDABLE - APPROVED</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">SALALAH&nbsp;:&nbsp;<span id="SLLTotalApr">@ViewBag.SLLTotalApr</span></h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">REFUNDABLE - APPROVED</h3>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+
+                    <table id="IndexREFUNDABLEAPR" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">DATE</th>
+                                <th>BRANCH</th>
+                                <th>PV NO.</th>
+                                <th>Y&S NO</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>CASE LEVEL</th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    REF PAID
+                                </th>
+                                <th>FUTURE DATE</th>
+
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        @if (User.IsInRole("VoucherApproval"))
+                        {
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">MUSCAT&nbsp;:&nbsp;<span id="NMCTTotalApr">@ViewBag.NMCTTotalApr</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">NON REFUNDABLE - APPROVED</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">SALALAH&nbsp;:&nbsp;<span id="NSLLTotalApr">@ViewBag.NSLLTotalApr</span></h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <h3 class="bg-maroon">NON REFUNDABLE - APPROVED</h3>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+
+                    <table id="IndexNONREFUNDABLEAPR" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">
+                                    DATE
+                                </th>
+                                <th>
+                                    BRANCH
+                                </th>
+                                <th>
+                                    PV NO.
+                                </th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    FUTURE DATE
+                                </th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        @if (User.IsInRole("VoucherApproval"))
+                        {
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalPDC">@ViewBag.MCTTotalPDC</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">PDC</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">SALALAH&nbsp;:&nbsp;<span id="SLLTotalPDC">@ViewBag.SLLTotalPDC</span></h3>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <h3 class="bg-yellow">PDC</h3>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+
+
+                    <table id="IndexPDC" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">BRANCH</th>
+                                <th>CHQ DATE</th>
+                                <th>PAY FROM</th>
+                                <th>PAY FOR</th>
+                                <th>REMARKS</th>
+                                <th>PAY TO</th>
+                                <th>AMOUNT</th>
+                                <th>DAYS LEFT</th>
+                                <th>PDC REFERENCE NO</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        <div class="col-sm-12">
+                            <div class="text-center">
+                                <h3 class="bg-gray-light">REFUNDABLE - REJECT</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table id="IndexREFUNDABLEREJ" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">DATE</th>
+                                <th>BRANCH</th>
+                                <th>REASON</th>
+                                <th>PV NO.</th>
+                                <th>Y&S NO</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>CASE LEVEL</th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    REF PAID
+                                </th>
+                                <th>FUTURE DATE</th>
+
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div style="padding-bottom:10px; padding-top:10px;" class="row">
+                        <div class="col-sm-12">
+                            <div class="text-center">
+                                <h3 class="bg-gray-light">NON REFUNDABLE - REJECT</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table id="IndexNONREFUNDABLEREJ" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">
+                                    DATE
+                                </th>
+                                <th>
+                                    BRANCH
+                                </th>
+                                <th>
+                                    REASON
+                                </th>
+                                <th>
+                                    PV NO.
+                                </th>
+                                <th>
+                                    PAY FOR
+                                </th>
+                                <th>
+                                    REMARKS
+                                </th>
+                                <th>
+                                    PAY TO
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    REF NO.
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+                                <th>
+                                    W/D BANK
+                                </th>
+                                <th>
+                                    PAID DATE
+                                </th>
+                                <th>
+                                    FUTURE DATE
+                                </th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                </div>
+            </div>
+        }
+        else if (ViewBag.DataFor == "INTRA")
+        {
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        INTRA TRANSACTION LIST
+                    </h3>
+                    <div class="card-tools">
+                        <button title="CREATE INTRA TRANSACTION" class="btn btn-primary btn-sm bg-maroon" onclick="location.href='@Url.Action("PayVoucherCreateIntra", "Finance")';return false;">CREATE INTRA TRANSACTION</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="IndexTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="all">
+                                    NO.
+                                </th>
+                                <th>
+                                    DATE
+                                </th>
+                                <th>
+                                    REASON
+                                </th>
+                                <th>
+                                    STATUS
+                                </th>
+                                <th>
+                                    AMOUNT
+                                </th>
+                                <th>
+                                    MODE
+                                </th>
+
+
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                </div>
+            </div>
+        }
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        var GetIndexDataURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { DataFor = @ViewBag.DataFor })';
+        var GetIndexDataREFURL = '@Url.Action("AjaxIndexDataPV", "CommonTask", new { DataFor = @ViewBag.DataFor })';
+        var table;
+        var tableRefundable;
+        var tableNonRefundable;
+        var tableRefundableApr;
+        var tableNonRefundableApr;
+        var tableRefundableRej;
+        var tableNonRefundableRej;
+        var tablePDC;
+        var GetDocNameURL = '@Url.Action("GetPVDocName", "CommonTask", new { area = string.Empty })';
+        function openInNewTab(url) {
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+        $(document).ready(function () {
+            console.log("Index PV Page");
+
+            if ($('#txtDataFor').val() == "REF" || $('#txtDataFor').val() == "NONREF") {
+
+                tableRefundable = $('#IndexREFUNDABLE').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "REF";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'REF_PAID', name: 'REF_PAID', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                //console.log(data.PV_No);
+                                //console.log(data.Status);
+                                //console.log(data.VoucherStatus);
+
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else if (data.Status == "2")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a>';
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 16 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable Initiated !!");
+                        //var bootstrapTooltip = $.fn.tooltip.noConflict();
+                        //$.fn.bstooltip = bootstrapTooltip;
+                        //$('.btn').bstooltip();
+                        var AjaxData = tableRefundable.ajax.json();
+                        console.log(AjaxData);
+
+                        var MuscatTTL = tableRefundable.ajax.json().MuscatTotal;
+                        var SalalahTTL = tableRefundable.ajax.json().SalalahTotal;
+
+                        console.log(MuscatTTL);
+                        console.log(SalalahTTL);
+
+                        $("#IndexREFUNDABLE_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableRefundable.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableRefundable.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tableNonRefundable = $('#IndexNONREFUNDABLE').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "NONREF";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        //{
+                        //    data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true,
+                        //    "type": "date ",
+                        //    "render": function (value) {
+                        //        if (value === null) return "";
+
+                        //        var pattern = /Date\(([^)]+)\)/;
+                        //        var results = pattern.exec(value);
+                        //        var dt = new Date(parseFloat(results[1]));
+
+                        //        return dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                        //    }
+                        //},
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                //console.log(data.PV_No);
+                                //console.log(data.Status);
+                                //console.log(data.VoucherStatus);
+
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if ((data.Status == "1" || data.Status == "2") && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 11 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable NonRefundable Initiated !!");
+                        //var bootstrapTooltip = $.fn.tooltip.noConflict();
+                        //$.fn.bstooltip = bootstrapTooltip;
+                        //$('.btn').bstooltip();
+
+                        $("#IndexNONREFUNDABLE_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableNonRefundable.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableNonRefundable.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tableRefundableApr = $('#IndexREFUNDABLEAPR').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "REFAPR";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'REF_PAID', name: 'REF_PAID', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                        return '<a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                        return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else if (data.Status == "2")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[2, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 16 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable tableRefundableApr Initiated !!");
+
+                        $("#IndexREFUNDABLEAPR_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableRefundableApr.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableRefundableApr.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tableNonRefundableApr = $('#IndexNONREFUNDABLEAPR').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "NONREFAPR";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                        return '<a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                        return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if ((data.Status == "1" || data.Status == "2") && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[2, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 11 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable NonRefundableApr Initiated !!");
+
+                        $("#IndexNONREFUNDABLEAPR_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableNonRefundableApr.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableNonRefundableApr.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tablePDC = $('#IndexPDC').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "PDC";
+                        }
+                    },
+                    "columns": [
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'DaysLeft', name: 'DaysLeft', autoWidth: true },
+                        { data: 'PDCRefNo', name: 'PDCRefNo', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                //console.log(data.PV_No);
+                                //console.log(data.Status);
+                                //console.log(data.VoucherStatus);
+
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return null;
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return null;
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else if (data.Status == "2")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a>';
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (parseInt(data.DaysLeft) <= 3) {
+                            rowColor = "PVRejected";
+
+                        }
+                        else  {
+                            rowColor = "PVpending";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable PDC Initiated !!");
+
+                        $("#IndexPDC_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tablePDC.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tablePDC.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tableRefundableRej = $('#IndexREFUNDABLEREJ').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "REFREJ";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'RejectReason', name: 'RejectReason', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'REF_PAID', name: 'REF_PAID', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return null;
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else if (data.Status == "2")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a>';
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 17 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable Initiated !!");
+
+                        $("#IndexREFUNDABLEREJ_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableRefundableRej.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableRefundableRej.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                tableNonRefundableRej = $('#IndexNONREFUNDABLEREJ').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    "lengthMenu": [[5,10, 25, 50], [5,10, 25, 50]],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "NONREFREJ";
+                        }
+                    },
+                    "columns": [
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                        { data: 'RejectReason', name: 'RejectReason', autoWidth: true },
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                        { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                        { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                        { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return null;
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if ((data.Status == "1" || data.Status == "2") && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 2 },
+                        { visible: false, targets: 12 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        //console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable NonRefundableRej Initiated !!");
+
+                        $("#IndexNONREFUNDABLEREJ_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableNonRefundableRej.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableNonRefundableRej.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+            }
+            else if ($('#txtDataFor').val() == "INTRA") {
+                table = $('#IndexTable').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": [
+                        { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                        { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                        { data: 'TransReasonName', name: 'TransReasonName', autoWidth: true },
+                        { data: 'VoucherStatusName', name: 'PaymentHeadName', autoWidth: true },
+                        { data: 'Amount', name: 'Amount', autoWidth: true },
+                        { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                console.log(data.PV_No);
+                                console.log(data.Status);
+                                console.log(data.VoucherStatus);
+
+                                if (type === 'display') {
+                                    if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a>';
+                                    else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                        return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    else {
+                                        if (data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                        else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                            return null;
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.VoucherStatus == "2")
+                                                return null;
+                                            else if (data.Status == "2")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else
+                                                return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[0, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [-1] },
+                        { type: 'natural', targets: 0 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                        console.log(data.VoucherStatus);
+
+                        if (data.VoucherStatus == "2") {
+                            rowColor = "PVRejected";
+
+                        }
+                        else if (data.VoucherStatus == "0") {
+                            rowColor = "PVpending";
+
+                        }
+                        else if (data.VoucherStatus == "1") {
+                            rowColor = "PVApproved";
+
+                        }
+                        $(row).addClass(rowColor);
+                    },
+                    initComplete: function () {
+                        console.log("DataTable Initiated !!");
+                        //var bootstrapTooltip = $.fn.tooltip.noConflict();
+                        //$.fn.bstooltip = bootstrapTooltip;
+                        //$('.btn').bstooltip();
+
+                        $(".dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    table.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    table.search("").draw();
+                                }
+                                return;
+                            });
+                    }
+                });
+
+            }
+
+            $('.table tbody').on('click', '.ShowDocsBTR', function () {
+                GetDocName(this.id, "PVTransfers");
+                return false;
+            });
+
+            $('.table tbody').on('click', '.ShowDocsPV', function () {
+                GetDocName(this.id, "PVDocuments");
+                return false;
+            });
+
+            function GetDocName(p_id, p_type) {
+                console.log("p_id");
+                console.log(p_id);
+
+                console.log("p_type");
+                console.log(p_type);
+
+                _parameters = { Id: p_id, type: p_type };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: GetDocNameURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            if (Result.FileName == "#") {
+                                Swal.fire({
+                                    type: "error",
+                                    title: 'Error...',
+                                    html: "Document not Found"
+                                });
+                            }
+                            else {
+                                openInNewTab("/Uploads/" + p_type + "/" + Result.FileName);
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

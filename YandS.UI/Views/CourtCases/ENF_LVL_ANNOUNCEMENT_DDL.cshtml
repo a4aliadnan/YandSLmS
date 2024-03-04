@@ -1,0 +1,14 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+    });
+</script>
+<div class="col-sm-4">
+    <div class="form-group">
+        @Html.LabelFor(model => model.AnnouncementTypeId)
+        @Html.DropDownList("AnnouncementTypeId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+    </div>
+</div>

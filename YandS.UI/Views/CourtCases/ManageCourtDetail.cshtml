@@ -1,0 +1,797 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Manage Court Detail";
+}
+<script type="text/javascript">
+    var CourtDetailContainer = "";
+    var ListFollowupContainer = "";
+    var CreateFollowupContainer = "";
+    var P_Courtid = "0";
+    var P_CaseId = 0;
+    var P_Detail = 0;
+    var _parameters = {};
+    var DDLToAppend;
+    var GetCourtDetailURL = '@Url.Action("CourtPView", "CourtCases", new { area = string.Empty })';
+    var GetListFollowupURL = '@Url.Action("GetHearingDetail", "CourtCases", new { area = string.Empty })';
+    var CreateFollowupURL = '@Url.Action("CreateCourtFollowup", "CourtCases", new { area = string.Empty })';
+    var DeleteFollowupURL = '@Url.Action("DeleteCourtFollowup", "CourtCases", new { area = string.Empty })';
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var GetSessionRollIdURL = '@Url.Action("GetSessionRollId", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+
+    var GetTabFromSessionRoll = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "POST",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+
+                divToLoad.html(data);
+
+                $.fn.autoResize = function () {
+                    let r = e => {
+                        e.style.height = '';
+                        e.style.height = e.scrollHeight + 'px'
+                    };
+                    return this.each((i, e) => {
+                        e.style.overflow = 'hidden';
+                        r(e);
+                        $(e).bind('input', e => {
+                            r(e.target);
+                        })
+                    })
+                };
+
+                if (divToLoad.attr("id") == "EditPopupViewContainer") {
+
+                    $('#EditPopupModal').modal('show');
+                }
+                else if (divToLoad.attr("id") == "div-detailView") {
+                    $('#modal-detailView').modal('show');
+                }
+                else if (divToLoad.attr("id") == "FileStatusDetail") {
+                    $('html, body').animate({
+                        scrollTop: divToLoad.offset().top
+                    }, 1000);
+                }
+                else {
+                    $('html, body').animate({
+                        scrollTop: divToLoad.offset().top
+                    }, 1000);
+                }
+                $('textarea').autoResize();
+            }
+        });
+    };
+
+
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    var ValidationMessage;
+    var NotValid;
+    var DetailViewName = "";
+
+    var bkClientReply = "";
+    var bkRequirements = "";
+    var bkFirstEmailDate = "";
+
+    var bkCourtFollow = "";
+    var bkCourtFollow_LawyerId = "";
+    var bkCourtFollowRequirement = "";
+    var bkCommissioningDate = "";
+
+    function LoadPartialView(data, container) {
+        //console.log(container);
+        container.empty();
+        container.append("Loading...");
+        container.html(data);
+    }
+
+    function LoadCreateHearingForm(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(CreateFollowupContainer, CreateFollowupURL, _parameters);
+    }
+    function LoadHearingList(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(ListFollowupContainer, GetListFollowupURL, _parameters);
+    }
+
+    function LoadHearings(Detail_id) {
+        _parameters = { DetailId: Detail_id, Courtid: P_Courtid };
+        GetTab(CreateFollowupContainer, CreateFollowupURL, _parameters);
+        GetTab(ListFollowupContainer, GetListFollowupURL, _parameters);
+    }
+
+    function ProcessCourtDetail(form) {
+        console.log("function ProcessCourtDetail($form)");
+        var $form = form;
+        $form.validate();
+        if ($form.valid()) {
+            $.ajax({
+                url: GetCourtDetailURL,
+                method: "POST",  // post
+                data: $form.serialize(),
+                success: function (partialResult) {
+                    //LoadPartialView(partialResult, CourtDetailContainer);
+                    //P_Detail = parseInt($("#hid_DetailId").val());
+
+                    location.reload();
+
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            $.each($form.validate().errorList, function (key, value) {
+                $errorSpan = $("span[data-valmsg-for='" + value.element.id + "']");
+                $errorSpan.html("<span style='color:red'>" + value.message + "</span>");
+                $errorSpan.show();
+            });
+        }
+    }
+    function formatDate(d) {
+        date = new Date(d)
+        var dd = date.getDate();
+        var mm = date.getMonth() + 1;
+        var yyyy = date.getFullYear();
+        if (dd < 10) { dd = '0' + dd }
+        if (mm < 10) { mm = '0' + mm };
+        return d = dd + '/' + mm + '/' + yyyy
+    }
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+            var _MstDesc = $("#MstDesc").val();
+            var _MstParentId = parseInt($("#MstParentId").val());
+
+            _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: CreateMasterTableDetailURL,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+
+    function process(date) {
+        var parts = date.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+
+    function ValidateMain() {
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUPREME BY" : ValidationMessage + "<br />" + "PLEASE SELECT SUPREME BY";
+            NotValid = true;
+        }
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+
+    function Validate_SessionFollowSupreme() {
+        if ($("#SessionRollDefendentName").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER DEFENDENT NAME" : ValidationMessage + "<br />" + "PLEASE ENTER DEFENDENT NAME";
+            NotValid = true;
+        }
+
+        if ($("#SessionClientId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SESSION CLIENT" : ValidationMessage + "<br />" + "PLEASE SELECT SESSION CLIENT";
+            NotValid = true;
+        }
+
+        return NotValid;
+
+    }
+    function Validate_SessionUpdate() {
+
+
+        if ($("#CurrentHearingDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER UPDATE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER UPDATE DATE";
+            NotValid = true;
+        }
+
+        if ($("#CourtDecision").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER COURT DECISION" : ValidationMessage + "<br />" + "PLEASE ENTER COURT DECISION";
+            NotValid = true;
+        }
+
+        //if ($("#SessionRemarks").val() == "") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REMARKS" : ValidationMessage + "<br />" + "PLEASE ENTER REMARKS";
+        //    NotValid = true;
+        //}
+
+
+        return NotValid;
+
+    }
+    function Validate_SessionJudgementSupreme() {
+
+
+        if ($("#SupremeJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#SupremeJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#SupremeJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME SENTENCE";
+            NotValid = true;
+        }
+
+        if (parseInt($('#SessionFileStatus').val()) == 2) {
+            if ($("#DifferentPanelYesSet").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FINAL JUDGEMENT OR TRANSFER" : ValidationMessage + "<br />" + "PLEASE SELECT FINAL JUDGEMENT OR TRANSFER";
+                NotValid = true;
+            }
+            //console.log($('input[name="DifferentPanelYesSet"]:checked').val());
+
+            //if ($('input[name="DifferentPanelYesSet"]:checked').val() == undefined) {
+            //    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FINAL JUDGEMENT OR DIFFERENT PANELS" : ValidationMessage + "<br />" + "PLEASE SELECT FINAL JUDGEMENT OR DIFFERENT PANELS";
+            //    NotValid = true;
+            //}
+        }
+
+        if ($("#SupremeFinalJDAmount").val() == "") {
+            NotValid = false;
+        }
+        else {
+            if (isNaN($("#SupremeFinalJDAmount").val())) {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID SUPREME FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID SUPREME FINAL JD AMOUNT";
+                NotValid = true;
+            }
+
+        }
+        if ($("#SupremeFinalJudgedInterests").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME JUDGED INTERESTS";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function Validate_SessionClose() {
+
+
+        if ($("#ClosureDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER CLOSURE DATE";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function ResetHiddenItems() {
+        $("#hidNextHearingDate").val("");
+        $("#hidCourtDecisionChange").val("");
+        $("#hidCurrentHearingDate").val("");
+        $("#hidRequirement").val("");
+        $("#hidFirstEmailDate").val("");
+
+        bkClientReply = "";
+        bkRequirements = "";
+        bkFirstEmailDate = "";
+
+        bkCourtFollow = "";
+        bkCourtFollow_LawyerId = "";
+        bkCourtFollowRequirement = "";
+        bkCommissioningDate = "";
+
+        $("#selClientReplyYN").val("").trigger('change');
+        $("#selCourtFollowYN").val("").trigger('change');
+        $("#selUpdateDateYN").val("").trigger('change');
+        $("#selNextHearingDateYN").val("").trigger('change');
+    }
+    function ValidateUpdateDate() {
+        console.log("ValidateUpdateDate()");
+        var NotValidUpdateDate = false;
+        if ($("#hidCourtDecisionChange").val() == "Y") {
+            var Msg = "لم تقم بتحديث التاريخ" + "<br />" + "PLEASE CHANGE THE DATE";
+
+            if ($("#CurrentHearingDate").val() == "") {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+
+            if ($("#CurrentHearingDate").val() == $("#hidCurrentHearingDate").val()) {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+        }
+
+        return NotValidUpdateDate;
+    }
+    function ValidateNextHearingDate() {
+        console.log("ValidateNextHearingDate()");
+        var NotValidNextHearingDate = false;
+        if ($("#hidNextHearingDate").val() == "") {
+
+        }
+        else {
+            var Msg = "الرجاء التأكد من تاريخ الجلسة القادمة" + "<br />" + "PLEASE CHECK SESSION DATE";
+
+            var ValidDays = [0, 7, 14, 21, 28, 35, 42, 49, 54, 63, 70];
+            var dtLastDate = moment(moment($("#hidNextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var currDate = moment(moment($("#NextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var result = currDate.diff(dtLastDate, 'days');
+
+            console.log(dtLastDate);
+            console.log(currDate);
+            console.log(result);
+
+            if (ValidDays.indexOf(result) == -1) {
+                NotValidNextHearingDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+
+            }
+        }
+
+        return NotValidNextHearingDate;
+    }
+    function ShowPreSubmit() {
+        var IsShowCientReply = false; //DIV_WAITING_CLIENT_REPLY
+        var IsShowCourtFollow = false; //DIV_WAITING_COURT_FOLLOW
+        var IsShowUpdateDate = false; //DIV_CHANGE_UPDATE_DATE
+        var IsShowNextHearing = false; //DIV_CHANGE_NEXT_HEARING_DATE
+        var IsShowRequirement = false;
+        var IsShowMemo = false;
+
+        console.log('Updated On');
+        console.log($('#UpdatedOn').val());
+
+        console.log('hidUpdated On');
+        console.log($('#hidUpdatedOn').val());
+
+        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden").addClass("AppHidden");
+
+        IsShowUpdateDate = ValidateUpdateDate();
+        IsShowNextHearing = ValidateNextHearingDate();
+
+        console.log(IsShowUpdateDate);
+        console.log(IsShowNextHearing);
+
+        if ($('#ClientReply').val() == "1") {
+            if (bkClientReply == "1") {
+                if ($('#selClientReplyYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCientReply = true;
+                        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selClientReplyYN').val() == "N") {
+                        $("#ClientReply").val("").trigger('change');
+                        $("#Requirements").val("");
+                        $("#FirstEmailDate").val("");
+                    }
+                    else {
+                        $("#ClientReply").val(bkClientReply).trigger('change');
+                        $("#Requirements").val(bkRequirements);
+                        //$("#FirstEmailDate").val(bkFirstEmailDate);
+                        $("#FirstEmailDate").datepicker("setDate", bkFirstEmailDate);
+
+                    }
+                }
+            }
+        }
+
+        if ($('#CourtFollow').val() == "1") {
+            if (bkCourtFollow == "1") {
+                if ($('#selCourtFollowYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCourtFollow = true;
+                        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selCourtFollowYN').val() == "N") {
+                        $("#CourtFollow").val("").trigger('change');
+                        $("#CourtFollow_LawyerId").val("0").trigger('change');
+                        $("#CourtFollowRequirement").val("");
+                        $("#CommissioningDate").val("");
+                    }
+                    else {
+                        $("#CourtFollow").val(bkCourtFollow).trigger('change');
+                        $("#CourtFollow_LawyerId").val(bkCourtFollow_LawyerId).trigger('change');
+                        $("#CourtFollowRequirement").val(bkCourtFollowRequirement);
+                        //$("#CommissioningDate").val(bkCommissioningDate);
+                        $("#CommissioningDate").datepicker("setDate", bkCommissioningDate);
+
+                    }
+                }
+            }
+        }
+
+        if (IsShowUpdateDate) {
+            $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowNextHearing) {
+            $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowCientReply) {
+
+            var SelValue = $('#selClientReplyYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowCourtFollow) {
+
+            var SelValue = $('#selCourtFollowYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowUpdateDate) {
+
+            var SelValue = $('#selUpdateDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowNextHearing) {
+
+            var SelValue = $('#selNextHearingDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+        $('#modal-preSubmit').modal('hide');
+        submitForm();
+    }
+
+</script>
+<div id="div_PrintRequirementForm" style="position: absolute; left: -1000px; top: -1000px"></div>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Court Registration</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Court Case</li>
+                        <li class="breadcrumb-item active"><a href="#">Court Management</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="div-CourtDetail"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="div-CreateFollowup"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="div-ListFollowup"></div>
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="hid_CaseId" value="@ViewBag.hid_CaseId" />
+    <input type="hidden" id="HFCaseId" value="@ViewBag.hid_CaseId" />
+    <input type="hidden" id="hid_Courtid" value="@ViewBag.hid_Courtid" />
+    <input type="hidden" id="hid_DetailId" value="@ViewBag.hid_DetailId" />
+    <input type="hidden" id="hid_SessionRollId" value="@ViewBag.hid_SessionRollId" />
+    <input type="hidden" value="@ViewBag.OfficeFileNo" id="PV_OFFICE_FILE_NO" />
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="hidNextHearingDate" value="" />
+    <input type="hidden" id="hidCurrentHearingDate" value="" />
+    <input type="hidden" id="hidCourtDecisionChange" value="" />
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-PVForm">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div id="modalPVFormoverlay" class="overlay">
+                    <i class="fas fa-2x fa-sync fa-spin"></i>
+                </div>
+                <div class="modal-header">
+                    <h4 class="modal-title"><span>ADD PAYMENT VOUCHER</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="PVCreateForm"></div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-preSubmit">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="DIV_WAITING_CLIENT_REPLY" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label dir="auto" for="selClientReplyYN">ARE YOU WAITING FOR CLIENT REPLY?<br /><span>؟</span>(CLIENT REPLY)&nbsp;<span>هل تنتظر رد الموكل</span></label>
+                                <select class="form-control select2bs4" id="selClientReplyYN">
+                                    <option value="">PLEASE SELECT</option>
+                                    <option value="N">لا NO</option>
+                                    <option value="Y">نعم YES</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIV_WAITING_COURT_FOLLOW" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label dir="auto" for="selCourtFollowYN">هل تنتظر مراجعة المحكمة ؟</label>
+                                <select class="form-control select2bs4" id="selCourtFollowYN">
+                                    <option value="">PLEASE SELECT</option>
+                                    <option value="N">لا NO</option>
+                                    <option value="Y">نعم YES</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIV_CHANGE_UPDATE_DATE" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label dir="auto" for="selUpdateDateYN">Change (Update Date) to be today's date? هل تريد تغيير ( تاريخ التحديث ) ليكون تاريخ اليوم؟</label>
+                                <select class="form-control select2bs4" id="selUpdateDateYN">
+                                    <option value="">PLEASE SELECT</option>
+                                    <option value="Y">YES</option>
+                                    <option value="N">NO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIV_CHANGE_NEXT_HEARING_DATE" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label dir="auto" for="selNextHearingDateYN">الرجاء التأكد من تاريخ الجلسة القادمة</label>
+                                <select class="form-control select2bs4" id="selNextHearingDateYN">
+                                    <option value="">PLEASE SELECT</option>
+                                    <option value="N">BACK عودة</option>
+                                    <option value="Y">SAVE حفظ</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ShowPreSubmit()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var GetCourtDetailURL = '@Url.Action("CourtPView", "CourtCases", new { area = string.Empty })';
+        var GetSupCourtDetailURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+        var GetListFollowupURL = '@Url.Action("GetHearingDetail", "CourtCases", new { area = string.Empty })';
+        var CreateFollowupURL = '@Url.Action("CreateCourtFollowup", "CourtCases", new { area = string.Empty })';
+        var DeleteFollowupURL = '@Url.Action("DeleteCourtFollowup", "CourtCases", new { area = string.Empty })';
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+
+        var _parameters = {};
+        var P_Courtid = 0;
+        var P_CaseId = 0;
+        var P_Detail = 0;
+        var P_PVURL = GetCourtDetailURL;
+        var CourtDetailContainer = $("#div-CourtDetail");
+        var ListFollowupContainer = $("#div-ListFollowup");
+        var CreateFollowupContainer = $("#div-CreateFollowup");
+
+
+        $(document).ready(function () {
+            P_CaseId = parseInt($("#hid_CaseId").val());
+            P_Courtid = $("#hid_Courtid").val();
+            P_Detail = parseInt($("#hid_DetailId").val());
+            P_SessionRollId = parseInt($("#hid_SessionRollId").val());
+
+            $('#selUpdateDateYN').on("change", function () {
+                if ($('#selUpdateDateYN').val() == "")
+                    return false;
+
+                if ($('#selUpdateDateYN').val() == "N") {
+                    $("#hidCourtDecisionChange").val("N");
+                }
+                else if ($('#selUpdateDateYN').val() == "Y") {
+                    $("#CurrentHearingDate").datepicker("setDate", new Date).datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true
+                    });
+                }
+                ShowPreSubmit();
+            });
+
+            $('#selNextHearingDateYN').on("change", function () {
+                if ($('#selNextHearingDateYN').val() == "N") {
+                    $('#modal-preSubmit').modal('hide');
+                }
+            });
+
+
+            //console.log("P_CaseId");
+            //console.log(P_CaseId);
+
+            //console.log("P_Courtid");
+            //console.log(P_Courtid);
+
+            //console.log("P_Detail");
+            //console.log(P_Detail);
+
+            if (P_Detail == 0) {
+                console.log("No Court Detail found! :: _CourtPView_Apeal Partial Page");
+            }
+
+            if (P_Courtid == "3") {
+                P_PVURL = GetSupCourtDetailURL;
+                var _PartialViewName = "_SessionRollSupremeUpdate";
+                _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId, CaseLevel: "5" };
+                GetTabFromSessionRoll(CourtDetailContainer, P_PVURL, _parameters);
+
+            }
+            else {
+                _parameters = { CaseId: P_CaseId, Courtid: P_Courtid, SessionRollId: P_SessionRollId };
+                GetTab(CourtDetailContainer, P_PVURL, _parameters);
+            }
+
+            $("body").on('propertychange change keyup paste input', "#CourtDecision", function (e) {
+                $("#hidCourtDecisionChange").val("N");
+                if (this.value.length) {
+                    $("#hidCourtDecisionChange").val("Y");
+                }
+
+                $('textarea').autoResize();
+            });
+        });
+    </script>
+}

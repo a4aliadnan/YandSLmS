@@ -1,0 +1,80 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        console.log($('#CurrentDisputeLevelandType').val());
+
+        $('.selectcls').addClass("AppHidden");
+
+        if (parseInt($('#CurrentDisputeLevelandType').val()) > 0) 
+            $('.cls_' + $('#CurrentDisputeLevelandType').val()).removeClass("AppHidden");
+        
+        $('#CurrentDisputeLevelandType').on("change", function () {
+            $('.selectcls').addClass("AppHidden");
+            $('.cls_' + $('#CurrentDisputeLevelandType').val()).removeClass("AppHidden");
+        });
+    });
+</script>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CurrentDisputeLevelandType)
+            @Html.DropDownList("CurrentDisputeLevelandType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group selectcls cls_1">
+            @Html.LabelFor(model => model.PrimaryObjectionNo)
+            @Html.EditorFor(model => model.PrimaryObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group selectcls cls_2">
+            @Html.LabelFor(model => model.ApealObjectionNo)
+            @Html.EditorFor(model => model.ApealObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group selectcls cls_3">
+            @Html.LabelFor(model => model.SupremeObjectionNo)
+            @Html.EditorFor(model => model.SupremeObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group selectcls cls_4">
+            @Html.LabelFor(model => model.PrimaryPlaintNo)
+            @Html.EditorFor(model => model.PrimaryPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group selectcls cls_5">
+            @Html.LabelFor(model => model.ApealPlaintNo)
+            @Html.EditorFor(model => model.ApealPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group selectcls cls_6">
+            @Html.LabelFor(model => model.SupremePlaintNo)
+            @Html.EditorFor(model => model.SupremePlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group selectcls cls_1">
+            @Html.LabelFor(model => model.PrimaryObjectionCourt)
+            @Html.DropDownList("PrimaryObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group selectcls cls_2">
+            @Html.LabelFor(model => model.ApealObjectionCourt)
+            @Html.DropDownList("ApealObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group selectcls cls_3">
+            @Html.LabelFor(model => model.SupremeObjectionCourt)
+            @Html.DropDownList("SupremeObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group selectcls cls_4">
+            @Html.LabelFor(model => model.PrimaryPlaintCourt)
+            @Html.DropDownList("PrimaryPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group selectcls cls_5">
+            @Html.LabelFor(model => model.ApealPlaintCourt)
+            @Html.DropDownList("ApealPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group selectcls cls_6">
+            @Html.LabelFor(model => model.SupremePlaintCourt)
+            @Html.DropDownList("SupremePlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+</div>

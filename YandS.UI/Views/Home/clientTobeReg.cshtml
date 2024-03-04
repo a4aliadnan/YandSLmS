@@ -1,0 +1,137 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "CLT-TOBE_REG";
+    var SP_NAME = "CLIENT_ACCESS-TOBE_REG";
+    $(document).ready(function () {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": -1,
+            //scrollY: '60vh',
+            //scrollCollapse: true,
+            //paging: false,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'TOBE REGISTER',
+                    text: 'Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            //select: true,
+            //select: 'single',
+            "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, 'ALL']],
+            "ajax": {
+                url: GetIndexDataURL,
+                type: "POST",
+                datatype: "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.LocationId = $('#hidLocationId').val();
+                    d.ClientCode = $('#hidClientCode').val();
+                    d.ProcedureName = SP_NAME;
+                },
+                deferRender: true
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false, render: function (data, type, row) { return FormatAccount_ClientFileNo(row); } },
+                { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true },
+                { data: 'ClientFileNo', name: 'ClientFileNo', autoWidth: false, "className": "Filter_A" },
+                {
+                    data: 'UpdateDate', name: 'UpdateDate', autoWidth: true,
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    }
+                },
+                {
+                    data: 'CourtDecision', name: 'CourtDecision', autoWidth: true,
+                    render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [0, 1, 3, 4]
+                }
+            ],
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                ShowHideClientFileNo();
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row clientTobeRegActive">
+    <div class="col-sm-3 text-left"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>NEW CASES</h3></div>
+    <div class="col-sm-3 text-right"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row clientTobeRegActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div class="row">
+    <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+
+        <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:50px !important" class="all VMiddle text-center">FILE NO.</th>
+                    <th style="width:350px !important" class="VMiddle text-center">NAME</th>
+                    <th style="width:250px !important;" class="VMiddle text-center">A/C NO<br /><span class="emphasized">CLIENT FILE NO</span></th>
+                    <th style="width:250px !important" class="VMiddle text-center">FILE STATUS</th>
+                    <th style="width:150px !important;" class="VMiddle text-center">CLIENT<br />FILE NO</th>
+                    <th style="width:150px !important" class="VMiddle text-center">UPDATE<br />DATE</th>
+                    <th class="VMiddle text-center">UPDATE</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+﻿@model YandS.UI.Models.CaseInvoice
+
+@{
+    ViewBag.Title = "Y & S Associates - Cancel Case Invoice";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Cancel Case Invoice</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Court Case</li>
+                        <li class="breadcrumb-item active"><a href="#">Cancel Case Invoice</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-md-6 classCenter">
+            <div class="card card-danger">
+                <div class="card-header">
+                    <h3 class="card-title">Cancel Case Invoice</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-danger">Are you sure you want to Cancel this?</p>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ClientFileNo)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.ClientFileNo)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.InvoiceNumber)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.InvoiceNumber)
+                        </dd>
+                    </dl>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-actions no-color">
+                            <input type="submit" value="Delete" class="btn btn-danger" /> |
+                            @Html.ActionLink("Back to Main", "Index")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>

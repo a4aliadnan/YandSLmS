@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    @Styles.Render("~/AllPageTheme")
+    <style>
+        body {
+            font-family: 'Cairo';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/cairo/v20/SLXVc1nY6HkvangtZmpcWmhzfH5lWWgcQyyS4J0.woff2) format('woff2');
+            unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
+        }
+    </style>
+    @Scripts.Render("~/bundles/autoNumeric")
+    @Scripts.Render("~/bundles/JqueryScript")
+    @Scripts.Render("~/bundles/BootstrapScript")
+    @Scripts.Render("~/CommonFunctions")
+</head>
+<body class="sidebar-mini control-sidebar-slide-open accent-lightblue text-sm">
+    <!-- Site wrapper -->
+    <div class="wrapper">
+        @Html.Partial("_GlobalVariables")
+        @if (SessionHandler.User == null)
+        {
+            using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <script>
+                    window.addEventListener('load', function () {
+                        document.getElementById('logoutForm').submit();
+                    })
+
+                </script>
+            }
+        }
+        else
+        {
+            if (SessionHandler.User.UserType > 0)
+            {
+
+                @Html.Partial("_Header")
+                @Html.Partial("_Aside")
+            }
+
+            @RenderBody()
+
+            if (SessionHandler.User.UserType > 0)
+            {
+
+                @Html.Partial("_Footer")
+            }
+
+            if (Session["Message"] != null)
+            {
+                var message = (YandS.UI.Models.MessageVM)Session["Message"];
+                <input type="hidden" id="hdnMessage" value="@message.Message" />
+                <input type="hidden" id="hdnMessageCategory" value="@message.Category" />
+                <input type="hidden" id="hdnIsShowForm" value="@message.IsShowForm" />
+                <input type="hidden" id="hdnCaseId" value="@message.CaseId" />
+                Session["Message"] = null;
+            }
+        }
+
+    </div>
+    <div id="div_RequirementForm" style="position: absolute; left: -1000px; top: -1000px"></div>
+    @{ Html.RenderPartial("_Scripts", RenderSection("pagespecific", false)); }
+    @if (Request.IsAuthenticated)
+    {
+        @Html.Partial("~/Views/Shared/_KeepAlive.cshtml")
+    }
+    <script>
+        function LoadRequirementForm(PartialViewName,CaseId) {
+            var _PartialViewName = PartialViewName;
+            P_CaseId = parseInt(CaseId);
+            P_SessionRollId = 0;
+            var _Mode = "C";
+
+            var PartialContainer = $("#div_RequirementForm");
+            PartialContainer.empty();
+
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+
+            $.ajax({
+                url: GetRequirementFormURL,
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    PartialContainer.html(data);
+                    //window.clipboardData.clearData("Text");
+                    Swal.fire({
+                        type: 'success',
+                        title: '',
+                        width: 700,
+                        html: $("#ContentDIV").html()
+                    }).then(function () {
+                        CopyToClipboard('swal2-content');
+                        console.log("Table Copied");
+                        $('#hdnIsShowForm').val('');
+                        $('#hdnCaseId').val('');
+                    });
+                }
+            });
+        }
+
+        function showMessage() {
+            if ($('#hdnIsShowForm').val() == 'Y') {
+                LoadRequirementForm("SaveResult", $('#hdnCaseId').val());
+
+            }
+            else {
+                if ($('#hdnMessageCategory').val() == 'Success') {
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Done!',
+                        html: $('#hdnMessage').val()
+                    })
+                }
+                else if ($('#hdnMessageCategory').val() == 'Error') {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: $('#hdnMessage').val()
+                    })
+                }
+            }
+
+
+            $('#hdnMessageCategory').val('');
+            $('#hdnMessage').val('');
+        }
+
+        $(document).ready(function () {
+            console.log("document ready _Layout");
+            try {
+                $("input[type='text']").each(function () {
+                    $(this).attr("autocomplete", "off");
+                });
+            }
+            catch (e) { }
+            if ($('#hdnMessage').length > 0 && $('#hdnMessage').val() != "") {
+                showMessage();
+            }
+
+            $('.clsCourtCases').click(function () {
+                $('.clsCourtCases').removeClass("active");
+                $(this).addClass("active");
+            });
+        });
+    </script>
+</body>
+</html>

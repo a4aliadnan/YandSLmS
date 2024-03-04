@@ -1,0 +1,77 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+<div class="card-body">
+    @using (Html.BeginCollectionItem("FeeId"))
+    {
+        {
+            YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+            ViewBag.FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+            ViewBag.CaseLevelName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && w.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+            ViewBag.InvClassificationName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeClassification && w.Mst_Value == Model.InvClassification).FirstOrDefault().Mst_Desc;
+
+            ViewBag.FormatedFeeAmount = String.Format("{0:#.###}", Model.FeeAmount);
+
+            if (Model.FeeTypeCascadeDetail != null)
+            {
+                ViewBag.FeeTypeCascadeDetailName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && w.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+            }
+        }
+    <div class="caseinvoicefeeRow">
+        @Html.HiddenFor(model => model.FeeId)
+        @Html.HiddenFor(model => model.FeeTypeId)
+        @Html.HiddenFor(model => model.InvoiceId)
+        @Html.HiddenFor(model => model.CaseLevel)
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="@ViewBag.InvClassificationName" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="@ViewBag.CaseLevelName" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="@ViewBag.FeeName" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="@ViewBag.FeeTypeCascadeDetailName" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                @Html.EditorFor(model => model.FeeTypeDetail, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="col-sm-12">
+                    <div class="row">
+
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                @Html.EditorFor(model => model.FeeAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @Value = ViewBag.FormatedFeeAmount } })
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>
+
+

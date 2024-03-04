@@ -1,0 +1,216 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "TBR-SupDispute";
+    var SP_NAME = "REG_IN_PROG-SUPDISPUTE";
+    $(document).ready(function () {
+        AddbuttonPressHandler();
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": -1,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'SUPREME DISPUTE',
+                    text: 'Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, 'ALL']],
+            "ajax": {
+                url: GetIndexDataURL,
+                type: "POST",
+                datatype: "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.SP_NAME = SP_NAME;
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                },
+                deferRender: true
+            },
+            "columns": [
+                { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                { data: 'Court', name: 'Court', autoWidth: true },
+                { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true },
+                { data: 'Notes', name: 'Notes', autoWidth: true },
+                { data: 'ActionCounter', name: 'ActionCounter', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            var ModifyLink = '<a class="btn btn-info btn-sm btnLink" title="" id="T_' + row.CaseRegistrationId + '" href="javascript:void(0)" data-original-title="Modify Registration Detail"><i class="fas fa-pencil-alt"></i></a>';
+                            var ModDelLink = '<a class="btn btn-info btn-sm btnLink" title="" id="T_' + row.CaseRegistrationId + '" href="javascript:void(0)" data-original-title="Modify Registration Detail"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="" id="TD_' + row.CaseRegistrationId + '" href="javascript:void(0)" data-original-title="Cancel Case Registration"><i class="fas fa-trash"></i></a>';
+                            var DeleteLink = '<a class="btn btn-danger btn-sm btnLink" title="" id="TD_' + row.CaseRegistrationId + '" href="javascript:void(0)" data-original-title="Cancel Case Registration"><i class="fas fa-trash"></i></a>';
+                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                if (row.FileStatus == "11")
+                                    return DeleteLink;
+                                else
+                                    return ModDelLink;
+                            }
+                            else {
+                                if (row.FileStatus == "11")
+                                    return "";
+                                else
+                                    return ModifyLink;
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 2
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 4
+                },
+                {
+                    targets: 6, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "drawCallback": function (settings) {
+                //alert('DataTables has redrawn the table');
+
+                $("#TBR_ModificationContainer").empty();
+            },
+            //"createdRow": function (row, data, dataIndex) {
+            //    var rowColor = GetdtClassName(dataForTable, data.DaysCounter);
+            //    $(row).addClass(rowColor);
+            //},
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+
+                var info = table.page.info();
+
+                var MCTRecords = table.ajax.json().MuscatTotal;
+                var SLLRecords = table.ajax.json().SalalahTotal;
+                var recordsTotal = table.ajax.json().recordsTotal;
+
+                $('#TTL').text(recordsTotal);
+
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                }
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+
+                        }
+                        return;
+                    });
+            }
+        });
+
+        $('.table tbody').on('click', '.btnLink', function () {
+            var _Mode = this.id.split('_')[0];
+            var _id = parseInt(this.id.split('_')[1]);
+            var data = table.row($(this).parents('tr')).data();
+
+            processbtnLinkClick(_Mode, data, dataForTable);
+            return false;
+        });
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row TBRSupDisputeActive">
+    <div class="col-sm-3 text-left"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>SUPREME DISPUTE (منازعة تنفيذ (كتابة طعن</h3></div>
+    <div class="col-sm-3 text-right"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row TBRSupDisputeActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" id="Div_OfficeFileNoMain" class="row">
+    <div class="col-sm-2">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="input-group mb-3">
+                    <input id="OfficeFileNoMain" class="form-control form-control" type="text" placeholder="ADD NEW FILE">
+                    <div class="input-group-append">
+                        <button type="button" onclick="GetCaseDetailMain(document.getElementById('OfficeFileNoMain').value,dataForTable)" class="btn btn-info" id="btnCaseSearchMain">
+                            ADD
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+    </div>
+    <div class="col-sm-2">
+
+
+    </div>
+</div>
+@Html.Partial("_CreateTBRInfoBanner")
+<div class="row">
+    <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+
+        <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:50px !important" class="all VMiddle text-center">DAYS C.</th>
+                    <th style="width:50px !important" class="all VMiddle text-center">FILE NO.</th>
+                    <th style="width:200px !important" class="VMiddle text-center">CLIENT</th>
+                    <th style="width:200px !important" class="VMiddle text-center">DEFENDANT</th>
+                    <th style="width:150px !important" class="VMiddle text-center">COURT</th>
+                    <th style="width:150px !important" class="VMiddle text-center">FILE STATUS</th>
+                    <th>NOTES</th>
+                    <th style="width:50px !important" class="VMiddle text-center">ACTION C.</th>
+                    <th style="width:15px !important" class="all"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

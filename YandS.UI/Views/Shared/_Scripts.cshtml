@@ -1,0 +1,26 @@
+﻿@Scripts.Render("~/AllPageScripts")
+<script>
+    $(document).ready(function () {
+        console.log("_Script Page");
+        scroller.init();
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        //$(".datepicker").datepicker("setDate", new Date());
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+    });
+</script>
+@if (@Model is HelperResult)
+{
+    @Model
+}
+

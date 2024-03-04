@@ -1,0 +1,215 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+        $('.AddNewMaster').on("click", function () {
+
+            console.log("_SessionFollowDIV Script");
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+
+            var _MstParentId = this.id.split('_')[0];
+            var _DDLToAppend = this.id.split('_')[1];
+
+
+            $("#MstParentId").val(_MstParentId);
+
+            if (_DDLToAppend == "FollowerId") {
+                ModalTitle = "ADD FOLLOWER";
+                DDLToAppend = $("#FollowerId");
+            }
+            else if (_DDLToAppend == "SuspendedFollowerId") {
+                ModalTitle = "ADD ADVISOR";
+                DDLToAppend = $("#SuspendedFollowerId");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $(".clsFollowup").removeClass("AppHidden").addClass("AppHidden");
+        $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+
+
+        if ($("#ShowFollowup").is(":checked")) {
+            $(".clsFollowup").removeClass("AppHidden");
+        }
+
+        if ($("#ShowSuspend").is(":checked")) {
+            $(".clsSuspended").removeClass("AppHidden");
+        }
+
+        $('#ShowFollowup').change(function () {
+            $(".clsFollowup").removeClass("AppHidden").addClass("AppHidden");
+            if ($(this).is(":checked")) {
+                $(".clsFollowup").removeClass("AppHidden");
+            }
+        });
+
+        $('#ShowSuspend').change(function () {
+            $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+            if ($(this).is(":checked")) {
+                $(".clsSuspended").removeClass("AppHidden");
+            }
+        });
+
+        function ClearUnCheckInput(clsName) {
+            $('.' + clsName).each(function () {
+                $(this).val('');
+            });
+        }
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@Html.HiddenFor(model => model.SessionRollId)
+@Html.HiddenFor(model => model.CaseId)
+@Html.HiddenFor(model => model.PartialViewName)
+
+<div>
+    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: black !important;">
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h3>FOLLOW UP لمتابعة الإجراءات</h3>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        @Html.CheckBoxFor(model => model.ShowFollowup)
+                        <label for="ShowFollowup">FOLLOW UPلمتابعةالإجراء</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group clearfix">
+                    <div class="icheck-primary d-inline">
+                        @Html.CheckBoxFor(model => model.ShowSuspend)
+                        <label for="ShowSuspend">FOR MEMO لكتابة المذكرات</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="AppHidden clsFollowup" style="padding-bottom:0px !important;padding-top:10px;background-color: #fff3cd !important; color: black !important;">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h3>FOLLOW UP المتابعة </h3>
+                </div>
+            </div>
+        </div>
+        <div class="row AppHidden clsFollowup">
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label for="WorkRequired">FOLLOW UP WORK REQUIRED المطلوب</label>
+                    @Html.EditorFor(model => model.WorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label for="SessionNotes">FOLLOW UP SESSION NOTES</label>
+                    @Html.EditorFor(model => model.SessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+        <div class="row AppHidden clsFollowup">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="LastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                    @Html.EditorFor(model => model.LastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="FollowerId">FOLLOWER المكلف بالمتابعة</label>
+                    @Html.DropDownList("FollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                @*<div class="col-sm-12">
+                    <div class="row">
+                        <label for="FollowerId">FOLLOWER المكلف بالمتابعة</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("FollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="861_FollowerId">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+            <div class="col-sm-3">
+                <div class="card-footer text-right">
+                    <a title="PRINT FORM" id="PrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintWorkForm">PRINT</a>
+                </div>
+            </div>
+        </div>
+        <div class="AppHidden clsSuspended" style="padding-bottom:0px !important;padding-top:10px;background-color: #e5f4d4 !important; color: black !important;">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h3>FOR MEMO لكتابة المذكرات</h3>
+                </div>
+            </div>
+        </div>
+        <div class="row AppHidden clsSuspended">
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label for="SuspendedWorkRequired">FOR MEMO المطلوب</label>
+                    @Html.EditorFor(model => model.SuspendedWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label for="SuspendedSessionNotes">MEMO NOTES</label>
+                    @Html.EditorFor(model => model.SuspendedSessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+        <div class="row AppHidden clsSuspended">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="SuspendedLastDate">MEMO LAST DATE إنجاز العمل قبل تاريخ</label>
+                    @Html.EditorFor(model => model.SuspendedLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="FollowerId">ADVISOR المستشار</label>
+                    @Html.DropDownList("SuspendedFollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                @*<div class="col-sm-12">
+                    <div class="row">
+                        <label for="FollowerId">ADVISOR المستشار</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("SuspendedFollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="861_SuspendedFollowerId">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+            <div class="col-sm-3">
+                <div class="card-footer text-right">
+                    <a title="PRINT FORM" id="SuspendedPrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_SuspendedPrintWorkForm">PRINT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

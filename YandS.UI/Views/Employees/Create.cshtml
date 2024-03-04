@@ -1,0 +1,204 @@
+﻿@model YandS.UI.Models.Employees
+@{
+    ViewBag.Title = "Y & S Associates - Employee Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Employee Information</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Master</li>
+                        <li class="breadcrumb-item">Employee</li>
+                        <li class="breadcrumb-item active"><a href="#">New Employee</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">Employee Master Information</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.EmployeeNumber)
+                                    @Html.EditorFor(model => model.EmployeeNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmployeeNumber, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FullName)
+                                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Email)
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Gender)
+                                    @Html.DropDownList("Gender", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LocationCode)
+                                    @*@Html.EditorFor(model => model.Gender, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    @Html.DropDownList("LocationCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+
+                                    @Html.ValidationMessageFor(model => model.LocationCode, "", new { @class = "text-danger" })
+
+                                    @*@Html.DropDownList("Parent",null, htmlAttributes: new { @class = "form-control" })*@
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Department)
+                                    @Html.DropDownList("Department", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CAddress)
+                                    @Html.EditorFor(model => model.CAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BasicSalary)
+                                    @Html.EditorFor(model => model.BasicSalary, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.BasicSalary, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LeaveAllowed)
+                                    @Html.EditorFor(model => model.LeaveAllowed, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.LeaveAllowed, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BankName)
+                                    @Html.DropDownList("BankName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DOB)
+                                    @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    @*@Html.TextBoxFor(model => model.DOB,"{0:dd/MM/yyyy}",  new { @class = "form-control datepicker" })*@
+                                    @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DOA)
+                                    @Html.EditorFor(model => model.DOA, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    @Html.ValidationMessageFor(model => model.DOA, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DOR)
+                                    @Html.EditorFor(model => model.DOR, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    @Html.ValidationMessageFor(model => model.DOR, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactNumber)
+                                    @Html.EditorFor(model => model.ContactNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Nationality)
+                                    @Html.DropDownList("Nationality", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    @Html.ValidationMessageFor(model => model.Nationality, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Designation)
+                                    @Html.DropDownList("Designation", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PAddress)
+                                    @Html.EditorFor(model => model.PAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Allowance)
+                                    @Html.EditorFor(model => model.Allowance, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Allowance, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label for="UploadedFile">Employee Picture</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="UploadedFile" name="upload" required>
+                                            <label class="custom-file-label" for="UploadedFile">Choose Image</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.AccountNumber)
+                                    @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button> | 
+                    <a class="btn btn-primary" href="@Url.Action("Index", "Employees")"><i class="fas fa-home"></i> Back to Main</a>
+                </div>
+
+            </div>
+        }
+    </section>
+    <!-- /.content -->
+</div>
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        jQuery(function ($) {
+            $.validator.addMethod('date',
+                function (value, element) {
+                    $.culture = Globalize.culture("en-AU");
+                    var date = Globalize.parseDate(value, "dd/MM/yyyy", "en-AU");
+                    return this.optional(element) ||
+                        !/Invalid|NaN/.test(new Date(date).toString());
+                });
+        });
+
+        //$.validator.methods.range = function (value, element, param) {
+        //    if ($(element).attr('data-val-date')) {
+        //        var min = $(element).attr('data-val-range-min');
+        //        var max = $(element).attr('data-val-range-max');
+        //        var date = new Date(value).getTime();
+        //        var minDate = new Date(min).getTime() || 0;
+        //        var maxDate = new Date(max).getTime() || 8640000000000000;
+        //        return this.optional(element) || (date >= minDate && date <= maxDate);
+        //    }
+        //    // use the default method
+        //    return this.optional(element) || (value >= param[0] && value <= param[1]);
+        //};
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Create Employee Page");
+            bsCustomFileInput.init();
+
+           
+        });
+    </script>
+
+}

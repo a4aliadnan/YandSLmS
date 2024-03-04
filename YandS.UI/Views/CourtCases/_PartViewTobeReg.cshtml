@@ -1,0 +1,81 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        if ($("#ActionDate").val() == "")
+            $("#ActionDate").datepicker("setDate", new Date());
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('textarea').autoResize();
+
+        $('#FileStatus').on("change", function () {
+            $("#ActionDate").datepicker("setDate", new Date());
+        });
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+@Html.HiddenFor(model => model.ReceptionDateDisp)
+@Html.HiddenFor(model => model.AdminFile)
+@Html.HiddenFor(model => model.UrgentCaseDays)
+@*@Html.HiddenFor(model => model.CourtDetailRegistered)*@
+@Html.HiddenFor(model => model.MainRemarks)
+
+<div class="card">
+    <div class="card-header ToBeRegBanner">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8 text-center"><h3 class="text-center">TO BE REGISTER قضايا جديدة قيد التسجيل</h3></div>
+            <div class="col-sm-2"><span style="float:right"><a title="PRINT FORM" id="PrintFormButton" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CaseRegistration/PrintForm/@Model.CaseRegistrationId">PRINT FORM</a></span></div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="FormPrintWorkRequired">WORK REQUIRED العمل المطلوب</label>
+                    @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="OfficeProcedure">NOTES الملاحظات</label>
+                    @Html.TextAreaFor(model => model.OfficeProcedure, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="FormPrintLastDate">LAST DATE الإنجاز قبل</label>
+                    @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="FileStatus">FILE STATUS حالة الملف</label>
+                    @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+
+            </div>
+            <div class="col-sm-6">
+                
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                    @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

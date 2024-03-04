@@ -1,0 +1,153 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("_CourtCaseHearingCreate Partial Page Loaded");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $("#HearingDate").val("");
+
+        console.log($("#hid_DetailId").val());
+
+
+        var $form = $("#frmCourcaseFollowup");
+        $form.removeData('validator');
+        $form.removeData('unobtrusiveValidation');
+        $.validator.unobtrusive.parse($form);
+
+
+        $('#AddCourtFollowup').click(function () {
+            console.log("frmCourcaseFollowup");
+
+            var $form = $("#frmCourcaseFollowup");
+            $form.validate();
+            console.log($form.validate());
+            if ($form.valid()) {
+                $.ajax({
+                    url: CreateFollowupURL,
+                    method: "POST",  // post
+                    data: $form.serialize(),
+                    success: function (Result) {
+                        if (Result.Message == "Success") {
+                            $("#HearingDate").val("");
+                            $("#NextHearingDate").val("");
+                            $("#HearingRemarks").val("");
+
+                            LoadHearingList($("#hid_DetailId").val());
+                        }
+                        else {
+                            var ErrorMessage;
+                            for (var i = 0; i < Result.length; i++) {
+                                var error = Result[i];
+                                var fieldKey = error.Key;
+                                var message = error.Message;
+                                // apply custom logic with field keys and messages
+                                console.log(fieldKey + ': ' + message);
+                                if (i == 0)
+                                    ErrorMessage = fieldKey + ': ' + message;
+                                else
+                                    ErrorMessage = ErrorMessage + "<br />" + fieldKey + ': ' + message;
+                            }
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: ErrorMessage
+                            });
+                            return false;
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                $.each($form.validate().errorList, function (key, value) {
+                    $errorSpan = $("span[data-valmsg-for='" + value.element.id + "']");
+                    $errorSpan.html("<span style='color:red'>" + value.message + "</span>");
+                    $errorSpan.show();
+                });
+            }
+            
+        });
+    });
+</script>
+@model YandS.UI.Models.CourtCasesFollowup
+@using (Html.BeginForm("CreateCourtFollowup", "CourtCases", FormMethod.Post, new { id = "frmCourcaseFollowup" }))
+{
+<div class="card card-warning">
+    <div class="card-header">
+        <h3 class="card-title">Create Hearing Followups</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+        </div>
+    </div>
+    <!-- /.card-header -->
+    @if (Model.DetailId == 0)
+    {
+    <div class="card-body">
+        <div class="container-fluid">
+            <!-- Timelime example  -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="callout callout-danger">
+                        <h5>New Hearing Information</h5>
+                        <p>Please Create Court Information then Add Hearing Information</p>
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </div>
+
+    }
+    else
+    {
+        <div class="card-body">
+            <div class="form-horizontal">
+                @Html.HiddenFor(model => model.DetailId)
+                @*@Html.HiddenFor(model => model.DetailId, new { Value = ViewData["DetailId"] })*@
+
+                <div class="row">
+                    <div class="col-6">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.HearingDate)
+                            @Html.EditorFor(model => model.HearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            @Html.ValidationMessageFor(model => model.HearingDate, "", new { @class = "text-danger" })
+                        </div>
+
+
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NextHearingDate)
+                            @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            @Html.ValidationMessageFor(model => model.NextHearingDate, "", new { @class = "text-danger" })
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.HearingRemarks)
+                            @Html.TextAreaFor(model => model.HearingRemarks, 3, 100, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" id="AddCourtFollowup" class="btn btn-secondary"><i class="fas fa-save"></i> Save Hearing Detail</button>
+        </div>
+    }
+
+</div>
+}
+

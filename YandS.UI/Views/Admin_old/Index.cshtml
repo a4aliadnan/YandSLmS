@@ -1,0 +1,18 @@
+﻿@model IEnumerable<YandS.UI.Models.ApplicationUser>
+@{
+    ViewBag.Title = "RBAC Administration";
+    Layout = "~/Views/Shared/_LayoutRBAC.cshtml";
+
+}
+
+
+<h3 style="font-weight:bold; font-size:x-large">
+    System Users
+</h3>
+
+@Html.Partial("_ListUserTable", Model)
+<br />
+<div>
+    <input class="btn btn-default" type="button" value="Create User" onclick="location.href='@Url.Action("UserCreate", "Admin")'" />
+    <br />
+</div>

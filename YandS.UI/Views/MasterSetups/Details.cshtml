@@ -1,0 +1,87 @@
+﻿@model YandS.UI.Models.MasterSetups
+@{
+    ViewBag.Title = "Y & S Associates Master Setup Details";
+}
+
+<div>
+    <h4>MasterSetups</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Created.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Modified.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Modified.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Mst_Desc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Mst_Desc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Mst_Value)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Mst_Value)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DisplaySeq)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DisplaySeq)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Active_Flag)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Active_Flag)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Remarks)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Remarks)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedOn)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MstId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

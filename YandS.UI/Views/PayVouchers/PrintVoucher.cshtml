@@ -1,0 +1,24 @@
+﻿@model YandS.UI.Models.PayVoucher
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Print Voucher</title>
+</head>
+<body>
+    @if (Model.VoucherType == "1")
+    {
+        @Html.Partial("_Refunable", Model)
+
+    }
+    else
+    {
+        @Html.Partial("_NonRefunable", Model)
+
+    }
+
+</body>
+</html>

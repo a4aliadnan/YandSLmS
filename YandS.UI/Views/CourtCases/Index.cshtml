@@ -1,0 +1,2103 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Case List";
+}
+<style>
+    .NewTitleBanner {
+        background-color: #203864 !important;
+        color: white !important;
+    }
+
+    .tableColorDarkRed {
+        color: #c00000 !important;
+    }
+
+    .AgainstClient {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .AgainstClient:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .AgainstClientActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .EnfGeneral {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .EnfGeneral:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .EnfGeneralActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .Closing {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .Closing:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosingActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .divClosingDetail {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+    .FinalClosureBanner {
+        background-color: #4c216d !important;
+        color: #ffd966 !important;
+        font-weight: bold;
+    }
+
+    .ClosurePartial {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .ClosurePartial:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosurePartialActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .ClosureFinal {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .ClosureFinal:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosureFinalActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .ClosureAccounts {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .ClosureAccounts:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosureAccountsActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .ClosureArchive {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .ClosureArchive:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosureArchiveActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .ClosureNotes {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .ClosureNotes:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ClosureNotesActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .ArabicInfoBanner {
+        background-color: #e2f0d9 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+    .FinalClosureBanner {
+        background-color: #4c216d !important;
+        color: #ffd966 !important;
+        font-weight: bold;
+    }
+
+    .disableDIV {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+</style>
+<script>
+    var GetFinanceTabURL = '@Url.Action("GetTab", "Finance", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("TobeReg", "CourtCases", new { area = string.Empty })';
+    var DDLToAppend;
+    var ValidationMessage = "";
+    var NotValid = false;
+    var DefendentTable;
+    var SmartFilter = false;
+    var bkClientReply = "";
+    var bkRequirements = "";
+    var bkFirstEmailDate = "";
+
+    var bkCourtFollow = "";
+    var bkCourtFollow_LawyerId = "";
+    var bkCourtFollowRequirement = "";
+    var bkCommissioningDate = "";
+
+    var bkReqWorkRequired = "";
+    var bkReqSessionNotes = "";
+    var bkReqLastDate = "";
+    var bkReqFollowerId = "";
+
+    var bkSuspendedWorkRequired = "";
+    var bkSuspendedSessionNotes = "";
+    var bkSuspendedLastDate = "";
+    var bkSuspendedFollowerId = "";
+    var _parameters = {};
+    var GetTabFromSessionRoll = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "POST",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+
+                divToLoad.html(data);
+
+                $.fn.autoResize = function () {
+                    let r = e => {
+                        e.style.height = '';
+                        e.style.height = e.scrollHeight + 'px'
+                    };
+                    return this.each((i, e) => {
+                        e.style.overflow = 'hidden';
+                        r(e);
+                        $(e).bind('input', e => {
+                            r(e.target);
+                        })
+                    })
+                };
+
+                $('html, body').animate({
+                    scrollTop: $("#ModificationContainer").offset().top
+                }, 1000);
+
+                $('textarea').autoResize();
+            }
+        });
+    };
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                $("#PartialViewContainerBoxCC").removeClass("AppHidden");
+                $("#div_CurrentCaseLevel").removeClass("AppHidden");
+                $("#div_ArabicData").removeClass("AppHidden");
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function ShowDIV() {
+
+        if ($('#ShowFollowup').val() == "True") {
+            $("#FollowDIV").removeClass("AppHidden");
+
+            bkReqWorkRequired = $('#WorkRequired').val();
+            bkReqSessionNotes = $('#SessionNotes').val();
+            bkReqLastDate = $('#LastDate').val();
+            bkReqFollowerId = $('#FollowerId').val();
+        }
+        else {
+            if ($('#txtViewToLoad').val() == "_SessionFollow")
+                $("#FollowDIV").removeClass("AppHidden");
+
+            bkReqWorkRequired = $('#WorkRequired').val();
+            bkReqSessionNotes = $('#SessionNotes').val();
+            bkReqLastDate = $('#LastDate').val();
+            bkReqFollowerId = $('#FollowerId').val();
+        }
+
+        if ($('#ShowSuspend').val() == "True") {
+            $("#ForMemoDIV").removeClass("AppHidden");
+
+            bkSuspendedWorkRequired = $('#SuspendedWorkRequired').val();
+            bkSuspendedSessionNotes = $('#SuspendedSessionNotes').val();
+            bkSuspendedLastDate = $('#SuspendedLastDate').val();
+            bkSuspendedFollowerId = $('#SuspendedFollowerId').val();
+
+        }
+        else {
+            if ($('#txtViewToLoad').val() == "_SessionSuspended")
+                $("#FollowDIV").removeClass("AppHidden");
+
+            bkSuspendedWorkRequired = $('#SuspendedWorkRequired').val();
+            bkSuspendedSessionNotes = $('#SuspendedSessionNotes').val();
+            bkSuspendedLastDate = $('#SuspendedLastDate').val();
+            bkSuspendedFollowerId = $('#SuspendedFollowerId').val();
+
+
+        }
+
+        $('textarea').autoResize();
+    }
+    function ShowSessionNoteBanner() {
+        if (!$.trim($("#SessionNote_Remark").val())) {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
+            $("#spnNotesBanner").text("");
+        }
+        else {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden");
+            $("#spnNotesBanner").text($.trim($("#SessionNote_Remark").val()));
+            $('textarea').autoResize();
+        }
+    }
+    function LoadPartialView(data, container) {
+        console.log(container.attr("id"));
+        container.empty();
+        container.append("Loading...");
+        container.html(data);
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        if (container.attr("id") == "div_CaseLevelPartialView") {
+            $("#DIV_UPDATE").removeClass("AppHidden");
+            $("#div_CaseHistory").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+        else if (container.attr("id") == "PartialViewContainerCC") {
+            ProcessClientCodeChange();
+        }
+        else if (container.attr("id") == "ENF_Modify_Detail") {
+            if ($("#hidCurrentTableName").val() == "ENF-CONTRESULT") {
+                $('html, body').animate({
+                    scrollTop: $("#DIV_DEF_CONTACT").offset().top
+                }, 700);
+            }
+            else {
+                $('html, body').animate({
+                    scrollTop: container.offset().top
+                }, 200);
+            }
+        }
+        else if (container.attr("id") == "EnforcementLevelContainer") {
+            if (container.length) {
+                $('html, body').animate({
+                    scrollTop: container.offset().top
+                }, 200);
+            }
+            LoadUpdate($('#EnforcementlevelId').val());
+        }
+        else if (container.attr("id") == "ENF_DIV_UPDATE") {
+            if (container.hasClass("AppHidden"))
+                container.removeClass("AppHidden");
+
+            if (container.length) {
+                $('html, body').animate({
+                    scrollTop: container.offset().top
+                }, 200);
+            }
+        }
+        else if (container.attr("id") == "TBR_Modify_Detail") {
+            console.log("File Status :: " + $('#FileStatus').val());
+            console.log("Case Id :: " + $("#HFCaseId").val());
+            console.log("Case Registration Id :: " + $("#hidCaseRegistrationId").val());
+            console.log("Case hidFileStatus Value :: " + $("#hidFileStatus").val());
+            console.log("Case FileStatus :: " + $("#FileStatus").val());
+
+            var skipFileStatus = [OfficeFileStatus.Transfer, OfficeFileStatus.Registered, "11"];
+
+            if ($('#hidFileStatusChanged').val() === "Y") {
+                if ($("#hidFileStatus").val() === $("#FileStatus").val()) {
+                    console.log("Same file status need to be restore Values");
+                    $("#FormPrintWorkRequired").val($("#hidFormPrintWorkRequired").val());
+                    $("#OfficeProcedure").val($("#hidOfficeProcedure").val());
+
+                    if ($("#hidFormPrintLastDate").val() != "")
+                        $("#FormPrintLastDate").datepicker("setDate", $("#hidFormPrintLastDate").val());
+                }
+                else {
+                    $("#FormPrintWorkRequired").val('');
+                    $("#OfficeProcedure").val('');
+                    $("#FormPrintLastDate").val('');
+
+                    $('#FormPrintLastDate').datepicker({
+                        format: "dd/mm/yyyy",
+                        todayBtn: "linked",
+                        clearBtn: true,
+                        autoclose: true,
+                        orientation: "bottom auto"
+                    });
+                }
+            }
+
+            if (skipFileStatus.indexOf($("#FileStatus").val()) == -1) {
+                if (!$.trim($("#DIV_REMARKS").html())) {
+                    _parameters = { ClassificationId: "_TBR_REMARKS", Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $("#hidCaseRegistrationId").val() };
+                    GetTab($("#DIV_REMARKS"), GetClientClassificationURL, _parameters);
+
+                }
+            }
+
+            if ($("#FileStatus").val() == OfficeFileStatus.Registered) {
+                $("#DIV_TBR_UPDATED").empty();
+                _parameters = { ClassificationId: "_TBR_UPDATED_REG", Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $("#hidCaseRegistrationId").val() };
+                GetTab($("#DIV_TBR_UPDATED"), GetClientClassificationURL, _parameters);
+
+            }
+        }
+        else if (container.attr("id") == "DIV_REMARKS") {
+
+        }
+        else if (container.attr("id") == "TBR_CaseLevel_Detail") {
+            $("#DIV_CaseLevel_Detail").removeClass("AppHidden");
+            if (_PartialViewName == "TBR-REGISTERED_SUP") {
+                $("#DIV_NEXT_HEARING_DATE").removeClass("AppHidden").addClass("AppHidden");
+                $(".sessionDetail").removeClass("AppHidden").addClass("AppHidden");
+
+            }
+            else {
+                $("#DIV_NEXT_HEARING_DATE").removeClass("AppHidden");
+                $(".sessionDetail").removeClass("AppHidden");
+                $('textarea').autoResize();
+
+            }
+        }
+        else if (container.attr("id") == "DIV_TBR_UPDATED") {
+            $('textarea').autoResize();
+        }
+        else if (container.attr("id") == "EditPopupViewContainer") {
+
+            $('#EditPopupModal').modal('show');
+        }
+        else {
+            if (container.length) {
+                $('html, body').animate({
+                    scrollTop: container.offset().top
+                }, 200);
+            }
+            $('textarea').autoResize();
+        }
+    }
+    function ProcessAddMasterValue() {
+        if ($("#MstDesc").val() != "") {
+            var url = "";
+            var _MstDesc = ""
+            var _MstParentId = 0;
+            var _Remarks = "";
+
+            if (parseInt($("#MstParentId").val()) == 214) {
+                url = CreateMasterTableDetailForPayToURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            else if (parseInt($("#MstParentId").val()) == 7) {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = 567;
+                _Remarks = "1";
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+
+            }
+            else {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: url,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+    function AddMasterValue(ModalTitle, CtrlToAppend, ParentId) {
+        console.log("ModalTitle ::" + ModalTitle);
+        console.log("CtrlToAppend ::" + CtrlToAppend);
+
+        DDLToAppend = $("#" + CtrlToAppend);
+        $("#MstParentId").val(ParentId);
+
+        $("#ModalTitle").text(ModalTitle);
+
+        $('#modal-AddMaster').modal('show');
+
+    }
+    function ProcessEditModalPopup() {
+        if ($("#FileClosureDetail_StatusDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FINAL CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER FINAL CLOSURE DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#FileClosureDetail_StatusDate").val());
+
+            if (process($("#FileClosureDetail_StatusDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#FileClosureDetail_ReasonCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REASON" : ValidationMessage + "<br />" + "PLEASE SELECT REASON";
+            NotValid = true;
+        }
+
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+        else {
+            var data = new FormData(jQuery('#frm_EditPopupModalTitle')[0]);
+            //console.log(data);
+            $.ajax({
+                type: "POST",
+                url: SubmitFormURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.Category == "Error") {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Error!',
+                            html: result.Message
+                        });
+                    }
+                    else {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Done!',
+                            html: "Data Save Successfully"
+                        });
+
+                        $('#EditPopupModal').modal('hide');
+
+                        return false;
+                    }
+
+                },
+                error: function () {
+
+                }
+            });
+        }
+    }
+    function processbtnLinkClick(_Mode, data, tableName) {
+        $("#hid_TableRowData").val(JSON.stringify(data));
+        if (_Mode == "D") {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this! هل تريد حذف البيانات",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    var form = $('#__AjaxAntiForgeryForm');
+                    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                    $.ajax({
+                        url: "/SessionRoll/Delete",
+                        type: 'POST',
+                        cache: false,
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: _SessionRollId
+                        },
+                        statusCode: {
+                            401: function (response) {
+                                alert(response);
+                            }
+                        },
+                        success: function (result) {
+                            if (result.redirectTo) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                                ReloadTable();
+                            }
+                            else {
+                                //console.log(result);
+                                var errorHtml = $('<div />').append(result).find('.content').html();
+                                //console.log(errorHtml);
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error deleting!',
+                                    html: errorHtml,
+                                    width: '50%'
+                                    //grow: 'row'
+                                });
+                                //Swal.fire("Error deleting!", errorHtml, "error");
+
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire("Error deleting!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                        }
+                    });
+                }
+            });
+        }
+        else if (_Mode == "TD") {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    var form = $('#__AjaxAntiForgeryForm');
+                    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                    $.ajax({
+                        url: "/CaseRegistration/Delete",
+                        type: 'POST',
+                        cache: false,
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: data.CaseRegistrationId
+                        },
+                        statusCode: {
+                            401: function (response) {
+                                alert(response);
+                            }
+                        },
+                        success: function (result) {
+                            if (result.redirectTo) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                                table.ajax.reload(function (json) {
+                                    var info = table.page.info();
+                                    var MCTRecords = table.ajax.json().MuscatTotal;
+                                    var SLLRecords = table.ajax.json().SalalahTotal;
+                                    var recordsTotal = table.ajax.json().recordsTotal;
+
+                                    if ($("#txtUserRole").val() == "VoucherApproval") {
+                                        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                        $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                        $('#TTL').text(recordsTotal);
+                                    }
+                                });
+                            }
+                            else {
+                                //console.log(result);
+                                var errorHtml = $('<div />').append(result).find('.content').html();
+                                //console.log(errorHtml);
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error deleting!',
+                                    html: errorHtml,
+                                    width: '50%'
+                                    //grow: 'row'
+                                });
+                                //Swal.fire("Error deleting!", errorHtml, "error");
+
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire("Error deleting!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                        }
+                    });
+                }
+            });
+        }
+        else if (_Mode == "M") {
+            var $CaseId = data.CaseId;
+            var $OfficeFileNo = data.OfficeFileNo;
+            var $DefendentTransferId = data.DefendentTransferId;
+
+            $("#HFCaseId").val($CaseId);
+            $("#hidDefendentTransferId").val($DefendentTransferId);
+            $("#PV_OFFICE_FILE_NO").val($OfficeFileNo);
+
+            if (typeof tableName !== 'undefined')
+                $("#hidCurrentTableName").val(tableName);
+
+            if (tableName == "ENF-CLREPLY") {
+                Swal.fire({
+                    title: 'ARE YOU SURE?',
+                    text: "YOU WON'T BE ABLE TO REVERT THIS!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'CANCEL',
+                    confirmButtonText: 'CLIENT DONE'
+                }).then((result) => {
+                    if (result.value) {
+
+                        var form = $('#__AjaxAntiForgeryForm');
+                        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                        $.ajax({
+                            url: "/CommonTask/ProcessReset",
+                            type: 'POST',
+                            cache: false,
+                            data: {
+                                __RequestVerificationToken: token,
+                                CaseId: $CaseId,
+                                ResetName: tableName
+                            },
+                            statusCode: {
+                                401: function (response) {
+                                    alert(response);
+                                }
+                            },
+                            success: function (result) {
+                                if (result.redirectTo) {
+                                    Swal.fire(
+                                        'PROCEED!',
+                                        'Your file has been updated.',
+                                        'success'
+                                    )
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: '',
+                                        html: 'Your file has been updated.'
+                                    }).then(function () {
+                                        table.ajax.reload(function (json) {
+                                            var info = table.page.info();
+                                            var MCTRecords = table.ajax.json().MuscatTotal;
+                                            var SLLRecords = table.ajax.json().SalalahTotal;
+                                            var recordsTotal = table.ajax.json().recordsTotal;
+
+                                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                                $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                                $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                                $('#TTL').text(recordsTotal);
+                                            }
+                                        });
+                                    });
+                                }
+                                else {
+                                    //console.log(result);
+                                    var errorHtml = $('<div />').append(result).find('.content').html();
+                                    //console.log(errorHtml);
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error in Update!',
+                                        html: errorHtml,
+                                        width: '50%'
+                                        //grow: 'row'
+                                    });
+
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                Swal.fire("Error processing!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                var _PartialViewName = "_ENF_Modify";
+                var PartialContainer = $("#ENF_ModificationContainer");
+                _parameters = { ClassificationId: _PartialViewName, Mode: $CaseId };
+            }
+
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+        }
+        else if (_Mode == "T") {
+            CancelTBR();
+            var $CaseId = data.CaseId;
+            var $OfficeFileNo = data.OfficeFileNo;
+            var $CaseRegistrationId = data.CaseRegistrationId;
+
+            $("#HFCaseId").val($CaseId);
+            $("#PV_OFFICE_FILE_NO").val($OfficeFileNo);
+            $("#hidCaseRegistrationId").val($CaseRegistrationId);
+
+            if (typeof tableName !== 'undefined')
+                $("#hidCurrentTableName").val(tableName);
+
+            var _PartialViewName = "_TBR_Modify";
+            var PartialContainer = $("#TBR_ModificationContainer");
+            _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $CaseRegistrationId };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        }
+        else if (_Mode == "CD") {
+            console.log(data);
+            var $CaseId = data.CaseId;
+            var $OfficeFileNo = data.OfficeFileNo;
+            var $DetailId = data.DetailId;
+            var $CaseLevelCode = data.CaseLevelCode;
+            var $Courtid = parseInt(data.CaseLevelCode) - 2;
+            var $SessionRollId = parseInt(data.SessionRollId);
+
+            $("#HFCaseId").val($CaseId);
+            $("#hid_DetailId").val($DetailId);
+            $("#hid_Courtid").val($Courtid);
+            if ($CaseLevelCode == "SUPREME")
+                $("#hid_CaseLevelCode").val("5");
+            else
+                $("#hid_CaseLevelCode").val($CaseLevelCode);
+
+            $("#hid_SessionRollId").val($SessionRollId);
+
+            if (typeof tableName !== 'undefined')
+                $("#hidCurrentTableName").val(tableName);
+
+            var _PartialViewName = "_CaseDetail_Modify";
+            var PartialContainer = $("#ModificationContainer");
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: $CaseId, SessionRollId: $SessionRollId, CaseLevel: $CaseLevelCode };
+            GetTabFromSessionRoll(PartialContainer, GetSessionRollURL, _parameters);
+        }
+        else if (_Mode == "CL") {
+            ResetHiddenItems();
+            $(".clsPVContainer").empty();
+            $(".navButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedId = "#btn_Closing";
+            var btnClickedClass = btnClickedId.split('_')[1];
+            var btnClickedActiveClass = btnClickedId.split('_')[1] + "Active";
+
+            $("#txtViewToLoad").val("_" + btnClickedClass);
+
+            $(btnClickedId).addClass(btnClickedActiveClass);
+
+            console.log(data);
+            var $CaseId = data.CaseId;
+            var $OfficeFileNo = data.OfficeFileNo;
+            var $DetailId = data.DetailId;
+            var $CaseLevelCode = data.CaseLevelCode;
+            var $Courtid = parseInt(data.CaseLevelCode) - 2;
+            var $SessionRollId = parseInt(data.SessionRollId);
+
+            $("#HFCaseId").val($CaseId);
+
+            $("#hid_OFB_ClientName").val(data.ClientName);
+            $("#hid_OFB_Defendant").val(data.DefClientName);
+            $("#hid_OFB_OfficeFileNo").val(data.OfficeFileNo);
+            $("#hid_OFB_SessionRollClientName").val(data.SessionRollClientName);
+            $("#hid_OFB_SessionRollDefendentName").val(data.SessionRollDefendentName);
+            $("#hid_DetailId").val($DetailId);
+            $("#hid_Courtid").val($Courtid);
+
+            if ($CaseLevelCode == "SUPREME")
+                $("#hid_CaseLevelCode").val("5");
+            else
+                $("#hid_CaseLevelCode").val($CaseLevelCode);
+
+            $("#hid_SessionRollId").val($SessionRollId);
+
+            if (typeof tableName !== 'undefined')
+                $("#hidCurrentTableName").val(tableName);
+
+            var _PartialViewName = "_Closing";
+            var PartialContainer = $("#ModificationContainer");
+            _parameters = { ClassificationId: _PartialViewName, Mode: $CaseId };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        }
+        else if (_Mode == "CR") {
+            console.log(data);
+            var $CaseId = data.CaseId;
+
+            _PartialViewName = "ClosureReasonModalPopup";
+            PartialContainer = $("#EditPopupViewContainer");
+            ModalTitle = "CLOSURE REASON";
+            $("#EditPopupModalTitle").text(ModalTitle);
+            _parameters = { ClassificationId: _PartialViewName, Mode: $CaseId };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        }
+        else {
+
+            switch (tableName) {
+                case "ToBeRegister":
+                    p_parameters = { "CaseId": parseInt(data.CaseId) };
+                    $.ajax({
+                        url: GetRegisterIdURL,
+                        type: "POST",
+                        data: JSON.stringify(p_parameters),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (result) {
+                            $.blockUI();
+                            console.log(result);
+                            console.log(result.CaseRegistrationId);
+                            var RedirectURL = "/CaseRegistration/IndexMain/" + result.CaseRegistrationId;
+                            window.location = RedirectURL;
+                        }
+                    });
+                    break;
+                case "CORPORATE":
+                    var _PartialViewName = "_ModifyCase";
+                    var PartialContainer = $("#ModificationContainer");
+                    _parameters = { ClassificationId: _PartialViewName, Mode: data.CaseId };
+                    GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+                    break;
+                case "TRANSELATION":
+                    var _PartialViewName = "_PartViewTranslation";
+                    var PartialContainer = $("#ModificationContainer");
+                    _parameters = { ClassificationId: _PartialViewName, Mode: data.CaseId };
+                    GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+                    break;
+                default:
+                    var _PartialViewName = "_ModifyCase";
+                    var PartialContainer = $($("#txtViewContainer").val());
+
+                    if (_PartialViewName == "_ModifyCase") {
+                        $(".navButton").each(function () {
+                            var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                            $(this).removeClass(btnActiveClass);
+                        });
+                        $("#spanCreateBtnText").text("");
+                        $("#spanCreateBtnText").text("MODIFY CASE");
+                        $("#txtViewToLoad").val("_ModifyCase");
+                        $("#btn_CreateCase").addClass("CreateCaseActive");
+                        _parameters = { ClassificationId: _PartialViewName, Mode: data.CaseId };
+                    }
+                    else
+                        _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+
+                    GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+            }
+        }
+    }
+    function process(date) {
+        var parts = date.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+    function ValidateBasic() {
+        console.log("ValidateBasic()");
+
+        if ($("#ReceiveLevelCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT RECEIVE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT RECEIVE LEVEL";
+            NotValid = true;
+        }
+
+        if ($("#ClientClassificationCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CLASSIFICATION" : ValidationMessage + "<br />" + "PLEASE SELECT CLASSIFICATION";
+            NotValid = true;
+        }
+
+        if ($("#ReceptionDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER RECEIVED DATE" : ValidationMessage + "<br />" + "PLEASE ENTER RECEIVED DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#ReceptionDate").val());
+
+            if (process($("#ReceptionDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#CaseTypeCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CASE TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT CASE TYPE";
+            NotValid = true;
+        }
+
+        if ($("#AgainstCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AGAINST" : ValidationMessage + "<br />" + "PLEASE SELECT AGAINST";
+            NotValid = true;
+        }
+
+        if ($("#ClientCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CLIENT NAME" : ValidationMessage + "<br />" + "PLEASE SELECT CLIENT NAME";
+            NotValid = true;
+        }
+
+        if ($("#Defendant").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID DEFENDANT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID DEFENDANT";
+            NotValid = true;
+        }
+
+
+        if ($("#SessionClientId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ARABIC CLIENT" : ValidationMessage + "<br />" + "PLEASE SELECT ARABIC CLIENT";
+            NotValid = true;
+        }
+
+        if ($("#SessionRollDefendentName").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID ARABIC DEFENDANT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID ARABIC DEFENDANT";
+            NotValid = true;
+        }
+
+
+        if ($("#CaseLevelCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CURRENT CASE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT CURRENT CASE LEVEL";
+            NotValid = true;
+        }
+
+        if ($('#AgainstCode').val() == "1") {
+            if ($("#OmaniExp").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT NATIONALITY" : ValidationMessage + "<br />" + "PLEASE SELECT NATIONALITY";
+                NotValid = true;
+            }
+        }
+
+        if ($('#TransportationFee').val() == "1") {
+            if ($("#TransportationSource").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT TRANSPORTATION SOURCE" : ValidationMessage + "<br />" + "PLEASE SELECT TRANSPORTATION SOURCE";
+                NotValid = true;
+            }
+        }
+
+        return NotValid;
+
+    }
+    function ValidateBank() {
+        console.log("ValidateBank()");
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidateFinance() {
+        console.log("ValidateFinance()");
+
+        //if ($("#OmaniExp").val() == "0") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT NATIONALITY" : ValidationMessage + "<br />" + "PLEASE SELECT NATIONALITY";
+        //    NotValid = true;
+        //}
+
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidateRealEstate() {
+        console.log("ValidateRealEstate()");
+
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidatePrimary() {
+        console.log("ValidatePrimary()");
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+        if ($("#GovernorateId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateAppeal() {
+        console.log("ValidateAppeal()");
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+        if ($("#GovernorateId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPEAL BY" : ValidationMessage + "<br />" + "PLEASE SELECT APPEAL BY";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateSupreme() {
+        console.log("ValidateSupreme()");
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+        if ($("#GovernorateId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUPREME BY" : ValidationMessage + "<br />" + "PLEASE SELECT SUPREME BY";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateEnforcement() {
+        console.log("ValidateEnforcement()");
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+        if ($("#GovernorateId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT BY" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT BY";
+            NotValid = true;
+        }
+
+
+        if (!$("input[name='RealEstateYesNo']:checked").val()) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REAL ESTATE DETAIL" : ValidationMessage + "<br />" + "PLEASE SELECT REAL ESTATE DETAIL";
+            NotValid = true;
+        }
+
+        if ($("#AgainstInsurance").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AGAINST INSURANCE" : ValidationMessage + "<br />" + "PLEASE SELECT AGAINST INSURANCE";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function GetAuctionClassName(p_Mst_Value, p_DaysPassed) {
+        var result = $.grep(AuctionProcessObj.data, function (e) { return e.Mst_Value === p_Mst_Value && p_DaysPassed >= e.From && p_DaysPassed < e.To; });
+
+        if (result && result.length == 1)
+            return result[0].ClassName;
+        else
+            return "";
+    }
+    function ResetHiddenItems() {
+        $("#hidRequirement").val('');
+        $("#hidFirstEmailDate").val('');
+        $("#hidNextHearingDate").val('');
+        $("#hidCourtDecisionChange").val('');
+        $("#hidCurrentHearingDate").val('');
+        $("#hid_OFB_ClientName").val('');
+        $("#hid_OFB_Defendant").val('');
+        $("#hid_OFB_OfficeFileNo").val('');
+        $("#hid_OFB_SessionRollClientName").val('');
+        $("#hid_OFB_SessionRollDefendentName").val('');
+
+        bkClientReply = "";
+        bkRequirements = "";
+        bkFirstEmailDate = "";
+
+        bkCourtFollow = "";
+        bkCourtFollow_LawyerId = "";
+        bkCourtFollowRequirement = "";
+        bkCommissioningDate = "";
+
+        $("#selClientReplyYN").val("").trigger('change');
+        $("#selCourtFollowYN").val("").trigger('change');
+        $("#selUpdateDateYN").val("").trigger('change');
+        $("#selNextHearingDateYN").val("").trigger('change');
+    }
+    function ValidateUpdateDate() {
+        console.log("ValidateUpdateDate()");
+        var NotValidUpdateDate = false;
+        if ($("#hidCourtDecisionChange").val() == "Y") {
+            var Msg = "لم تقم بتحديث التاريخ" + "<br />" + "PLEASE CHANGE THE DATE";
+
+            if ($("#CurrentHearingDate").val() == "") {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+
+            if ($("#CurrentHearingDate").val() == $("#hidCurrentHearingDate").val()) {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+        }
+
+        return NotValidUpdateDate;
+    }
+    function ValidateNextHearingDate() {
+        console.log("ValidateNextHearingDate()");
+        var NotValidNextHearingDate = false;
+        if ($("#hidNextHearingDate").val() == "") {
+
+        }
+        else {
+            var Msg = "الرجاء التأكد من تاريخ الجلسة القادمة" + "<br />" + "PLEASE CHECK SESSION DATE";
+
+            var ValidDays = [0, 7, 14, 21, 28, 35, 42, 49, 54, 63, 70];
+            var dtLastDate = moment(moment($("#hidNextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var currDate = moment(moment($("#NextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var result = currDate.diff(dtLastDate, 'days');
+
+            console.log(dtLastDate);
+            console.log(currDate);
+            console.log(result);
+
+            if (ValidDays.indexOf(result) == -1) {
+                NotValidNextHearingDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+
+            }
+        }
+
+        return NotValidNextHearingDate;
+    }
+    function GetdtClassName(p_TableName, p_DaysPassed) {
+        if (p_DaysPassed && p_DaysPassed.length == 0)
+            return "";
+
+        var result = $.grep(dtObjDataTable.data, function (e) { return e.dtTableName.toUpperCase() === p_TableName.toUpperCase() && p_DaysPassed >= e.From && p_DaysPassed < e.To; });
+
+        if (result && result.length == 1)
+            return result[0].ClassName;
+        else
+            return "";
+    }
+    function ShowPreSubmit() {
+        var IsShowCientReply = false; //DIV_WAITING_CLIENT_REPLY
+        var IsShowCourtFollow = false; //DIV_WAITING_COURT_FOLLOW
+        var IsShowUpdateDate = false; //DIV_CHANGE_UPDATE_DATE
+        var IsShowNextHearing = false; //DIV_CHANGE_NEXT_HEARING_DATE
+        var IsShowRequirement = false;
+        var IsShowMemo = false;
+
+        console.log('Updated On');
+        console.log($('#UpdatedOn').val());
+
+        console.log('hidUpdated On');
+        console.log($('#hidUpdatedOn').val());
+
+        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden").addClass("AppHidden");
+
+        IsShowUpdateDate = ValidateUpdateDate();
+        IsShowNextHearing = ValidateNextHearingDate();
+
+        if ($('#ClientReply').val() == "1") {
+            if (bkClientReply == "1") {
+                if ($('#selClientReplyYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCientReply = true;
+                        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selClientReplyYN').val() == "N") {
+                        $("#ClientReply").val("").trigger('change');
+                        $("#Requirements").val("");
+                        $("#FirstEmailDate").val("");
+                    }
+                    else {
+                        $("#ClientReply").val(bkClientReply).trigger('change');
+                        $("#Requirements").val(bkRequirements);
+                        //$("#FirstEmailDate").val(bkFirstEmailDate);
+                        $("#FirstEmailDate").datepicker("setDate", bkFirstEmailDate);
+
+                    }
+                }
+            }
+        }
+
+        if ($('#CourtFollow').val() == "1") {
+            if (bkCourtFollow == "1") {
+                if ($('#selCourtFollowYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCourtFollow = true;
+                        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selCourtFollowYN').val() == "N") {
+                        $("#CourtFollow").val("").trigger('change');
+                        $("#CourtFollow_LawyerId").val("0").trigger('change');
+                        $("#CourtFollowRequirement").val("");
+                        $("#CommissioningDate").val("");
+                    }
+                    else {
+                        $("#CourtFollow").val(bkCourtFollow).trigger('change');
+                        $("#CourtFollow_LawyerId").val(bkCourtFollow_LawyerId).trigger('change');
+                        $("#CourtFollowRequirement").val(bkCourtFollowRequirement);
+                        //$("#CommissioningDate").val(bkCommissioningDate);
+                        $("#CommissioningDate").datepicker("setDate", bkCommissioningDate);
+
+                    }
+                }
+            }
+        }
+
+        if (IsShowUpdateDate) {
+            $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowNextHearing) {
+            $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowCientReply) {
+
+            var SelValue = $('#selClientReplyYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowCourtFollow) {
+
+            var SelValue = $('#selCourtFollowYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowUpdateDate) {
+
+            var SelValue = $('#selUpdateDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowNextHearing) {
+
+            var SelValue = $('#selNextHearingDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+        $('#modal-preSubmit').modal('hide');
+        submitForm();
+    }
+    function ClearDivElements(ControlNames, ControlTypes, DefaultSelectVal, DivID) {
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+            if (result.value) {
+                if (ControlNames.indexOf(",") !== -1) {
+                    var Namesarray = ControlNames.split(",");
+                    var Typesarray = ControlTypes.split(",");
+                    var DefaultSelectValarray = DefaultSelectVal.split(",");
+
+                    for (i = 0; i < Namesarray.length; i++) {
+                        if (Typesarray[i] == "select2")
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]).trigger('change');
+                        else
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]);
+                    }
+                }
+                else {
+                    if (ControlTypes == "select2")
+                        $("#" + ControlNames).val(DefaultSelectVal).trigger('change');
+                    else
+                        $("#" + ControlNames).val(DefaultSelectVal);
+                }
+                $("#" + DivID).removeClass("AppHidden").addClass("AppHidden");
+            }
+        });
+    }
+    function ValidateTranslation() {
+        console.log("ValidateTranslation()");
+        NotValid = false;
+
+        if ($("#CourtDecisionTranslated").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSELATION" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSELATION";
+            NotValid = true;
+        }
+        return NotValid;
+    }
+    function LoadPrintRequirementForm(PartialViewName) {
+        var _PartialViewName = PartialViewName;
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = 0;
+        var _Mode = "C";
+
+        var PartialContainer = $("#div_PrintRequirementForm");
+        PartialContainer.empty();
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                PartialContainer.html(data);
+                Swal.fire({
+                    type: 'success',
+                    title: '',
+                    width: 700,
+                    html: $("#ContentDIV").html()
+                }).then(function () {
+                    CopyToClipboard('swal2-content');
+
+                    if ($("#hidIsCorporate").val() == "Y" || $("#hidIsTranselation").val() == "Y") {
+                        table.ajax.reload(function (json) {
+                            var info = table.page.info();
+                            var MCTRecords = table.ajax.json().MuscatTotal;
+                            var SLLRecords = table.ajax.json().SalalahTotal;
+                            var recordsTotal = table.ajax.json().recordsTotal;
+
+                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                $('#TTL').text(recordsTotal);
+                            }
+                        });
+                        $('html, body').animate({
+                            scrollTop: $("#PartialViewContainer").offset().top
+                        }, 1000);
+                    }
+                    else {
+                        $("#btn_General").trigger('click');
+                    }
+                });
+            }
+        });
+    }
+    function ClearDivElements(ControlNames, ControlTypes, DefaultSelectVal, DivID) {
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+            if (result.value) {
+                if (ControlNames.indexOf(",") !== -1) {
+                    var Namesarray = ControlNames.split(",");
+                    var Typesarray = ControlTypes.split(",");
+                    var DefaultSelectValarray = DefaultSelectVal.split(",");
+
+                    for (i = 0; i < Namesarray.length; i++) {
+                        if (Typesarray[i] == "select2")
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]).trigger('change');
+                        else
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]);
+                    }
+                }
+                else {
+                    if (ControlTypes == "select2")
+                        $("#" + ControlNames).val(DefaultSelectVal).trigger('change');
+                    else
+                        $("#" + ControlNames).val(DefaultSelectVal);
+                }
+                $("#" + DivID).removeClass("AppHidden").addClass("AppHidden");
+            }
+        });
+    }
+    function ValidateTranslation() {
+        console.log("ValidateTranslation()");
+        NotValid = false;
+
+        if ($("#CourtDecisionTranslated").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSELATION" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSELATION";
+            NotValid = true;
+        }
+        return NotValid;
+    }
+
+</script>
+<div id="div_PrintRequirementForm" style="position: absolute; left: -1000px; top: -1000px"></div>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-3 text-center">
+                    <h1>MANAGE FILE DATA</h1>
+                </div>
+                @if (User.IsInRole("VoucherApproval"))
+                {
+                    <div class="col-sm-1"></div>
+                    <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary1" value="A" name="rdoLocation" @ViewBag.LocationCheckALL>
+                                <label for="radioPrimary1"> ALL </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary2" value="M" name="rdoLocation" @ViewBag.VoucherApproval>
+                                <label for="radioPrimary2"> MUSCAT </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary3" value="S" name="rdoLocation">
+                                <label for="radioPrimary3"> SALALAH </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1"></div>
+                }
+                else
+                {
+                    <div class="col-sm-5 text-center"></div>
+                }
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">COURT CASE</li>
+                        <li class="breadcrumb-item active"><a href="#">COURT CASES MAIN</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">LIST OF COURT CASES</h3>
+            </div>
+            <div class="card-body">
+                <div id="div_courtCasesMailButton" style="padding-bottom:10px;" class="col-sm-12">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" id="btn_CreateCase" style="font-size: 1.2rem !important;" class="btn btn-block CreateCase @ViewBag.CreateCaseActive btn-lg navButton"><span id="spanCreateBtnText">@ViewBag.CreateBtnText</span></button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_General" style="font-size: 1.2rem !important;" class="btn btn-block General @ViewBag.GeneralActive btn-lg navButton">GENERAL</button>
+                        </div>
+                        @*<div class="col">
+                                <button type="button" id="btn_BeforeCourt" style="font-size: 1.2rem !important;" class="btn btn-block BeforeCourt @ViewBag.BeforeCourtActive btn-lg navButton">BEFORE COURT</button>
+                            </div>*@
+                        <div class="col">
+                            <button type="button" id="btn_TobeRegister" style="font-size: 1.2rem !important;" class="btn btn-block TobeRegister @ViewBag.TobeRegisterActive btn-lg navButton">TO BE REGISTER</button>
+                        </div>
+                        @*<div class="col">
+                                <button type="button" id="btn_Primary" style="font-size: 1.2rem !important;" class="btn btn-block Primary @ViewBag.PrimaryActive btn-lg navButton">PRIMARY</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" id="btn_Appeal" style="font-size: 1.2rem !important;" class="btn btn-block Appeal @ViewBag.AppealActive btn-lg navButton">APPEAL</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" id="btn_Supreme" style="font-size: 1.2rem !important;" class="btn btn-block Supreme @ViewBag.SupremeActive btn-lg navButton">SUPREME</button>
+                            </div>*@
+                        <div class="col">
+                            <button type="button" id="btn_Enforcement" style="font-size: 1.2rem !important;" class="btn btn-block Enforcement @ViewBag.EnforcementActive btn-lg navButton">ENFORCEMENT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_AgainstClient" style="font-size: 1.2rem !important;" class="btn btn-block AgainstClient @ViewBag.AgainstClientActive btn-lg navButton">AGAINST CLIENT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_Closing" style="font-size: 1.2rem !important;" class="btn btn-block Closing @ViewBag.ClosingActive btn-lg navButton">FILE CLOSURE غلق الملف</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherCreateNew" style="font-size: 1.2rem !important;" class="btn btn-block PayVoucherCreateNew @ViewBag.PayVoucherCreateNewActive btn-lg navButton">EXPENSES طلب مصاريف</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="PartialViewContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="ModificationContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="ENF_PartialViewContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="ENF_ModificationContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="TBR_PartialViewContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="TBR_ModificationContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtAllowCloseCase" value="@ViewBag.AllowCloseCase" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+    <input type="hidden" id="txtLocationId" value="@ViewBag.LocationId" />
+    <input type="hidden" id="txtViewContainer" value="@ViewBag.ViewContainer" />
+    <input type="hidden" id="txtViewToLoad" value="@ViewBag.ViewToLoad" />
+    <input type="hidden" id="HFCaseId" value="@ViewBag.HFCaseId" />
+    <input type="hidden" id="hidIsCourtFollow" value="@ViewBag.hidIsCourtFollow" />
+    <input type="hidden" id="hidIsClientReply" value="@ViewBag.hidIsClientReply" />
+    <input type="hidden" id="hidIsCorporate" value="@ViewBag.hidIsCorporate" />
+    <input type="hidden" id="hidIsTranselation" value="@ViewBag.hidIsTranselation" />
+    <input type="hidden" id="hidIsAgainstClient" value="N" />
+    <input type="hidden" id="hidRequirement" value="" />
+    <input type="hidden" id="hidFirstEmailDate" value="" />
+    <input type="hidden" id="hidCurrentTableName" value="" />
+    <input type="hidden" id="PV_OFFICE_FILE_NO" value="@ViewBag.OfficeFileNo" />
+    <input type="hidden" id="hidNextHearingDate" value="" />
+    <input type="hidden" id="hidCurrentHearingDate" value="" />
+    <input type="hidden" id="hidCourtDecisionChange" value="" />
+    <input type="hidden" id="hidDefendentTransferId" value="" />
+    <input type="hidden" id="hidActionLevel" value="" />
+    <input type="hidden" id="hidDisputeLevel" value="" />
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+
+    <input type="hidden" id="hid_Courtid" value="@ViewBag.hid_Courtid" />
+    <input type="hidden" id="hid_CaseLevelCode" value="@ViewBag.hid_CaseLevelCode" />
+    <input type="hidden" id="hid_DetailId" value="@ViewBag.hid_DetailId" />
+    <input type="hidden" id="hid_SessionRollId" value="@ViewBag.hid_SessionRollId" />
+    <input type="hidden" id="hid_IsAccountTeam" value="@ViewBag.IsAccountTeam" />
+    <input type="hidden" id="hid_OFB_ClientName" value="@ViewBag.OFB_ClientName" />
+    <input type="hidden" id="hid_OFB_Defendant" value="@ViewBag.OFB_Defendant" />
+    <input type="hidden" id="hid_OFB_OfficeFileNo" value="@ViewBag.OFB_OfficeFileNo" />
+    <input type="hidden" id="hid_OFB_SessionRollClientName" value="@ViewBag.OFB_SessionRollClientName" />
+    <input type="hidden" id="hid_OFB_SessionRollDefendentName" value="@ViewBag.OFB_SessionRollDefendentName" />
+    <input type="hidden" id="hid_TableRowData" value="" />
+
+    @if (User.IsInRole("TBRRemarks"))
+    {
+        <input type="hidden" id="hidTBRRemarks" value="Y" />
+    }
+    else
+    {
+        <input type="hidden" id="hidTBRRemarks" value="N" />
+    }
+
+    @if (User.IsInRole("VoucherApproval") || User.Identity.Name.Equals("6"))
+    {
+        <input type="hidden" id="hidTBRPayVoucher" value="Y" />
+    }
+    else
+    {
+        <input type="hidden" id="hidTBRPayVoucher" value="N" />
+    }
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</div>
+<div class="modal fade" id="modal-AddMaster">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddMasterValue()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="modal-preSubmit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="DIV_WAITING_CLIENT_REPLY" class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label dir="auto" for="selClientReplyYN">ARE YOU WAITING FOR CLIENT REPLY?<br /><span>؟</span>(CLIENT REPLY)&nbsp;<span>هل تنتظر رد الموكل</span></label>
+                            <select class="form-control select2bs4" id="selClientReplyYN">
+                                <option value="">PLEASE SELECT</option>
+                                <option value="N">لا NO</option>
+                                <option value="Y">نعم YES</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="DIV_WAITING_COURT_FOLLOW" class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label dir="auto" for="selCourtFollowYN">هل تنتظر مراجعة المحكمة ؟</label>
+                            <select class="form-control select2bs4" id="selCourtFollowYN">
+                                <option value="">PLEASE SELECT</option>
+                                <option value="N">لا NO</option>
+                                <option value="Y">نعم YES</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="DIV_CHANGE_UPDATE_DATE" class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label dir="auto" for="selUpdateDateYN">Change (Update Date) to be today's date? هل تريد تغيير ( تاريخ التحديث ) ليكون تاريخ اليوم؟</label>
+                            <select class="form-control select2bs4" id="selUpdateDateYN">
+                                <option value="">PLEASE SELECT</option>
+                                <option value="Y">YES</option>
+                                <option value="N">NO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="DIV_CHANGE_NEXT_HEARING_DATE" class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label dir="auto" for="selNextHearingDateYN">الرجاء التأكد من تاريخ الجلسة القادمة</label>
+                            <select class="form-control select2bs4" id="selNextHearingDateYN">
+                                <option value="">PLEASE SELECT</option>
+                                <option value="N">BACK عودة</option>
+                                <option value="Y">SAVE حفظ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ShowPreSubmit()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="EditPopupModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="EditPopupModalTitle"></span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frm_EditPopupModalTitle" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div id="EditPopupViewContainer"></div>
+                }
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessEditModalPopup()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Ajax Index CourtCases Document Page");
+            var bootstrapTooltip = $.fn.tooltip.noConflict();
+            $.fn.bstooltip = bootstrapTooltip;
+            $.fn.autoResize = function () {
+                let r = e => {
+                    e.style.height = '';
+                    e.style.height = e.scrollHeight + 'px'
+                };
+                return this.each((i, e) => {
+                    e.style.overflow = 'hidden';
+                    r(e);
+                    $(e).bind('input', e => {
+                        r(e.target);
+                    })
+                })
+            };
+            var _PartialViewName = $("#txtViewToLoad").val();
+            //var PartialContainer = $("#PartialViewContainer");
+            var PartialContainer = $($("#txtViewContainer").val());
+
+            if (_PartialViewName == "_ModifyCase")
+                _parameters = { ClassificationId: _PartialViewName, Mode: $('#HFCaseId').val() };
+            else
+                _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+
+            if ($("#hidIsCorporate").val() == "Y") {
+                $("#div_IsCourtFollow").removeClass("AppHidden").addClass("AppHidden");
+                $("#div_courtCasesMailButton").removeClass("AppHidden").addClass("AppHidden");
+                $('.clsCourtCases').removeClass("active");
+                $(".clsCorporate").addClass("active");
+            }
+            else if ($("#hidIsTranselation").val() == "Y") {
+                $("#div_IsCourtFollow").removeClass("AppHidden").addClass("AppHidden");
+                $("#div_courtCasesMailButton").removeClass("AppHidden").addClass("AppHidden");
+                $('.clsCourtCases').removeClass("active");
+                $(".clsTranselation").addClass("active");
+            }
+
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+            $('.navButton').click(function () {
+                if ($(this).attr("id") == "btn_Closing") {
+                    if ($("#hid_OFB_OfficeFileNo").val() == "") {
+
+                    }
+                    else {
+                        $(".navButton").each(function () {
+                            var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                            $(this).removeClass(btnActiveClass);
+                        });
+
+                        var btnClickedId = $(this).attr("id");
+                        var btnClickedClass = $(this).attr("id").split('_')[1];
+                        var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                        $("#txtViewToLoad").val("_" + btnClickedClass);
+
+                        $(this).addClass(btnClickedActiveClass);
+
+                        var _PartialViewName = "_Closing";
+                        var PartialContainer = $("#ModificationContainer");
+                        _parameters = { ClassificationId: _PartialViewName, Mode: $CaseId };
+                        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+                    }
+                }
+                else if ($(this).attr("id") == "btn_PayVoucherCreateNew") {
+                    ResetHiddenItems();
+                    $(".clsPVContainer").empty();
+                    $(".navButton").each(function () {
+                        var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                        $(this).removeClass(btnActiveClass);
+                    });
+
+                    var btnClickedId = $(this).attr("id");
+                    var btnClickedClass = $(this).attr("id").split('_')[1];
+                    var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                    $("#txtViewToLoad").val("_" + btnClickedClass);
+
+                    $(this).addClass(btnClickedActiveClass);
+
+                    var _PartialViewName = "_PayVoucherCreateNEW";
+                    var PartialContainer = $("#ModificationContainer");
+                    var _Mode = "CM";
+                    var _Voucher_No = 0;
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                    GetTab(PartialContainer, GetFinanceTabURL, _parameters);
+                }
+                else {
+                    ResetHiddenItems();
+                    $(".clsPVContainer").empty();
+                    $("#spanCreateBtnText").text("");
+                    $("#spanCreateBtnText").text("CREATE CASE");
+                    $(".navButton").each(function () {
+                        var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                        $(this).removeClass(btnActiveClass);
+                    });
+
+                    var btnClickedId = $(this).attr("id");
+                    var btnClickedClass = $(this).attr("id").split('_')[1];
+                    var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                    $("#txtViewToLoad").val("_" + btnClickedClass);
+
+                    $(this).addClass(btnClickedActiveClass);
+
+                    console.log("Partial View Tobe Load :: " + $("#txtViewToLoad").val());
+                    console.log("View Container :: " + $("#txtViewContainer").val());
+
+                    _PartialViewName = $("#txtViewToLoad").val();
+                    PartialContainer = $($("#txtViewContainer").val());
+
+                    if ($(this).attr("id") == "btn_CreateCase") {
+                        $("#HFCaseId").val("0");
+                    }
+
+
+                    _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+                    GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+                    if ($(this).attr("id") == "btn_TobeRegister" || $(this).attr("id") == "btn_Enforcement") {
+                        $("#div_courtCasesMailButton").hide();
+                    }
+                }
+            });
+
+            $('.modal').on('hidden.bs.modal', function (event) {
+                $(this).removeClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+            });
+
+            $('.modal').on('shown.bs.modal', function (event) {
+                $("#MstDesc").val("");
+                // keep track of the number of open modals
+                if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+                    $('body').data('fv_open_modals', 0);
+                }
+
+                // if the z-index of this modal has been set, ignore.
+                if ($(this).hasClass('fv-modal-stack')) {
+                    return;
+                }
+
+                $(this).addClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+                $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+
+            });
+
+            $('input[type=radio][name=rdoLocation]').change(function () {
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    var MCTRecords = table.ajax.json().MuscatTotal;
+                    var SLLRecords = table.ajax.json().SalalahTotal;
+                    var recordsTotal = table.ajax.json().recordsTotal;
+
+                    if ($("#txtUserRole").val() == "VoucherApproval") {
+                        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                        $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                        $('#TTL').text(recordsTotal);
+                    }
+                });
+
+                if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
+                    table2.ajax.reload(function (json) {
+                        var info = table2.page.info();
+                        var MCTRecords = table2.ajax.json().MuscatTotal;
+                        var SLLRecords = table2.ajax.json().SalalahTotal;
+                        var recordsTotal = table2.ajax.json().recordsTotal;
+
+                        if ($("#txtUserRole").val() == "VoucherApproval") {
+                            $('#MCTTTL2').text("MUSCAT : " + MCTRecords);
+                            $('#SLLTTL2').text("SALALAH : " + SLLRecords);
+                            $('#TTL2').text(recordsTotal);
+                        }
+                    });
+                }
+            });
+
+            $('#selUpdateDateYN').on("change", function () {
+                if ($('#selUpdateDateYN').val() == "")
+                    return false;
+
+                if ($('#selUpdateDateYN').val() == "N") {
+                    $("#hidCourtDecisionChange").val("N");
+                }
+                else if ($('#selUpdateDateYN').val() == "Y") {
+                    $("#CurrentHearingDate").datepicker("setDate", new Date).datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true
+                    });
+                }
+                ShowPreSubmit();
+            });
+
+            $('#selNextHearingDateYN').on("change", function () {
+                if ($('#selNextHearingDateYN').val() == "N") {
+                    $('#modal-preSubmit').modal('hide');
+                }
+            });
+        });
+    </script>
+}

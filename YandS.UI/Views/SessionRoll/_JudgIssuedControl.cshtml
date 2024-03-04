@@ -1,0 +1,18 @@
+﻿@model YandS.UI.Models.SessionsRollVM
+<div class="col JudgIssued">
+    <div class="form-group">
+        <label>JUDGEMENT TYPE</label>
+        @Html.DropDownList("DifferentPanelYesSet", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+    </div>
+    @*<label for=""></label>
+        <div style="color: black !important;padding-top:10px;" class="text-left">
+            <div class="icheck-primary d-inline">
+                @Html.RadioButtonFor(m => m.DifferentPanelYesSet, "Y", new { id = "DifferentPanelYesSet1" })
+                <label for="DifferentPanelYesSet1"> FINAL JUDGEMENT حكم نهائي</label>
+            </div>
+            <div class="icheck-primary d-inline">
+                @Html.RadioButtonFor(m => m.DifferentPanelYesSet, "N", new { id = "DifferentPanelYesSet2" })
+                <label for="DifferentPanelYesSet2"> DIFFERENT PANELS إحالة لهيئة مغايرة</label>
+            </div>
+        </div>*@
+</div>

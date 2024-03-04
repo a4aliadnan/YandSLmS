@@ -1,0 +1,103 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+
+        console.log("_SessionRollRegisterENF Partial Page Loaded");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "913") {
+                ModalTitle = "ADD CLIENT";
+                DDLToAppend = $("#SessionClientId");
+            }
+            else if (this.id == "4") {
+                ModalTitle = "Add Location";
+                DDLToAppend = $("#PASCourtLocationid");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div class="card">
+    <div style="padding-bottom:0px;padding-top:10px;" class="row @ViewBag.CourtClass">
+        <div class="col-sm-12 text-center"><h3>@ViewBag.HeadingText</h3></div>
+    </div>
+    <div class="card-body">
+        <div class="form-horizontal">
+            @Html.HiddenFor(model => model.DetailId, new { @Value = ViewBag.hid_DetailId })
+            @Html.HiddenFor(model => model.Courtid, new { @Value = "4" })
+
+            <div id="DivClearable">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>CASE LEVEL</label>
+                            <span class="form-control" disabled="disabled">@ViewBag.CaseLevelName</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>CASE AGAINST</label>
+                            <span class="form-control" disabled="disabled">@ViewBag.AgainstName</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>ENFORCEMENT BY</label>
+                            @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>ENFORCEMENT NO</label>
+                            @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label>COURT</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("PASCourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>REGISTRATION DATE</label>
+                            @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

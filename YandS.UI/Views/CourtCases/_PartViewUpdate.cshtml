@@ -1,0 +1,56 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+<div style="padding-bottom:0px !important;padding-top:10px;background-color: #ebf0f9 !important; color: black !important;">
+    <div class="row">
+        <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+    </div>
+</div>
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                <div class="form-group">
+                    @Html.TextAreaFor(model => model.CourtDecision, 5, 200, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SessionRemarks">REMARKS توجيهات للمحامي</label>
+                <div class="form-group">
+                    @Html.TextAreaFor(model => model.SessionRemarks, 5, 200, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                <div class="form-group">
+                    @Html.EditorFor(model => model.Requirements, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card-footer text-right col-sm-11">
+            <a title="PRINT FORM" id="RequirementPrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintRequirementForm/?id=@Model.CaseId&formName=_PrintRequirementForm">REPORT</a>
+        </div>
+    </div>
+</div>

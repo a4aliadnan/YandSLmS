@@ -1,0 +1,65 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+
+        console.log("_CaseRegPayVoucher Partial Page Loaded");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        //var form = $("#frm_CourtDetail");
+        ////console.log(form);
+        ////console.log(CourtDetailContainer);
+        //form.removeData('validator');
+        //form.removeData('unobtrusiveValidation');
+        //$.validator.unobtrusive.parse(form);
+    });
+</script>
+@model YandS.UI.Models.CaseRegistrationVM
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.PoliceNo)
+            @Html.EditorFor(model => model.PoliceNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PublicProsecutionNo)
+            @Html.EditorFor(model => model.PublicProsecutionNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PAPCNo)
+            @Html.EditorFor(model => model.PAPCNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.LaborConflicNo)
+            @Html.EditorFor(model => model.LaborConflicNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.PoliceStation)
+            @Html.DropDownList("PoliceStation", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            @Html.ValidationMessageFor(model => model.PoliceStation, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PublicPlace)
+            @Html.DropDownList("PublicPlace", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PAPCPlace)
+            @Html.DropDownList("PAPCPlace", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.LaborConflicPlace)
+            @Html.DropDownList("LaborConflicPlace", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+</div>

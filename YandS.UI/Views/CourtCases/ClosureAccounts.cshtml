@@ -1,0 +1,310 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    var table;
+    var dataForTable = "";
+    var SP_NAME = "";
+
+    function LoadResultTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        dataForTable = "CLOSURE_ACCOUNT";
+        SP_NAME = "GetDetailTable";
+
+        table = $('#HtmlTable').DataTable({
+            lengthChange: false,
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = SP_NAME;
+                    d.CaseId = $('#CaseId').val();
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'CourtLevelDisp', name: 'CourtLevelDisp', autoWidth: true },
+                { data: 'InvoiceNumber', name: 'InvoiceNumber', autoWidth: true },
+                { data: 'InvoiceDate', name: 'InvoiceDate', autoWidth: true },
+                { data: 'InvoiceStatusName', name: 'InvoiceStatusName', autoWidth: true },
+                { data: 'InvoiceAmount', name: 'InvoiceAmount', autoWidth: true }
+            ],
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': [-1] },
+                {
+                    targets: 2, render: function (data) {
+                        if (data) {
+                            return moment(data).format('DD/MM/YYYY');
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+                if (data.InvoiceStatus == "-1") {
+                    rowColor = "CaseInvoiceCancel";
+                }
+                else if (data.InvoiceStatus == "1") {
+                    rowColor = "CaseInvoiceUnPaid";
+                }
+                else if (data.InvoiceStatus == "2") {
+                    rowColor = "CaseInvoicePaid";
+                }
+
+                $(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+    }
+
+
+    $(document).ready(function () {
+        console.log("ClosureAccounts PartialView");
+
+        LoadResultTable();
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $('textarea').autoResize();
+
+        $('.btnSave').on("click", function () {
+            console.log(".btnSave CLICK");
+            $('#FileClosureDetail_btnSave').val(this.id);
+            ValidationMessage = "";
+            NotValid = false;
+
+            if ($("#FileClosureDetail_btnSave").val() == "btnClosureAccountsDepSave") {
+                if ($("#FileClosureDetail_FileAllocation").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE ALLOCATION" : ValidationMessage + "<br />" + "PLEASE SELECT FILE ALLOCATION";
+                    NotValid = true;
+                }
+
+                if ($("#FileClosureDetail_FinalOnvoiceOnHold").val() == "1") {
+
+                    if ($("#FileClosureDetail_SuggestedDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUGGESTED DATE" : ValidationMessage + "<br />" + "PLEASE ENTER SUGGESTED DATE";
+                        NotValid = true;
+                    }
+                    else {
+
+                        var today = new Date();
+
+                        var dd = String(today.getDate()).padStart(2, '0');
+                        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = today.getFullYear();
+
+                        today = dd + '/' + mm + '/' + yyyy;
+
+                        console.log(today);
+                        console.log($("#FileClosureDetail_SuggestedDate").val());
+
+                        if (process(today) >= process($("#FileClosureDetail_SuggestedDate").val())) {
+                            ValidationMessage = ValidationMessage == "" ? "SUGGESTED DATE CANNOT BE LESS THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUGGESTED DATE CANNOT BE LESS THEN CURRENT DATE";
+                            NotValid = true;
+                        }
+                    }
+                }
+            }
+            else if ($("#FileClosureDetail_btnSave").val() == "btnClosureAccountsFinSave") {
+                if ($("#FileClosureDetail_FinanceFileClosureDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FINANCE FILE CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER FINANCE FILE CLOSURE DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_FinanceFileClosureDate").val());
+
+                    if (process($("#FileClosureDetail_FinanceFileClosureDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "FINANCE FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "FINANCE FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+            }
+
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+            else
+                submitClosureForm();
+            
+
+        });
+
+        if ($('#FileClosureDetail_FinalOnvoiceOnHold').val() == "") {
+            $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+        }
+        else {
+            $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+        }
+
+        $('#FileClosureDetail_FinalOnvoiceOnHold').on("change", function () {
+            console.log(this.id);
+            console.log($(this).val());
+
+            if ($('#FileClosureDetail_FinalOnvoiceOnHold').val() == "") {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+            }
+        });
+    });
+</script>
+<div class="card card-secondary clsAccountProcedure">
+    <div class="card-header FinalClosureBanner">
+        <div class="text-center">
+            <span class="h3">ACCOUNTS DEPT PROCEEDURE إجراءات قسم المحاسبة</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.FileClosureDetail.FileAllocation)
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("FileAllocation", null, htmlAttributes: new { id = "FileClosureDetail_FileAllocation", Name = "FileClosureDetail.FileAllocation", @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="501">
+                                    ADD
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="" for="FinalOnvoiceOnHold">FINAL INVOICE ON HOLD</label>
+                    @Html.DropDownList("FinalOnvoiceOnHold", null, htmlAttributes: new { id = "FileClosureDetail_FinalOnvoiceOnHold", Name = "FileClosureDetail.FinalOnvoiceOnHold", @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div id="DIV_SUGGESTED_DATE" class="form-group AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.SuggestedDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.SuggestedDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="" for="JudRecRedStamp">JUDGMENT RECOVERY (RED STAMP) استرداد الصيغة وغلق الملف</label>
+                    @Html.DropDownList("JudRecRedStamp", null, htmlAttributes: new { id = "FileClosureDetail_JudRecRedStamp", Name = "FileClosureDetail.JudRecRedStamp", @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnClosureAccountsDepSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>
+<div class="card card-primary">
+    <div class="card-header">
+        <div class="text-center">
+            <span class="h3">INVOICES</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div id="divInvoiceTable" class="col-sm-12">
+                <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>CASE LEVEL</th>
+                            <th>INVOICE NUMBER</th>
+                            <th>INVOICE DATE</th>
+                            <th>INVOICE STATUS</th>
+                            <th>INVOICE AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-primary">
+    <div class="card-header ArabicInfoBanner">
+        <div class="text-center">
+            <span class="h3">FINANCE FILE CLOSURE</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.FinanceFileClosureDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.FinanceFileClosureDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnClosureAccountsFinSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>

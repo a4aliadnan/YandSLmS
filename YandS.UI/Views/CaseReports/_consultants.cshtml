@@ -1,0 +1,64 @@
+﻿<script type="text/javascript">
+
+    $(document).ready(function () {
+        console.log("_beforeCourt Partial View Document Ready ");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+    });
+</script>
+@model YandS.DAL.RepCaseParameterForm
+<div style="padding-bottom:0px;padding-top:10px;" class="row beforeCourtActive">
+    <div class="col-sm-12 text-center"><h3>CONSULTANTS REPORT</h3></div>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Location)
+            @Html.DropDownList("Location", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClientCode)
+            @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.AgainstCode)
+            @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClaimAmount)
+            @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReceptionDateFrom)
+            @Html.EditorFor(model => model.ReceptionDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CaseTypeCode)
+            @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CaseLevelCode)
+            @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CaseStatus)
+            @Html.DropDownList("CaseStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ParentCourtId)
+            @Html.DropDownList("ParentCourtId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReceptionDateTo)
+            @Html.EditorFor(model => model.ReceptionDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+</div>

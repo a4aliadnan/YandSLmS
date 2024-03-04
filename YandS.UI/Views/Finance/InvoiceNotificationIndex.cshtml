@@ -1,0 +1,354 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Invoice Notification";
+}
+<style>
+
+    .InvoiceProcessed {
+        background-color: #c6e0b4 !important;
+        color: black !important;
+    }
+
+    .UrgentProcess {
+        background-color: #FF0000 !important;
+        color: white !important;
+    }
+    div.dt-buttons {
+        width: auto !important;
+    }
+
+    .PVTable {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PVTable:hover {
+            background-color: #97e4ff !important;
+        }
+
+    .PVTableActive {
+        background-color: #97e4ff !important;
+        color: black !important;
+    }
+
+    .CaseTable {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .CaseTable:hover {
+            background-color: #97e4ff !important;
+        }
+
+    .CaseTableActive {
+        background-color: #97e4ff !important;
+        color: black !important;
+    }
+
+    .TransportationTable {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .TransportationTable:hover {
+            background-color: #97e4ff !important;
+        }
+
+    .TransportationTableActive {
+        background-color: #97e4ff !important;
+        color: black !important;
+    }
+
+    .InvoiceHoldTable {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .InvoiceHoldTable:hover {
+            background-color: #97e4ff !important;
+        }
+
+    .InvoiceHoldTableActive {
+        background-color: #97e4ff !important;
+        color: black !important;
+    }
+    .text-wrap {
+        white-space: normal;
+    }
+
+    .width-400 {
+        width: 400px;
+    }
+
+    .width-300 {
+        width: 300px;
+    }
+
+    .width-200 {
+        width: 200px;
+    }
+
+    .width-100 {
+        width: 100px;
+    }
+
+    .VMiddle {
+        vertical-align: middle !important;
+    }
+</style>
+<script>
+    var GetTabURL = '@Url.Action("GetTab", "Finance", new { area = string.Empty })';
+    var GetIndexDataURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { DataFor = @ViewBag.DataFor })';
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+        console.log(divToLoad.attr("id"));
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                divToLoad.html(data);
+                if (divToLoad.attr("id") == "EditPopupViewContainer") {
+                    $('#EditPopupModal').modal('show');
+                }
+                else {
+                    $('html, body').animate({
+                        scrollTop: divToLoad.offset().top
+                    }, 1000);
+                }
+            }
+        });
+    };
+    function ReloadTable() {
+        var ActiveTab = "btn" + $("#txtViewToLoad").val();
+        switch (ActiveTab) {
+            case "btn_PVTable":
+                PVDataTable.ajax.reload();
+                break;
+            case "btn_CaseTable":
+                CaseDataTable.ajax.reload();
+                break;
+            case "btn_TransportationTable":
+                DataTable.ajax.reload();
+                break;
+            case "btn_InvoiceHoldTable":
+                DataTable.ajax.reload();
+                break;
+        }
+    }
+
+    function processbtnLinkClick(_Mode, data) {
+        console.log(data);
+        var _UIDENT = data.UIDENT;
+        Swal.fire({
+            title: 'ARE YOU SURE?',
+            text: "YOU WON'T BE ABLE TO REVERT THIS!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'CANCEL',
+            confirmButtonText: 'INVOICE DONE'
+        }).then((result) => {
+            if (result.value) {
+
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                $.ajax({
+                    url: "/Finance/InvoiceProcess",
+                    type: 'POST',
+                    cache: false,
+                    data: {
+                        __RequestVerificationToken: token,
+                        Uid: _UIDENT
+                    },
+                    statusCode: {
+                        401: function (response) {
+                            alert(response);
+                        }
+                    },
+                    success: function (result) {
+                        if (result.redirectTo) {
+                            //Swal.fire(
+                            //    'Processed!',
+                            //    'Invoice Notification Updated Successfully.',
+                            //    'success'
+                            //)
+                            ReloadTable();
+                        }
+                        else {
+                            //console.log(result);
+                            var errorHtml = $('<div />').append(result).find('.content').html();
+                            //console.log(errorHtml);
+                            Swal.fire({
+                                type: 'error',
+                                title: 'Error in Invoice Update!',
+                                html: errorHtml,
+                                width: '50%'
+                                //grow: 'row'
+                            });
+                            //Swal.fire("Error deleting!", errorHtml, "error");
+
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        Swal.fire("Error processing!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                    <h1>INVOICE NOTIFICATION</h1>
+                </div>
+                @if (User.IsInRole("VoucherApproval"))
+                {
+                    <div class="col-sm-1"></div>
+                    <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary1" value="A" name="rdoLocation">
+                                <label for="radioPrimary1"> ALL </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary2" value="M" name="rdoLocation" @ViewBag.VoucherApproval>
+                                <label for="radioPrimary2"> MUSCAT </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary3" value="S" name="rdoLocation">
+                                <label for="radioPrimary3"> SALALAH </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1"></div>
+                }
+                else
+                {
+                    <div class="col-sm-5 text-center">
+
+                    </div>
+
+                }
+
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">FINANCE</li>
+                        <li class="breadcrumb-item active"><a href="#">INVOICE NOTIFICATION</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_PVTable" style="font-size: 1.25rem !important;" class="btn btn-block PVTable @ViewBag.PVTableActive btn-lg navButton">REFUNDABLE</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_CaseTable" style="font-size: 1.25rem !important;" class="btn btn-block CaseTable @ViewBag.CaseTableActive btn-lg navButton">LAWYER FEES</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_TransportationTable" style="font-size: 1.25rem !important;" class="btn btn-block TransportationTable @ViewBag.TransportationTableActive btn-lg navButton">TRANSPORTATION FEES</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_InvoiceHoldTable" style="font-size: 1.25rem !important;" class="btn btn-block InvoiceHoldTable @ViewBag.InvoiceHoldTableActive btn-lg navButton">FINAL INVOICE ON HOLD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="div_Detail">
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+    <input type="hidden" id="txtLocationId" value="@ViewBag.LocationId" />
+    <input type="hidden" id="txtViewContainer" value="@ViewBag.ViewContainer" />
+    <input type="hidden" id="txtViewToLoad" value="@ViewBag.ViewToLoad" />
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Index Invoice Notification Page");
+            console.log("Partial View Tobe Load :: " + $("#txtViewToLoad").val());
+            console.log("View Container :: " + $("#txtViewContainer").val());
+
+            var _PartialViewName = $("#txtViewToLoad").val();
+            var _Voucher_No = -1;
+            var _Mode = "C";
+
+            var PartialContainer = $($("#txtViewContainer").val());
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+            GetTab(PartialContainer, GetTabURL, _parameters);
+
+            $('input[type=radio][name=rdoLocation]').change(function () {
+                ReloadTable();
+            });
+
+            $('.navButton').click(function () {
+                $("#div_Detail").empty();
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                var btnClickedId = $(this).attr("id");
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                var DivToShow = $("#div_Detail");
+
+                $("#txtViewToLoad").val("_" + btnClickedClass);
+                $("#txtViewContainer").val("#div_Detail");
+
+                console.log(btnClickedId);
+                console.log(btnClickedClass);
+                console.log(btnClickedActiveClass);
+
+                $(this).addClass(btnClickedActiveClass);
+
+                console.log("Partial View Tobe Load :: " + $("#txtViewToLoad").val());
+                console.log("View Container :: " + $("#txtViewContainer").val());
+
+                var _Voucher_No = -1;
+                var _Mode = "C";
+                //var PartialContainer = $("#txtViewContainer").val();
+                var _PartialViewName = $("#txtViewToLoad").val();
+
+                var PartialContainer = $($("#txtViewContainer").val());
+                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                GetTab(PartialContainer, GetTabURL, _parameters);
+
+            });
+        });
+    </script>
+
+}

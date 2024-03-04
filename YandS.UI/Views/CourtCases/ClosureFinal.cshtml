@@ -1,0 +1,465 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+@Html.HiddenFor(model => model.FileClosureDetail.ClosureInitiatedBy)
+
+<script type="text/javascript">
+    var table;
+    var dataForTable = "";
+    var SP_NAME = "";
+    var VIEW_ATTACHED_EMAIL = "";
+
+    function LoadResultTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        dataForTable = "CLOSURE_FINAL";
+        SP_NAME = "GetDetailTable";
+
+        table = $('#HtmlTable').DataTable({
+            lengthChange: false,
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = SP_NAME;
+                    d.CaseId = $('#CaseId').val();
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                { data: 'ClientName', name: 'ClientName', autoWidth: false },
+                { data: 'Defendant', name: 'Defendant', autoWidth: false },
+                { data: 'AgainstName', name: 'AgainstName', autoWidth: false },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false, render: function (data, type, row) { return FormatAccount_ClientFileNo(row); } },
+                { data: 'ClosureDate', name: 'ClosureDate', autoWidth: false },
+                { data: 'ClosureInitiatedBy', name: 'ClosureInitiatedBy', autoWidth: false },
+                { data: 'ClosureApproveddBy', name: 'ClosureApproveddBy', autoWidth: false },
+                { data: 'FileArchive', name: 'FileArchive', autoWidth: false },
+                { data: 'ClosingNotesDate', name: 'ClosingNotesDate', autoWidth: false },
+                { data: 'ClosingNotes', name: 'ClosingNotes', autoWidth: true }
+            ],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [0, 1, 2, 3, 4, 6, 7, 8]
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: [5, 9]
+                },
+                {
+                    targets: 10, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            initComplete: function () {
+                $(".clsValidLoginDT").removeClass("AppHidden");
+                $('textarea').autoResize();
+            }
+        });
+    }
+    $(document).ready(function () {
+        console.log("ClosureFinal PartialView");
+        bsCustomFileInput.init();
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        var inputConfirm = document.getElementById("FileClosureDetail_ApprovalPassword");
+        var inputAccount = document.getElementById("FileClosureDetail_AccountPassword");
+
+
+        // Execute a function when the user presses a key on the keyboard
+        inputConfirm.addEventListener("keypress", function (eventConfirm) {
+            // If the user presses the "Enter" key on the keyboard
+            if (eventConfirm.key === "Enter") {
+                // Cancel the default action, if needed
+                eventConfirm.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("btnValidateApproval").click();
+            }
+        });
+
+
+        // Execute a function when the user presses a key on the keyboard
+        inputAccount.addEventListener("keypress", function (eventAccount) {
+            // If the user presses the "Enter" key on the keyboard
+            if (eventAccount.key === "Enter") {
+                // Cancel the default action, if needed
+                eventAccount.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("btnValidateAccountUser").click();
+            }
+        });
+
+
+        $('textarea').autoResize();
+
+
+        var $ApprovalStatus = $("#FinalClosureApprovalStatus").val();
+        var $CaseStatus = $("#FileClosureDetail_StatusCode").val();
+        var $ReqReOpenCase = $("#hidReqReOpenCase").val();
+
+        console.log("Case Status :: " + $CaseStatus);
+        console.log("Request Re Open? :: " + $ReqReOpenCase);
+
+        /*
+        if ($CaseStatus == "2" && $ReqReOpenCase == "Y") {
+
+            $(".clsValidLogin").removeClass("AppHidden");
+            LoadResultTable();
+        }
+        else {
+            if ($ApprovalStatus == "0") {
+                LoadResultTable();
+                $(".clsValidLogin").removeClass("AppHidden");
+
+                var $UserName = $("#hidUserName").val();
+                var $InitiatedBy = $("#FinalClosureInitiatedBy").val();
+
+                if ($UserName === $InitiatedBy) {
+                    $(".clsApprovalInit").addClass("disableDIV");
+                    $(".clsValidApproval").addClass("disableDIV");
+                }
+                else {
+                    $(".wfStepOne").addClass("disableDIV");
+                    $(".clsApprovalInit").removeClass("AppHidden");
+                }
+            }
+            else if ($ApprovalStatus == "Y" || $ApprovalStatus == "N") {
+                LoadResultTable();
+                $(".clsValidLogin").removeClass("AppHidden");
+                $(".clsValidApproval").removeClass("AppHidden");
+                $("#divClosureFinal").addClass("disableDIV");
+            }
+        }
+        */
+        $('.clsViewAttachedEmail').on("click", function () {
+            VIEW_ATTACHED_EMAIL = "Y";
+        });
+
+        $('.btnSave').on("click", function () {
+            console.log(".btnSave CLICK");
+            $('#FileClosureDetail_btnSave').val(this.id);
+            ValidationMessage = "";
+            NotValid = false;
+
+            if ($("#FileClosureDetail_btnSave").val() == "btnFinalClosureSave") {
+                if ($("#FileClosureDetail_StatusDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FINAL CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER FINAL CLOSURE DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_StatusDate").val());
+
+                    if (process($("#FileClosureDetail_StatusDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+
+                if ($("#FileClosureDetail_ReasonCode").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REASON" : ValidationMessage + "<br />" + "PLEASE SELECT REASON";
+                    NotValid = true;
+                }
+
+                if ($('#ViewClosingEmail').hasClass("AppHidden")) {
+                    if ($('#upload').get(0).files.length === 0) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ATTACH EMAIL" : ValidationMessage + "<br />" + "PLEASE ATTACH EMAIL";
+                        NotValid = true;
+                    }
+                }
+
+            }
+            else if ($("#FileClosureDetail_btnSave").val() == "btnFinalClosurApprovaleSave") {
+
+                if ($("#FileClosureDetail_ClosureApprovalStatus").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPROVAL STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT APPROVAL STATUS";
+                    NotValid = true;
+                }
+
+                if (VIEW_ATTACHED_EMAIL == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE VIEW ATTACHMENT" : ValidationMessage + "<br />" + "PLEASE VIEW ATTACHMENT";
+                    NotValid = true;
+                }
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+            else {
+                submitClosureForm();
+                $(this).closest(".card").addClass("disableDIV");
+            }
+        });
+
+        if ($('#FileClosureDetail_FinalOnvoiceOnHold').val() == "") {
+            $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+        }
+        else {
+            $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+        }
+
+        $('#FileClosureDetail_FinalOnvoiceOnHold').on("change", function () {
+            console.log(this.id);
+            console.log($(this).val());
+
+            if ($('#FileClosureDetail_FinalOnvoiceOnHold').val() == "") {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+            }
+        });
+
+        if ($("#divClosureFinal").hasClass("disableDIV")) {
+            $(".clsValidLogin").removeClass("AppHidden");
+        }
+
+        if ($("#divClosureFinalConfirm").hasClass("disableDIV")) {
+            $(".clsValidApproval").removeClass("AppHidden");
+        }
+
+        if ($("#divClosureFinalAccount").hasClass("disableDIV")) {
+            $(".clsValidAccountLogin").removeClass("AppHidden");
+        }
+    });
+</script>
+@Html.HiddenFor(model => model.FinalClosureInitiatedBy)
+@Html.HiddenFor(model => model.FinalClosureApproveddBy)
+@Html.HiddenFor(model => model.FinalClosureApprovalStatus)
+@Html.HiddenFor(model => model.FileClosureDetail.PartDetailId)
+@Html.HiddenFor(model => model.PartialViewName)
+
+<div class="card @ViewBag.ClosureInProgress">
+    <div class="card-header FinalClosureBanner">
+        <div class="row">
+            <div class="col-sm-1 AppHidden"></div>
+            <div class="col-sm-12 text-center"><h3>FINAL CLOSURE REQUEST طلب الغلق الكلي</h3></div>
+            <div class="col-sm-1 AppHidden"><a title="PRINT FORM" id="FinalClosureFormButton1" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CommonTask/ClosureFormView/?CaseId=@Model.CaseId&screen=ClosureFinalForm">PRINT FORM</a></div>
+        </div>
+    </div>
+    <div id="divClosureFinal" class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.StatusDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.StatusDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.ReasonCode)
+                    @Html.DropDownList("ReasonCode", null, htmlAttributes: new { id = "FileClosureDetail_ReasonCode", Name = "FileClosureDetail.ReasonCode", @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6" style="padding-top:30px;">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="upload" name="upload">
+                                <label class="custom-file-label" for="upload">ارفاق الايميل</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="padding-top:30px;">
+                            <div id="ViewClosingEmail" class="input-group-append mb-6 @ViewBag.ViewClosingEmail">
+                                <a target="_blank" class="btn btn-block btn-outline-info" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/ClosingEmail/@ViewBag.ClosingEmailDoc">VIEW</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClosingNotesDate)
+                    @Html.EditorFor(model => model.ClosingNotesDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClosingNotes)
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.ClosingNotes, 1, 200, new { @class = "form-control", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnFinalClosureSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>
+<div class="card @ViewBag.ClosureConfirm">
+    <div class="card-header FinalClosureBanner">
+        <div class="row">
+            <div class="col-sm-1 AppHidden"></div>
+            <div class="col-sm-12 text-center"><h3>FILE CLOSURE CONFIRM تأكيد غلق الملف</h3></div>
+            <div class="col-sm-1 AppHidden"><span style="float:right"><a title="PRINT FORM" id="FinalClosureFormButton" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CommonTask/ClosureFormView/?CaseId=@Model.CaseId&screen=ClosureFinalForm">PRINT FORM</a></span></div>
+        </div>
+    </div>
+    <div id="divClosureFinalConfirm" class="card-body  @ViewBag.AccountDeparmentProgress @ViewBag.StoreInProress">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.FileClosureDetail.ApprovalPassword)
+                        <div class="input-group">
+                            @Html.PasswordFor(model => model.FileClosureDetail.ApprovalPassword, htmlAttributes: new { @class = "form-control" })
+                            <div class="input-group-append">
+                                <button type="button" onclick="ValidateUser(document.getElementById('FileClosureDetail_ApprovalPassword').value,'clsValidApproval')" class="btn btn-warning" id="btnValidateApproval">VERIFY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group clsValidApproval AppHidden">
+                    <div style="padding-top:30px;">
+                        <div id="ViewClosingEmailApproval" class="input-group-append mb-6 @ViewBag.ViewClosingEmail">
+                            <a target="_blank" class="btn btn-block btn-outline-info clsViewAttachedEmail" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/ClosingEmail/@ViewBag.ClosingEmailDoc">VIEW</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group clsValidApproval AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.ClosureApprovalStatus)
+                    @Html.DropDownList("ClosureApprovalStatus", null, htmlAttributes: new { id = "FileClosureDetail_ClosureApprovalStatus", Name = "FileClosureDetail.ClosureApprovalStatus", @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center clsValidApproval AppHidden">
+        <button type="button" id="btnFinalClosurApprovaleSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>
+<div class="card @ViewBag.AccountDepartment">
+    <div class="card-header FinalClosureBanner">
+        <div class="row">
+            <div class="col-sm-1 AppHidden"></div>
+            <div class="col-sm-12 text-center"><h3>ACCOUNTS DEPT PROCEEDURE إجراءات قسم المحاسبة</h3></div>
+            <div class="col-sm-1 AppHidden"><span style="float:right"><a title="PRINT FORM" id="FinalClosureFormButton2" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CommonTask/ClosureFormView/?CaseId=@Model.CaseId&screen=ClosureFinalForm">PRINT FORM</a></span></div>
+        </div>
+    </div>
+    <div id="divClosureFinalAccount" class="card-body @ViewBag.StoreInProress">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.FileClosureDetail.AccountPassword)
+                        <div class="input-group">
+                            @Html.PasswordFor(model => model.FileClosureDetail.AccountPassword, htmlAttributes: new { @class = "form-control" })
+                            <div class="input-group-append">
+                                <button type="button" onclick="ValidateUser(document.getElementById('FileClosureDetail_AccountPassword').value,'clsValidAccountLogin')" class="btn btn-warning" id="btnValidateAccountUser">VERIFY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group clsValidAccountLogin AppHidden">
+                    <label class="" for="StatusCode">CASE STATUS</label>
+                    @Html.DropDownList("StatusCode", null, htmlAttributes: new { id = "FileClosureDetail_StatusCode", Name = "FileClosureDetail.StatusCode", @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group  clsValidAccountLogin AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.AccountAuditDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.AccountAuditDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group clsValidAccountLogin AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.AccountAudit)
+                    @Html.DropDownList("AccountAudit", null, htmlAttributes: new { id = "FileClosureDetail_AccountAudit", Name = "FileClosureDetail.AccountAudit", @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div class="row clsValidAccountLogin AppHidden">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="" for="StatusCode">FINAL INVOICE ON HOLD</label>
+                    @Html.DropDownList("FinalOnvoiceOnHold", null, htmlAttributes: new { id = "FileClosureDetail_FinalOnvoiceOnHold", Name = "FileClosureDetail.FinalOnvoiceOnHold", @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div id="DIV_SUGGESTED_DATE" class="form-group AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.SuggestedDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.SuggestedDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="" for="StatusCode">JUDGMENT RECOVERY (RED STAMP) استرداد الصيغة وغلق الملف</label>
+                    @Html.DropDownList("JudRecRedStamp", null, htmlAttributes: new { id = "FileClosureDetail_JudRecRedStamp", Name = "FileClosureDetail.JudRecRedStamp", @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center clsValidAccountLogin AppHidden">
+        <button type="button" id="btnClosureAccountsDepSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>

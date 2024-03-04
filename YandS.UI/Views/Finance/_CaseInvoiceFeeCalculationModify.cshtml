@@ -1,0 +1,224 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,4})?$/);
+        $(".dlsDigits").regexMask(IsDigitmask);
+
+        $(".deleteFeeCalcTypeRow").on("click", function () {
+            console.log("Partial View  - deleteFeeCalcTypeRow");
+            $(this).parents(".caseinvoicefeeCalculationRow:first").remove();
+            FeeCalcDisplay("Y");
+            return false;
+        });
+
+        $(".ClaimAmount").on("blur", function () {
+            var ClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmount").val();
+            var ClaimAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmountPct").val();
+            var txtClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue");
+            var FeeAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".FeeAmountPctCalc").val();
+            var txtFeeAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtFeeAmountValue");
+            CalculateFeeAmount(ClaimAmount, ClaimAmountPct, txtClaimAmount, FeeAmountPct, txtFeeAmount);
+        });
+
+        $(".ClaimAmountPctCalc").on("blur", function () {
+            /*
+            var ClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmount").val();
+            var ClaimAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmountPct").val();
+
+            if (ClaimAmount != "" && ClaimAmountPct != "") {
+                //Calculate Claim amount and set
+                var CalimAmount = parseFloat(ClaimAmount);
+                var CalimAmountPct = parseFloat(ClaimAmountPct);
+
+                var ClaimAmountCalculated = CalimAmount * (CalimAmountPct / 100);
+
+                var txtClaimAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue");
+
+                $(txtClaimAmountCalculated).val(ClaimAmountCalculated);
+
+            }
+            FeeCalcDisplay()
+            */
+            var ClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmount").val();
+            var ClaimAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmountPct").val();
+            var txtClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue");
+            var FeeAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".FeeAmountPctCalc").val();
+            var txtFeeAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtFeeAmountValue");
+            CalculateFeeAmount(ClaimAmount, ClaimAmountPct, txtClaimAmount, FeeAmountPct, txtFeeAmount);
+
+        });
+
+        $(".FeeAmountPctCalc").on("blur", function () {
+            /*
+            //Calculate Fee amount and set
+
+            var ClaimAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue").val();
+
+            //var ClaimAmountCalculated = parseFloat($("#ClaimAmountCalculated").val());
+            var FeeAmountPct = parseFloat($(this).val());
+
+            var FeeAmountCalculated = ClaimAmountCalculated * (FeeAmountPct / 100);
+
+            var txtFeeAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtFeeAmountValue");
+
+            $(txtFeeAmountCalculated).val(FeeAmountCalculated);
+
+            FeeCalcDisplay();
+            */
+
+            var ClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmount").val();
+            var ClaimAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmountPct").val();
+            var txtClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue");
+            var FeeAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".FeeAmountPctCalc").val();
+            var txtFeeAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtFeeAmountValue");
+            CalculateFeeAmount(ClaimAmount, ClaimAmountPct, txtClaimAmount, FeeAmountPct, txtFeeAmount);
+
+        });
+
+        function CalculateFeeAmount(P_ClaimAmount, P_ClaimAmountPct, P_txtClaimAmount, P_FeeAmountPct, P_txtFeeAmount) {
+            var ClaimAmountCalculated;
+
+            if (P_ClaimAmount != "" && P_ClaimAmountPct != "") {
+
+                ClaimAmountCalculated = parseFloat(P_ClaimAmount) * (parseFloat(P_ClaimAmountPct) / 100);
+
+                $(P_txtClaimAmount).val(round2Fixed(ClaimAmountCalculated));
+
+            }
+
+            if (P_ClaimAmount != "" && P_ClaimAmountPct != "" && P_FeeAmountPct != "") {
+
+                var FeeAmountCalculated = ClaimAmountCalculated * (parseFloat(P_FeeAmountPct) / 100);
+
+                $(P_txtFeeAmount).val(round2Fixed(FeeAmountCalculated));
+
+            }
+
+            if (P_ClaimAmount == "" || P_ClaimAmountPct == "") {
+                $(P_txtFeeAmount).val("0");
+                $(P_txtClaimAmount).val("0");
+            }
+
+            if (P_FeeAmountPct == "") {
+                $(P_txtFeeAmount).val("0");
+            }
+
+            FeeCalcDisplay();
+        }
+
+        function FeeCalcDisplay(p_IsDelete) {
+            var FeeCalcTotal = 0;
+
+            $(".txtFeeAmountValue").each(function () {
+                console.log(this.value);
+                FeeCalcTotal = FeeCalcTotal + parseFloat(this.value);
+            });
+            if (FeeCalcTotal > 0) {
+                $("#FeeCalcTotal").text(round2Fixed(FeeCalcTotal));
+            }
+            else {
+                $("#FeeCalcTotal").text("0");
+                if (p_IsDelete == "Y") {
+                    $("#InvoiceFeeCalculationDetailHeader").addClass("AppHidden");
+                    $("#InvoiceFeeCalculationSummary").addClass("AppHidden");
+                }
+            }
+        }
+        //$(".ClaimAmount").on("blur", function () {
+        //    FeeCalcDisplay();
+        //});
+
+        //$(".ClaimAmountPctCalc").on("blur", function () {
+        //    var ClaimAmount = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmount").val();
+        //    var ClaimAmountPct = $(this).closest('.caseinvoicefeeCalculationRow').find(".ClaimAmountPct").val();
+
+        //    if (ClaimAmount != "" && ClaimAmountPct != "") {
+        //        //Calculate Claim amount and set
+        //        var CalimAmount = parseFloat(ClaimAmount);
+        //        var CalimAmountPct = parseFloat(ClaimAmountPct);
+
+        //        var ClaimAmountCalculated = CalimAmount * (CalimAmountPct / 100);
+
+        //        var txtClaimAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue");
+
+        //        $(txtClaimAmountCalculated).val(ClaimAmountCalculated);
+        //    }
+        //    FeeCalcDisplay();
+
+        //});
+
+        //$(".FeeAmountPctCalc").on("blur", function () {
+        //    //Calculate Fee amount and set
+
+        //    var ClaimAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtClaimAmountValue").val();
+
+        //    //var ClaimAmountCalculated = parseFloat($("#ClaimAmountCalculated").val());
+        //    var FeeAmountPct = parseFloat($(this).val());
+
+        //    var FeeAmountCalculated = ClaimAmountCalculated * (FeeAmountPct / 100);
+
+        //    var txtFeeAmountCalculated = $(this).closest('.caseinvoicefeeCalculationRow').find(".txtFeeAmountValue");
+
+        //    $(txtFeeAmountCalculated).val(FeeAmountCalculated);
+            
+        //    FeeCalcDisplay();
+        //});
+
+        function FeeCalcDisplay() {
+            var FeeCalcTotal = 0;
+
+            $(".txtFeeAmountValue").each(function () {
+                console.log(this.value);
+                FeeCalcTotal = FeeCalcTotal + parseFloat(this.value);
+            });
+            $("#FeeCalcTotal").text(FeeCalcTotal);
+        }
+    });
+
+</script>
+@model YandS.UI.Models.CaseInvoiceFeeCalculation
+
+@using (Html.BeginCollectionItem("FeeCaclId"))
+{
+<div class="caseinvoicefeeCalculationRow">
+    @Html.HiddenFor(model => model.FeeCaclId, new { @class = "clsFeeCaclId" })
+    @Html.HiddenFor(model => model.InvoiceId)
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="form-group" style="padding-left:30px;padding-top:10px;">
+                <div class="icheck-primary d-inline">
+                    @Html.CheckBoxFor(model => model.ShowInInvoice)
+                    @Html.LabelFor(model => model.ShowInInvoice)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control ClaimAmountPctCalc ClaimAmount dlsDigits" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmountPct, new { htmlAttributes = new { @class = "form-control ClaimAmountPctCalc ClaimAmountPct dlsDigits" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmountCalculated, new { htmlAttributes = new { @class = "form-control txtClaimAmountValue", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.FeeAmountPct, new { htmlAttributes = new { @class = "form-control FeeAmountPctCalc dlsDigits" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.FeeAmountCalculated, new { htmlAttributes = new { @class = "form-control txtFeeAmountValue", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div  class="col-sm-1">
+            <a href="#" id="deleteFeeCalcTypeRow" class="btn btn-danger deleteFeeCalcTypeRow"><i class="fas fa-trash"></i></a>
+        </div>
+    </div>
+</div>
+}

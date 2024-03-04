@@ -1,0 +1,2153 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+@{
+    ViewBag.UpdateBoxUser = Model.UpdateBoxByName;
+}
+<script type="text/javascript">
+    var GetPayVoucherCreatedListURL = '@Url.Action("GetPayVoucherCreatedList", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("TobeReg", "CourtCases", new { area = string.Empty })';
+    var GetGetDefendentTransferDataURL = '@Url.Action("GetDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var DefendentTRansferDataTable;
+    var PVDetailTable;
+    var objDTO = {};
+    function LoadAnnouncementView() {
+        var _Announcementparameters = "";
+        var AnnouncementViewName = "ENF_LVL_ANNOUNCEMENT_DDL";
+        var AnnouncementViewContainer = $("#div_Def_AnnType");
+
+        _Announcementparameters = { ClassificationId: AnnouncementViewName, Mode: $("#HFCaseId").val() };
+
+        GetTab(AnnouncementViewContainer, GetClientClassificationURL, _Announcementparameters);
+    }
+    function LoadUpdate(Enforcementlevel) {
+        var _Updateparameters = "";
+
+        var UpdateViewName = "";
+        var UpdateViewContainer = $("#ENF_DIV_UPDATE");
+
+        switch (Enforcementlevel) {
+            case OfficeFileStatus.MeetJudge:
+            case OfficeFileStatus.Dispute:
+            case OfficeFileStatus.AuctionSession:
+                UpdateViewName = "ENF_UPDATE_SESSION";
+                break;
+            case OfficeFileStatus.JudicalSale:
+                if ($("#AuctionProcess").val() == "11")
+                    UpdateViewName = "ENF_UPDATE_SESSION";
+                else
+                    UpdateViewName = "ENF_UPDATE";
+
+                break;
+            default:
+                UpdateViewName = "ENF_UPDATE";
+        }
+
+        _Updateparameters = { ClassificationId: UpdateViewName, Mode: $("#HFCaseId").val() };
+
+        GetTab(UpdateViewContainer, GetClientClassificationURL, _Updateparameters);
+    }
+    function ProcessAddClient() {
+        var url = "";
+        var _MstDesc = ""
+        var _MstParentId = 0;
+        var _Remarks = "";
+
+        var _PayToBankName = "";
+        var _PayToAccountNumber = "";
+        var _PayToEmail = "";
+        var _PayToContactNo = "";
+        var _PayMst_Value = "";
+        var _PayToMessageLang = "";
+
+        var PAYTOs = ["1900", "1901", "1902", "1903", "1905"];
+        if (PAYTOs.indexOf($("#MstParentId").val()) >= 0) {
+            if ($("#PVDetail_PayToMstDesc").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter PAY TO BENEFICIARY'
+                });
+
+                return false;
+            }
+
+            if ($("#PVDetail_PayToEmail").val() == "") {
+
+            }
+            else {
+                if (!validateEmail($("#PVDetail_PayToEmail").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Email Address'
+                    });
+
+                    return false;
+                }
+            }
+
+            if ($("#PVDetail_PayToContactNo").val() == "") {
+
+            }
+            else {
+                if (!validateContactNo($("#PVDetail_PayToContactNo").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Contact No'
+                    });
+
+                    return false;
+                }
+            }
+
+            url = AddNewPayToDetailURL;
+
+            _MstParentId = parseInt($("#MstParentId").val());
+            _MstDesc = $("#PVDetail_PayToMstDesc").val();
+
+            var _PayToBankName = $("#PVDetail_PayToBankName").val();
+            var _PayToAccountNumber = $("#PVDetail_PayToAccountNumber").val();
+            var _PayToEmail = $("#PVDetail_PayToEmail").val();
+            var _PayToContactNo = $("#PVDetail_PayToContactNo").val();
+            var _PayToMessageLang = $("#PVDetail_PayToMessageLang").val();
+
+            if ($(".clsDisableInModify").hasClass("disableDIV")) {
+                _PayMst_Value = $("#PVDetail_PayToMstValue").val();
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang, PayMst_Value: _PayMst_Value };
+            }
+            else
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang };
+
+        }
+        else {
+            if ($("#MstDesc").val() != "") {
+                url = CreateMasterTableDetailURL;
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                if (_MstParentId === 860)
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: "2" };
+                else
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: url,
+            success: function (Result) {
+
+                if (Result.Message == "Success") {
+                    if (Result.NoNeedAppend == "Y") {
+                        DDLToAppend.val(Result.id).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                    else {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                }
+                else {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ErrorMessage
+                    });
+                }
+            }
+        });
+    }
+    function LoadEnforcementStage(Enforcementlevel) {
+        console.log("LoadEnforcementStage");
+        console.log(Enforcementlevel);
+        $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        var partialViewPrefix = "CEL-ENF_LVL_";
+        var _parameters = "";
+
+        var _PartialViewName = "";
+        var PartialContainer = $("#EnforcementLevelContainer");
+
+        switch (Enforcementlevel) {
+            case OfficeFileStatus.PleaseSelect:
+            case OfficeFileStatus.RequestMeetJudge:
+            case OfficeFileStatus.OnlineRegENF:
+            case OfficeFileStatus.RecoveryRedStamp_Close:
+            case OfficeFileStatus.FileReview:
+            case OfficeFileStatus.InitiateClosingFile:
+                $("#EnforcementLevelContainer").empty();
+                LoadUpdate($('#EnforcementlevelId').val());
+                return false;
+                break;
+            case OfficeFileStatus.MeetJudge:
+                LoadAnnouncementView();
+                $("#div_Def_AnnType").removeClass("AppHidden");
+                LoadUpdate($('#EnforcementlevelId').val());
+                return false;
+                break;
+            case OfficeFileStatus.Announcement:
+                _PartialViewName = partialViewPrefix + "ANNOUNCEMENT";
+                EnforcementLevelHeading = "ANNOUNCEMENT إعلان المنفذ ضده بالسند التنفيذي"
+                EnforcementLevelHeaderClass = "AnnouncementActive";
+                break;
+            case OfficeFileStatus.ContactingAuthorities:
+                _PartialViewName = partialViewPrefix + "INQUIRY";
+                EnforcementLevelHeading = "INQUIRY ( الإستعلام ( مخاطبة الجهات"
+                EnforcementLevelHeaderClass = "InquiryActive";
+                break;
+            case OfficeFileStatus.JudicalSale:
+            case OfficeFileStatus.AuctionSession:
+                _PartialViewName = partialViewPrefix + "JUDICIALAUCTION";
+                EnforcementLevelHeading = "JUDICIAL AUCTION البيع القضائي"
+                EnforcementLevelHeaderClass = "InquiryActive";
+                break;
+            case OfficeFileStatus.ArrestOrder:
+                _PartialViewName = partialViewPrefix + "ARRESTORDER";
+                EnforcementLevelHeading = "ARREST ORDER تفاصيل أمر الحبس الصادر"
+                EnforcementLevelHeaderClass = "ArrestOrderActive";
+                break;
+            case OfficeFileStatus.Suspendfd:
+                _PartialViewName = partialViewPrefix + "SUSPENDED";
+                EnforcementLevelHeading = "SUSPENDED تم وقف إجراءات التنفيذ بصفة مؤقتة"
+                EnforcementLevelHeaderClass = "SuspendedActive";
+                break;
+            case OfficeFileStatus.RecoveryRedStamp_Re_Open:
+                _PartialViewName = partialViewPrefix + "RECOVERYANDREOPEN";
+                EnforcementLevelHeading = "RECOVERY AND REOPEN استرداد الصيغة"
+                EnforcementLevelHeaderClass = "RecoveryFromCourtActive";
+                break;
+            case OfficeFileStatus.Dispute:
+                _PartialViewName = partialViewPrefix + "DISPUTE";
+                EnforcementLevelHeading = "DISPUTE منازعة تنفيذ"
+                EnforcementLevelHeaderClass = "GeneralActive";
+                LoadAnnouncementView();
+                $("#div_Def_AnnType").removeClass("AppHidden");
+                break;
+            case OfficeFileStatus.Transfer:
+                _PartialViewName = partialViewPrefix + "TRANSFER";
+                EnforcementLevelHeading = "TRANSFER"
+                EnforcementLevelHeaderClass = "GeneralActive";
+                break;
+            case OfficeFileStatus.ArrestApplication:
+            case OfficeFileStatus.ArrestAnnouncement:
+                _PartialViewName = partialViewPrefix + "ANNOUNCEMENT_DET";
+                EnforcementLevelHeading = "ANNOUNCEMENT إعلان المنفذ ضده بالسند التنفيذي"
+                EnforcementLevelHeaderClass = "AnnouncementActive";
+                break;
+
+        }
+
+        _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val() };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        $("#EnforcementLevelBox").removeClass("AppHidden");
+    }
+    function ValidateBasicEnforcement() {
+        console.log("ValidateEnforcement()");
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT BY" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT BY";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#RegistrationDate").val());
+
+            if (process($("#RegistrationDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "REGISTRATION DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "REGISTRATION DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#GovernorateId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+            NotValid = true;
+        }
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+        if ($("#AgainstInsurance").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AGAINST INSURANCE" : ValidationMessage + "<br />" + "PLEASE SELECT AGAINST INSURANCE";
+            NotValid = true;
+        }
+
+        if ($("#ReceiveLevelCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT RECEIVE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT RECEIVE LEVEL";
+            NotValid = true;
+        }
+
+        if ($("#AgainstCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AGAINST" : ValidationMessage + "<br />" + "PLEASE SELECT AGAINST";
+            NotValid = true;
+        }
+
+        if ($("#CaseTypeCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CASE TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT CASE TYPE";
+            NotValid = true;
+        }
+
+        if ($("#EnforcementlevelId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CURRENT ENFORCEMENT LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT CURRENT ENFORCEMENT LEVEL";
+            NotValid = true;
+        }
+
+        if ($("#EnforcementActionDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ACTION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER ACTION DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#EnforcementActionDate").val());
+
+            if (process($("#EnforcementActionDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "ACTION DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "ACTION DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#EnforcementAdmin").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT ADMIN" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT ADMIN";
+            NotValid = true;
+        }
+
+        if ($("#ReOpenEnforcement").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT RE-OPEN ENFORCEMENT" : ValidationMessage + "<br />" + "PLEASE SELECT RE-OPEN ENFORCEMENT";
+            NotValid = true;
+        }
+
+        //var skipDefendedDetailFor = ["SUSPENDED", "AGAINSTCLIENT"];
+
+        //console.log($("#hidCurrentTableName").val());
+        //console.log(skipDefendedDetailFor.indexOf($("#hidCurrentTableName").val()));
+
+        if ($('#TransportationFee').val() == "1") {
+            if ($("#TransportationSource").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT TRANSPORTATION SOURCE" : ValidationMessage + "<br />" + "PLEASE SELECT TRANSPORTATION SOURCE";
+                NotValid = true;
+            }
+        }
+
+        //if (skipDefendedDetailFor.indexOf($("#hidCurrentTableName").val()) <= 0) {
+        //    if ($("#DEF_DateOfContact").val() == "") {
+        //        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER DATE OF CONTACT" : ValidationMessage + "<br />" + "PLEASE ENTER DATE OF CONTACT";
+        //        NotValid = true;
+        //    }
+        //    else {
+
+        //        var today = new Date();
+
+        //        var dd = String(today.getDate()).padStart(2, '0');
+        //        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //        var yyyy = today.getFullYear();
+
+        //        today = dd + '/' + mm + '/' + yyyy;
+
+        //        console.log(today);
+        //        console.log($("#DEF_DateOfContact").val());
+
+        //        if (process($("#DEF_DateOfContact").val()) > process(today)) {
+        //            ValidationMessage = ValidationMessage == "" ? "DATE OF CONTACT CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "DATE OF CONTACT CANNOT BE GREATER THEN CURRENT DATE";
+        //            NotValid = true;
+        //        }
+        //    }
+
+        //    if ($("#DEF_MobileNo").val() == "") {
+        //        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID MOBILE NO." : ValidationMessage + "<br />" + "PLEASE ENTER VALID MOBILE NO.";
+        //        NotValid = true;
+        //    }
+
+        //    if ($("#DEF_Corresponding").val() == "") {
+        //        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID CORRESPONDING" : ValidationMessage + "<br />" + "PLEASE ENTER VALID CORRESPONDING";
+        //        NotValid = true;
+        //    }
+        //}
+
+
+
+
+        return NotValid;
+    }
+    function ValidateEnforcementAnnouncement() {
+        if ($("#AnnouncementTypeId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ANNOUNCEMENT TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT ANNOUNCEMENT TYPE";
+            NotValid = true;
+        }
+        return NotValid;
+    }
+    function ValidateEnforcementInquiry() {
+        console.log("ValidateEnforcementInquiry()");
+        NotValid = false;
+        /*
+        if ($("#SubmissionDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUBMISSION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER SUBMISSION DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#SubmissionDt").val());
+
+            if (process($("#SubmissionDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "SUBMISSION DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUBMISSION DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#ApprovalDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPROVAL DATE" : ValidationMessage + "<br />" + "PLEASE ENTER APPROVAL DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#ApprovalDt").val());
+
+            if (process($("#ApprovalDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "APPROVAL DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "APPROVAL DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#InquiryDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER INQUIRY DATE" : ValidationMessage + "<br />" + "PLEASE ENTER INQUIRY DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#InquiryDt").val());
+
+            if (process($("#InquiryDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "INQUIRY DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "INQUIRY DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#MOHResultDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER MOH RESULT DATE" : ValidationMessage + "<br />" + "PLEASE ENTER MOH RESULT DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#MOHResultDt").val());
+
+            if (process($("#MOHResultDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "MOH RESULT DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "MOH RESULT DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#MOHResult").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT MOH RESULT" : ValidationMessage + "<br />" + "PLEASE SELECT MOH RESULT";
+            NotValid = true;
+        }
+        else if ($("#MOHResult").val() == "3") {
+            if (!$("input[name='RealEstateYesNo']:checked").val()) {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REAL ESTATE DETAIL" : ValidationMessage + "<br />" + "PLEASE SELECT REAL ESTATE DETAIL";
+                NotValid = true;
+            }
+        }
+
+        if ($("#ROPResultDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ROP RESULT DATE" : ValidationMessage + "<br />" + "PLEASE ENTER ROP RESULT DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#ROPResultDt").val());
+
+            if (process($("#ROPResultDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "ROP RESULT DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "ROP RESULT DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#ROPResult").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ROP RESULT" : ValidationMessage + "<br />" + "PLEASE SELECT ROP RESULT";
+            NotValid = true;
+        }
+
+        if ($("#BankResultDt").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER BANK'S RESULT DATE" : ValidationMessage + "<br />" + "PLEASE ENTER BANK'S RESULT DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#BankResultDt").val());
+
+            if (process($("#BankResultDt").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "BANK'S RESULT DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "BANK'S RESULT DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#BankResult").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT BANK RESULT" : ValidationMessage + "<br />" + "PLEASE SELECT BANK RESULT";
+            NotValid = true;
+        }
+        */
+        return NotValid;
+    }
+    function ValidateEnforcementJudicialAuction() {
+        if ($("#AuctionProcess").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AUCTION PROCESS" : ValidationMessage + "<br />" + "PLEASE SELECT AUCTION PROCESS";
+            NotValid = true;
+        }
+
+        if ($("#JUDAuctionDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER AUCTION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER AUCTION DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#JUDAuctionDate").val());
+
+            if (process($("#JUDAuctionDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "AUCTION DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "AUCTION DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        //if ($("#JUDAuctionValue").val() == "") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT AUCTION VALUE" : ValidationMessage + "<br />" + "PLEASE SELECT AUCTION VALUE";
+        //    NotValid = true;
+        //}
+        return NotValid;
+    }
+    function ValidateEnforcementArrestOrder() {
+        if ($("#ArrestOrderNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ARREST ORDER NO" : ValidationMessage + "<br />" + "PLEASE SELECT ARREST ORDER NO";
+            NotValid = true;
+        }
+
+        if ($("#ArrestOrderIssueDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ARREST ORDER ISSUE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER ARREST ORDER ISSUE DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#ArrestOrderIssueDate").val());
+
+            if (process($("#ArrestOrderIssueDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "ARREST ORDER ISSUE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "ARREST ORDER ISSUE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#PoliceStationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT POLICE STATION" : ValidationMessage + "<br />" + "PLEASE SELECT POLICE STATION";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateEnforcementSuspended() {
+        if ($("#SuspensionCauseId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CAUSE OF SUSPENSION" : ValidationMessage + "<br />" + "PLEASE SELECT CAUSE OF SUSPENSION";
+            NotValid = true;
+        }
+
+        if ($("#SuspensionPeriod").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUSPENSION PERIOD" : ValidationMessage + "<br />" + "PLEASE SELECT SUSPENSION PERIOD";
+            NotValid = true;
+        }
+
+        //if ($("#JUDDecisionId").val() == "0") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT JUDGE'S DECISION" : ValidationMessage + "<br />" + "PLEASE SELECT JUDGE'S DECISION";
+        //    NotValid = true;
+        //}
+        return NotValid;
+    }
+    function ValidateEnforcementRecoveryAndReopen() {
+        if ($("#CauseOfRecoveryId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CAUSE OF RECOVERY" : ValidationMessage + "<br />" + "PLEASE SELECT CAUSE OF RECOVERY";
+            NotValid = true;
+        }
+        /*
+        if ($("#DateOfInstruction").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER DATE OF INSTRUCTION" : ValidationMessage + "<br />" + "PLEASE ENTER DATE OF INSTRUCTION";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            console.log(today);
+            console.log($("#DateOfInstruction").val());
+
+            if (process($("#DateOfInstruction").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "DATE OF INSTRUCTION CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "DATE OF INSTRUCTION CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+        */
+        return NotValid;
+    }
+    function ValidateEnforcementCloseFile() {
+        if ($("#ReasonCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REASON" : ValidationMessage + "<br />" + "PLEASE SELECT REASON";
+            NotValid = true;
+        }
+        return NotValid;
+    }
+    function ValidateMoneyTransfer() {
+
+        if ($("#MoneyWith").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT MONEY WITH المبلغ لدى" : ValidationMessage + "<br />" + "PLEASE SELECT MONEY WITH المبلغ لدى";
+            NotValid = true;
+        }
+        else {
+            if ($("#MoneyWith").val() == "1") {
+                if ($("#TransferDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#TransferDate").val());
+
+                    if (process($("#TransferDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+
+                    if ($('#Amount').val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                    else if (parseFloat($('#Amount').val()) <= 0) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                }
+            }
+            else if ($("#MoneyWith").val() == "2") {
+                if ($("#MoneyTrCompleteDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER COMPLETE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER COMPLETE DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#MoneyTrCompleteDate").val());
+
+                    if (process($("#MoneyTrCompleteDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "TRANSFER COMPLETE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER COMPLETE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+
+                    if ($('#Amount').val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                    else if (parseFloat($('#Amount').val()) <= 0) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                }
+            }
+        }
+
+        return NotValid;
+    }
+    function ValidateEnforcementDispute() {
+        NotValid = false;
+        return NotValid;
+    }
+    function ValidateCreatePV() {
+        NotValid = false;
+
+        if ($("#PVDetail_Payment_Head").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PAY FOR" : ValidationMessage + "<br />" + "PLEASE SELECT PAY FOR";
+            NotValid = true;
+        }
+
+        if ($("#PVDetail_Payment_To").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PAY TO" : ValidationMessage + "<br />" + "PLEASE SELECT PAY TO";
+            NotValid = true;
+        }
+
+        if ($("#PVDetail_PaymentHeadDetail").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT DETAIL" : ValidationMessage + "<br />" + "PLEASE SELECT DETAIL";
+            NotValid = true;
+
+        }
+
+        if ($("#PVDetail_PaymentToBenificry").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT BENEFICIARY" : ValidationMessage + "<br />" + "PLEASE SELECT BENEFICIARY";
+            NotValid = true;
+        }
+
+        if ($("#PVDetail_Amount").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER AMOUNT";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function LoadPrintRequirementForm(PartialViewName) {
+        var _PartialViewName = PartialViewName;
+        P_CaseId = parseInt($("#HFCaseId").val());
+        P_SessionRollId = 0;
+        var _Mode = "C";
+
+        var PartialContainer = $("#div_PrintRequirementForm");
+        PartialContainer.empty();
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                PartialContainer.html(data);
+                Swal.fire({
+                    type: 'success',
+                    title: '',
+                    width: 700,
+                    html: $("#ContentDIV").html()
+                }).then(function () {
+                    CopyToClipboard('swal2-content');
+
+                    if ($("#EnforcementlevelId").val() == OfficeFileStatus.InitiateClosingFile) {
+                        var data = JSON.parse($("#hid_TableRowData").val());
+
+                        ResetHiddenItems();
+                        $(".clsPVContainer").empty();
+                        $("#div_courtCasesMailButton").show();
+                        $(".navButton").each(function () {
+                            var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                            $(this).removeClass(btnActiveClass);
+                        });
+
+                        var btnClickedId = "#btn_Closing";
+                        var btnClickedClass = btnClickedId.split('_')[1];
+                        var btnClickedActiveClass = btnClickedId.split('_')[1] + "Active";
+
+                        $("#txtViewToLoad").val("_" + btnClickedClass);
+
+                        $(btnClickedId).addClass(btnClickedActiveClass);
+
+                        console.log(data);
+                        var $CaseId = data.CaseId;
+                        var $OfficeFileNo = data.OfficeFileNo;
+                        var $DetailId = data.DetailId;
+                        var $CaseLevelCode = data.CaseLevelCode;
+                        var $Courtid = parseInt(data.CaseLevelCode) - 2;
+                        var $SessionRollId = parseInt(data.SessionRollId);
+
+                        $("#HFCaseId").val($CaseId);
+
+                        $("#hid_OFB_ClientName").val(data.ClientName);
+                        $("#hid_OFB_Defendant").val(data.DefClientName);
+                        $("#hid_OFB_OfficeFileNo").val(data.OfficeFileNo);
+                        $("#hid_OFB_SessionRollClientName").val(data.SessionRollClientName);
+                        $("#hid_OFB_SessionRollDefendentName").val(data.SessionRollDefendentName);
+                        $("#hid_DetailId").val($DetailId);
+                        $("#hid_Courtid").val($Courtid);
+
+                        if ($CaseLevelCode == "SUPREME")
+                            $("#hid_CaseLevelCode").val("5");
+                        else
+                            $("#hid_CaseLevelCode").val($CaseLevelCode);
+
+                        $("#hid_SessionRollId").val($SessionRollId);
+
+                        var _PartialViewName = "_Closing";
+                        var PartialContainer = $("#ModificationContainer");
+                        _parameters = { ClassificationId: _PartialViewName, Mode: $CaseId };
+                        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+                    }
+                    else {
+                        table.ajax.reload();
+                        if (typeof table2 != 'undefined') {
+                            table2.ajax.reload(function (json) {
+                                var info = table2.page.info();
+                                var MCTRecords = table2.ajax.json().MuscatTotal;
+                                var SLLRecords = table2.ajax.json().SalalahTotal;
+                                var recordsTotal = table2.ajax.json().recordsTotal;
+
+                                if ($("#txtUserRole").val() == "VoucherApproval") {
+                                    $('#MCTTTL2').text("MUSCAT : " + MCTRecords);
+                                    $('#SLLTTL2').text("SALALAH : " + SLLRecords);
+                                    $('#TTL2').text(recordsTotal);
+                                }
+                            });
+                        }
+
+
+                        $('html, body').animate({
+                            scrollTop: $("#PartialViewContainer").offset().top
+                        }, 1000);
+                    }
+                });
+            }
+        });
+    }
+    function submitForm() {
+        var data = new FormData(jQuery('#frm_ModifyEnforcement')[0]);
+
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.Category) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.Message
+                    });
+                }
+                else {
+                    //Swal.fire({
+                    //    type: 'success',
+                    //    title: 'Done!',
+                    //    html: "Data Save Successfully"
+                    //});
+
+                    //$("#ENF_Modify_Detail").empty();
+                    //$("#ENF_Modify_Detail").append("Loading...");
+                    //$("#ENF_Modify_Detail").html(result);
+                    ResetHiddenItems();
+                    LoadPrintRequirementForm("SaveResult");
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function dateChanged(ev) {
+        $(this).datepicker('hide');
+        if ($("#DEF_DateOfContact").val() !== "") {
+            $(".clsDateOfContactView").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+        else {
+            $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
+        }
+    }
+    function SetSum() {
+        var sum = $('#DefendentTRansferHtmlTable').DataTable().column(1).data().sum();
+        $('#frmTotal').val(sum);
+    }
+    function processDefendentTransfer(data) {
+        console.log(data);
+        _parameters = { objDTO: data };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: DefendentTransferURL,
+            success: function (Result) {
+
+                if (Result.ProcessFlag == "Y") {
+                    table.ajax.reload(function (json) {
+                        var info = table.page.info();
+                        var MCTRecords = table.ajax.json().MuscatTotal;
+                        var SLLRecords = table.ajax.json().SalalahTotal;
+                        var recordsTotal = table.ajax.json().recordsTotal;
+
+                        if ($("#txtUserRole").val() == "VoucherApproval") {
+                            $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                            $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                            $('#TTL').text(recordsTotal);
+                        }
+                    });
+
+                    if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
+                        table2.ajax.reload(function (json) {
+                            var info = table2.page.info();
+                            var MCTRecords = table2.ajax.json().MuscatTotal;
+                            var SLLRecords = table2.ajax.json().SalalahTotal;
+                            var recordsTotal = table2.ajax.json().recordsTotal;
+
+                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                $('#MCTTTL2').text("MUSCAT : " + MCTRecords);
+                                $('#SLLTTL2').text("SALALAH : " + SLLRecords);
+                                $('#TTL2').text(recordsTotal);
+                            }
+                        });
+                    }
+
+                    Swal.fire({
+                        type: "success",
+                        title: 'SUCCESS',
+                        html: "DATA PROCESSED SUCCESSFULLY"
+                    });
+                }
+                else {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ProcessMessage
+                    });
+                }
+            }
+        });
+    }
+    function CalcTotal() {
+        var p_Amt = $("#PVDetail_Amount").val() == "" ? 0 : parseFloat($("#PVDetail_Amount").val());
+        var p_VarAmt = $("#PVDetail_VatAmount").val() == "" ? 0 : parseFloat($("#PVDetail_VatAmount").val());
+
+        var p_TtlAmt = p_Amt + p_VarAmt;
+
+        $("#PVDetail_TotalAmount").val(p_TtlAmt);
+
+    }
+    function ValidateTBR() {
+
+        if ($("#DisputeLevel").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT DISPUTE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT DISPUTE LEVEL";
+            NotValid = true;
+        }
+
+        if ($("#DisputeType").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT DISPUTE TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT DISPUTE TYPE";
+            NotValid = true;
+        }
+
+        if ($("#FileStatus").val() == OfficeFileStatus.PleaseSelect) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+    }
+    function EditMasterList(ModalTitle, CtrlToAppend, ParentId, p_mst_Value) {
+
+        if (p_mst_Value == "0" || p_mst_Value == "") {
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Select Item to Modify'
+            });
+
+            return false;
+        }
+
+        $(".clsMstDesc").removeClass("AppHidden").addClass("AppHidden");
+
+        if (ParentId == "214") {
+            $("#ModalDiv_214").removeClass("AppHidden");
+            $(".clsDisableInModify").addClass("disableDIV");
+            var data = $('#PVDetail_Payment_To').select2('data')
+            ModalTitle = "MODIFY PAY TO FOR  " + data[0].text;
+            $("#PVDetail_PayToMstDesc").val(data[0].text);
+        }
+        else if (ParentId == "7") {
+            if ($("#PVDetail_Payment_Head").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select PAY FOR سبب الصرف'
+                });
+
+                return false;
+            }
+
+            var data = $('#PVDetail_Payment_Head').select2('data');
+            ModalTitle = "MODIFY PAY FOR DETAIL FOR " + data[0].text;
+            $("#ModalDiv_7").removeClass("AppHidden");
+        }
+        else if (ParentId == "1898") {
+
+            if ($("#PVDetail_Payment_To").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select PAY TO الدفع إلى'
+                });
+
+                return false;
+            }
+            else {
+                ParentId = parseInt($("#PVDetail_Payment_To").val());
+            }
+
+            $(".clsDisableInModify").addClass("disableDIV");
+            var data = $('#PVDetail_Payment_To').select2('data');
+            var data1 = $('#PVDetail_PaymentToBenificry').select2('data');
+
+            ModalTitle = "MODIFY PAY TO " + data[0].text + " BENEFICIARY FOR " + data1[0].text;
+            $("#PVDetail_PayToMstDesc").val(data1[0].text);
+            $("#ModalDiv_214").removeClass("AppHidden");
+        }
+
+        console.log("ModalTitle ::" + ModalTitle);
+        console.log("CtrlToAppend ::" + CtrlToAppend);
+        DDLToAppend = $("#" + CtrlToAppend);
+        $("#MstParentId").val(ParentId);
+        $("#ModalTitle").text(ModalTitle);
+
+        $('#modal-AddMasterValue').modal('show');
+    }
+    function SetPayToDetails(p_MstParentId, p_mst_Value) {
+        $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+
+        if (p_mst_Value == "" || p_mst_Value == "0") {
+            ClearPayToFields(p_mst_Value);
+            return false;
+        }
+
+        _parameters = { MstParentId: p_MstParentId, Mst_Value: p_mst_Value };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetPayToDetailURL,
+            success: function (PayToRemarks) {
+                console.log(PayToRemarks);
+
+                if (PayToRemarks.PayToAccountNumber != "") {
+                    $("#PVDetail_PayToBankNameDisp").val(PayToRemarks.PayToBankName);
+                    $('#PVDetail_PayToAccountNumberDisp').val(PayToRemarks.PayToAccountNumber);
+                    $(".clsPayToDetail").removeClass("AppHidden");
+
+                    $("#PVDetail_PayToMstValue").val(p_mst_Value);
+                    $('#PVDetail_PayToBankName').val(PayToRemarks.PayToBankCode).trigger('change');
+                    $("#PVDetail_PayToAccountNumber").val(PayToRemarks.PayToAccountNumber);
+                    $("#PVDetail_PayToContactNo").val(PayToRemarks.PayToContactNo);
+                    $("#PVDetail_PayToEmail").val(PayToRemarks.PayToEmail);
+                }
+                else {
+                    ClearPayToFields(p_mst_Value);
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function ClearPayToFields(p_mst_Value) {
+        $("#PVDetail_PayToMstValue").val(p_mst_Value);
+        $("#PVDetail_PayToBankNameDisp").val("");
+        $('#PVDetail_PayToAccountNumberDisp').val("");
+        $("#PVDetail_PayToMstDesc").val("");
+        $('#PVDetail_PayToBankName').val("0").trigger('change');
+        $("#PVDetail_PayToAccountNumber").val("");
+        $("#PVDetail_PayToContactNo").val("");
+        $("#PVDetail_PayToEmail").val("");
+        $(".clsDisableInModify").removeClass("disableDIV");
+    }
+
+    $(document).ready(function () {
+        console.log("Modify Enforcement --> INFO STAGE Partail View Document Page");
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        bsCustomFileInput.init();
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $("#Amount").regexMask(IsDigitmask);
+        $('#btnResetForm').on("click", function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    objDTO = {
+                        DataFor: "DELETE_ALL",
+                        CaseId: parseInt($("#HFCaseId").val()),
+                        CaseLevelCode: "6"
+                    };
+
+                    processDefendentTransfer(objDTO);
+
+                    $('#MoneyTrRequestDate').val("");
+                }
+            });
+        });
+
+        if ($("#EnforcementActionDate").val() == "") {
+            $("#EnforcementActionDate").datepicker("setDate", new Date());
+
+            if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+                $("#EnforcementActionDate").datepicker('remove');
+                $('#EnforcementActionDate').prop('readonly', true);
+            }
+        }
+
+        $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
+        $(".cls_EnfMainAll").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        $(".clsCourt").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
+            $(".cls_MoneyTransfer").removeClass("AppHidden");
+            $("#SavePV_Data").val("MoneyTransfer");
+        }
+        else {
+            $(".cls_ENFInfoStage").removeClass("AppHidden");
+            $("#SavePV_Data").val("ENFInfoStage");
+
+        }
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            var p_mst_Value = "0";
+            $(".clsMstDesc").removeClass("AppHidden").addClass("AppHidden");
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "7") {
+                if ($("#PVDetail_Payment_Head").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY FOR سبب الصرف'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#PVDetail_Payment_Head').select2('data')
+
+                ModalTitle = "ADD PAY FOR DETAIL FOR " + data[0].text;
+                $("#MstParentId").val($("#PVDetail_Payment_Head").val());
+                DDLToAppend = $("#PVDetail_PaymentHeadDetail");
+
+                $("#ModalDiv_7").removeClass("AppHidden");
+
+            }
+            else if (this.id == "1898") {
+                if ($("#PVDetail_Payment_To").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY TO الدفع إلى'
+                    });
+
+                    return false;
+                }
+
+                if ($("#PVDetail_Payment_To").val() == "1901") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'EMPLOYEE CANNOT BE ADDED FROM HERE'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#PVDetail_Payment_To').select2('data')
+                ModalTitle = "ADD BENEFICIARY FOR " + data[0].text;
+                $("#MstParentId").val($("#PVDetail_Payment_To").val());
+                DDLToAppend = $("#PVDetail_PaymentToBenificry");
+
+                $("#ModalDiv_214").removeClass("AppHidden");
+
+            }
+            else if (this.id == "860") {
+                ModalTitle = "ADD LAWYER";
+                DDLToAppend = $("#LawyerId");
+            }
+            else if (this.id == "1154") {
+                ModalTitle = "ADD ENFORCEMENT ADMIN";
+                DDLToAppend = $("#EnforcementAdmin");
+            }
+            else if (this.id == "913") {
+                ModalTitle = "ADD ARABIC CLIENT";
+                DDLToAppend = $("#SessionClientId");
+            }
+            else if (this.id == "4") {
+                ModalTitle = "ADD COURT";
+                DDLToAppend = $("#CourtLocationid");
+            }
+            else if (this.id == "1408") {
+                ModalTitle = "ADD CALLER NAME";
+                DDLToAppend = $("#DEF_CallerName");
+            }
+            ClearPayToFields(p_mst_Value)
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+            $('#PartialViewName').val("ENFInfoStage");
+
+            if (!$('.cls_ENFDetail').hasClass("AppHidden")) {
+                NotValid = ValidateBasicEnforcement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            if (!$('.cls_MoneyTransfer').hasClass("AppHidden")) {
+                NotValid = ValidateMoneyTransfer();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+                else {
+                    $('#PartialViewName').val("MoneyTransfer");
+                    if (parseInt($("#hidDefendentTransferId").val()) > 0)
+                        $('#DataFor').val("UPDATE");
+                    else
+                        $('#DataFor').val("CREATE");
+                }
+            }
+
+            if (!$('.cls_PVCreate').hasClass("AppHidden")) {
+                NotValid = ValidateCreatePV();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+                else {
+                    $('#PartialViewName').val("MoneyTransfer");
+                    if (parseInt($("#hidDefendentTransferId").val()) > 0)
+                        $('#DataFor').val("UPDATE");
+                    else
+                        $('#DataFor').val("CREATE");
+                }
+            }
+
+            if ($("#hidIsAgainstClient").val() == "N") {
+                var $EnforcementlevelId = $('#EnforcementlevelId').val();
+
+                switch ($EnforcementlevelId) {
+                    case OfficeFileStatus.Announcement:
+                        NotValid = ValidateEnforcementAnnouncement();
+                        break;
+                    case OfficeFileStatus.ContactingAuthorities:
+                        NotValid = ValidateEnforcementInquiry();
+                        break;
+                    case OfficeFileStatus.JudicalSale:
+                        NotValid = ValidateEnforcementJudicialAuction();
+                        break;
+                    case OfficeFileStatus.ArrestOrder:
+                        NotValid = ValidateEnforcementArrestOrder();
+                        break;
+                    case OfficeFileStatus.Suspendfd:
+                        NotValid = ValidateEnforcementSuspended();
+                        break;
+                    case OfficeFileStatus.RecoveryRedStamp_Re_Open:
+                        NotValid = ValidateEnforcementRecoveryAndReopen();
+                        break;
+                    case OfficeFileStatus.Transfer:
+                        NotValid = ValidateTBR();
+                        break;
+                    case OfficeFileStatus.Dispute:
+                        NotValid = ValidateEnforcementDispute();
+                        break;
+                }
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            ShowPreSubmit();
+
+        });
+
+        $('#EnforcementlevelId').on("change", function () {
+            console.log($('#EnforcementlevelId').val());
+
+            $("#EnforcementLevelBox").removeClass("AppHidden").addClass("AppHidden");
+
+            $("#EnforcementActionDate").datepicker("setDate", new Date());
+
+            if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+                $("#EnforcementActionDate").datepicker('remove');
+                $('#EnforcementActionDate').prop('readonly', true);
+            }
+
+            //$("#EnforcementAdmin").val("0").trigger('change');
+
+            if ($("#hidIsAgainstClient").val() == "N")
+                LoadEnforcementStage($('#EnforcementlevelId').val());
+        });
+
+        if ($('#DEF_DateOfContact').val() !== "") {
+            console.log($('#DEF_DateOfContact').val());
+            $(".clsDateOfContactView").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+
+        $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('input[name="RealEstateYesNo"]:checked').val() == "Y") {
+            $(".clsRealEstate").removeClass("AppHidden");
+        }
+
+        $('input[type=radio][name=RealEstateYesNo]').change(function () {
+            console.log("rdoRealEstate Change");
+            console.log(this.value);
+
+            $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+            if (this.value == "Y")
+                $(".clsRealEstate").removeClass("AppHidden");
+        });
+        console.log($('#EnforcementlevelId').val());
+
+        if ($("#hidIsAgainstClient").val() == "N")
+            LoadEnforcementStage($('#EnforcementlevelId').val());
+        else {
+            $(".clsClientReply").removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+            $("#EnforcementActionDate").datepicker('remove');
+            $('#EnforcementActionDate').prop('readonly', true);
+        }
+
+        $("#DEF_DateOfContact").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).change(dateChanged);
+
+        /*Pay Voucher*/
+        $("#PVDetail_Amount").val("0");
+        var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+        $("#PVDetail_Amount").regexMask(IsDigitmask);
+        $("#PVDetail_VatAmount").regexMask(IsDigitmask);
+
+        $('.txtCalc').on("blur", function () { CalcTotal(); });
+
+        $('#PVDetail_Payment_To').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#PVDetail_Payment_To").val() == "0") {
+                InitDropDownList($('#PVDetail_PaymentToBenificry'));
+
+                return false;
+            }
+
+            LoadDependentDDLByParentId($('#PVDetail_Payment_To').val(), $('#PVDetail_PaymentToBenificry'));
+        });
+
+        $('#PVDetail_PaymentToBenificry').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#PVDetail_PaymentToBenificry").val() == "0")
+                return false;
+
+            SetPayToDetails(parseInt($("#PVDetail_Payment_To").val()), $("#PVDetail_PaymentToBenificry").val());
+        });
+
+        SetPayToDetails(parseInt($("#PVDetail_Payment_To").val()), $("#PVDetail_PaymentToBenificry").val());
+
+        if (typeof PVDetailTable != 'undefined')
+            PVDetailTable.destroy();
+
+        PVDetailTable = $('#tblPVDetail').DataTable({
+            lengthChange: false,
+            "dom": 't',
+            ajax: {
+                url: GetPayVoucherCreatedListURL,
+                "dataSrc": "",
+                type: 'POST',
+                data: function (d) {
+                    d.P_OfficeFileNo = $("#PV_OFFICE_FILE_NO").val();
+                }
+            },
+            "columns": [
+                { data: 'CaseLevel' },
+                { data: 'PaymentHeadName' },
+                { data: 'PaymentHeadDetailName' },
+                { data: 'PaymentToName' },
+                { data: 'PaymentToBenificryName' },
+                { data: 'TotalAmount' },
+                { data: 'PV_Status' },
+                { data: 'W_D_Date' },
+                { data: 'PV_Reason' }
+            ],
+            //"columnDefs": [{ 'orderable': false, "targets": "_all" }],
+            "order": [],
+            "columnDefs": [{
+                "targets": "_all",
+                "orderable": false
+            }]
+        });
+
+        /*END Pay Voucher*/
+        $('textarea').autoResize();
+
+        //console.log($('#SessionRollId').val());
+        ShowSessionNotes($('#SessionRollId').val());
+
+        $('#GovernorateId').on("change", function () {
+            LoadCourtByGovernorate($('#GovernorateId').val(), $('#CourtLocationid'));
+        });
+
+        if ($('#MoneyWith').val() == "1")
+            $(".clsCourt").removeClass("AppHidden");
+        else if ($('#MoneyWith').val() == "2")
+            $(".clsClent").removeClass("AppHidden");
+
+        $('#MoneyWith').on("change", function () {
+            $(".clsCourt").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#MoneyWith').val() == "1")
+                $(".clsCourt").removeClass("AppHidden");
+            else if ($('#MoneyWith').val() == "2")
+                $(".clsClent").removeClass("AppHidden");
+        });
+
+        var AllowedUsers = ["1", "2"];
+        $(".AddNewMaster").prop("disabled", false);
+        $(".EditMaster").prop("disabled", false);
+        $(".TransMaster").prop("disabled", false);
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+            $(".EditMaster").prop("disabled", true);
+            $(".TransMaster").prop("disabled", true);
+        }
+
+    });
+
+</script>
+@using (Html.BeginForm("TobeReg", "CourtCases", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm_ModifyEnforcement" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.HiddenFor(model => model.PartialViewName)
+    @Html.HiddenFor(model => model.DataFor)
+    @Html.HiddenFor(model => model.Courtid)
+    @Html.HiddenFor(model => model.CaseLevelCode)
+    @Html.HiddenFor(model => model.DetailId)
+    @Html.HiddenFor(model => model.SessionClientId)
+    @Html.HiddenFor(model => model.SessionRollDefendentName)
+    @Html.HiddenFor(model => model.UpdatedOn)
+    @Html.HiddenFor(model => model.DEF_MobileNo2)
+    @Html.HiddenFor(model => model.DEF_MobileNo3)
+    @Html.HiddenFor(model => model.DEF_MobileNo4)
+    @Html.HiddenFor(model => model.DEF_MobileNo5)
+    @Html.HiddenFor(model => model.SavePV_Data)
+    @Html.HiddenFor(model => model.SessionRollId)
+    <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
+
+    <div class="card cls_EnfMainAll cls_ENFDetail">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label>ENFORCEMENT BY</label>
+                        @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        @Html.ValidationMessageFor(model => model.ApealByWho, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label>GOVERNORATE المحافظة</label>
+                        @Html.DropDownList("GovernorateId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ReceiveLevelCode)
+                        @Html.DropDownList("ReceiveLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CaseTypeCode)
+                        @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "4" })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RegistrationDate)
+                        @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            @Html.LabelFor(model => model.CourtLocationid)
+                            <div class="input-group mb-3">
+                                @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.CourtLocationid, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AgainstCode)
+                        @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+                    </div>
+                    <div class="form-group">
+                        <label>RE-OPEN ENFC  إعادة فتح ملف التنفيذ</label>
+                        @Html.DropDownList("ReOpenEnforcement", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "9" })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label>ENFORCEMENT NO</label>
+                        @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CourtRefNo, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label>AGAINST INSH. ضد شركة التأمين</label>
+                        @Html.DropDownList("AgainstInsurance", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            @Html.LabelFor(model => model.OmaniExp)
+                            <div class="input-group mb-3">
+                                @Html.DropDownList("OmaniExp", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "14" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div style="padding-top:10px;">
+                                <div class="form-group text-right">
+                                    <label>REAL ESTATE DETAIL</label>
+                                </div>
+                            </div>
+                            <div style="color: black !important;padding-top:10px;" class="text-left">
+                                <div class="icheck-primary d-inline">
+                                    @Html.RadioButtonFor(m => m.RealEstateYesNo, "Y", new { id = "radioRealEstate1" })
+                                    <label for="radioRealEstate1">YES</label>
+                                </div>
+                                <div class="icheck-primary d-inline">
+                                    @Html.RadioButtonFor(m => m.RealEstateYesNo, "N", new { id = "radioRealEstate2" })
+                                    <label for="radioRealEstate2">NO</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group clsRealEstate">
+                                    @Html.TextAreaFor(model => model.RealEstateDetail, 3, 200, new { @class = "form-control", @placeholder = "Please Enter Real Estate Detail   " })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card cls_EnfMainAll cls_ENFInfoStage">
+        <div class="card-header enfGeneralActive">
+            <div class="text-center">
+                <span class="h3">STAGE DETAILS تفاصيل المرحلة</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EnforcementlevelId)
+                        @Html.DropDownList("EnforcementlevelId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EnforcementActionDate)
+                        @Html.EditorFor(model => model.EnforcementActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label>ADMIN المشرف</label>
+                        @Html.DropDownList("EnforcementAdmin", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="EnforcementLevelContainer" class="card-body"></div>
+    </div>
+    <div class="card cls_EnfMainAll cls_MoneyTransfer">
+        <div class="card-header MoneyTransferActive">
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8 text-center"><h3 class="text-center">MONEY TRANSFER تحويل الأموال</h3></div>
+                <div class="col-sm-2"><span style="float:right"><button id="btnResetForm" type="button" class="btn btn-lg btn-warning"><i class="fas fa-trash"> </i> DELETE</button></span></div>
+            </div>
+        </div>
+        <div class="card-body">
+            @Html.HiddenFor(model => model.DefendentTransferId)
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label>MONEY WITH المبلغ لدى</label>
+                        @Html.DropDownList("MoneyWith", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+                <div class="col-sm-2 clsCourt">
+                    <div class="form-group">
+                        <label for="MoneyTrRequestDate">REQUEST DATE تاريخ الطلب</label>
+                        @Html.EditorFor(model => model.MoneyTrRequestDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+                <div class="col-sm-3 clsCourt">
+                    <div class="form-group">
+                        <label for="TransferDate">COURT TRANSFER DATE تاريخ تحويل المحكمة</label>
+                        @Html.EditorFor(model => model.TransferDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+                <div class="col-sm-2 clsCourt clsClent">
+                    <div class="form-group">
+                        <label for="Amount">AMOUNT</label>
+                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3 clsCourt clsClent">
+                    <div class="form-group">
+                        <label for="MoneyTrCompleteDate">TRANSFER COMPLETED  DATE تاريخ استلام الموكل للتحويل</label>
+                        @Html.EditorFor(model => model.MoneyTrCompleteDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card cls_EnfMainAll cls_ENFAddressDetail">
+        <div id="DIV_DEF_CONTACT" class="row clsClientReply">
+            <div class="col-sm-12">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #50634d !important; color: white !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>DEFENDANT CONTACT AND ADDRESS عنوان الخصم ووكيله القانوني </h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="div_Def_AnnType" style="padding-top:10px" class="row">
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label for="DEF_LawyerId">DEFENDANT LAWYER محامي الخصم</label>
+                                    <div class="input-group mb-3">
+                                        @Html.EditorFor(model => model.DEF_LawyerId, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="input-group-append">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="upload" name="upload">
+                                                <label class="custom-file-label" for="upload">UPLOAD POA تحميل الوكالة</label>
+                                            </div>
+                                        </div>
+                                        <div id="ViewDEF_LawyerDocs" class="input-group-append @ViewBag.ViewDEF_LawyerDocs">
+                                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Lawyer_Docs/@ViewBag.DEF_Lawyer_Docs">VIEW</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="DEF_DateOfContact">DATE OF CONTACT تاريخ الاتصال</label>
+                                @Html.EditorFor(model => model.DEF_DateOfContact, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group clsDateOfContactView">
+                                <label for="DEF_CallerName">CALLER NAME اسم المتصل</label>
+                                @Html.DropDownList("DEF_CallerName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clsDateOfContactView">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="DEF_MobileNo">MOBILE الهاتف</label>
+                                @*@Html.EditorFor(model => model.DEF_MobileNo, new { htmlAttributes = new { @class = "form-control", @dir = "auto" } })*@
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.DEF_MobileNo, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="DEF_Corresponding">NOTES  الملاحظات</label>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.DEF_Corresponding, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="DEF_VisitDate">VISIT DATE تاريخ مراجعته لمكتبنا</label>
+                                            @Html.EditorFor(model => model.DEF_VisitDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-7" style="padding-top:30px;">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="uploadAddress" name="uploadAddress">
+                                            <label class="custom-file-label" for="uploadAddress">ADDRESS FORM تحميل استمارة العناوين</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1" style="padding-top:30px;">
+                                        <div id="ViewDEF_LawyerDocs" class="input-group-append mb-6 @ViewBag.ViewDEF_AddressDocs">
+                                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Address_Docs/@ViewBag.DEF_Address_Docs">VIEW</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card cls_EnfMainAll cls_PVCreate">
+        <div id="PVDIV">
+            <div class="col-sm-12">
+                <div style="padding-bottom:0px !important;padding-top:10px" class="sessionRunningCategoryBar">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-10 text-center">
+                            <h5>EXPENSES طلب رسوم</h5>
+                        </div>
+                        <div style="padding-bottom:10px;padding-right:20px;" class="col-sm-1"><button style="float:right" type="button" onclick="ClearDivElements('CourtType,Payment_Head,Remarks,Payment_To,Amount,VatAmount,TotalAmount,BillNumber','select2,select2,text,select2,text,text,text,text','0,0,,0,0,,,','PVDIV')" class="btn btn-sm btn-danger"><i class="fas fa-trash"> </i> CLEAR</button></div>
+                    </div>
+                </div>
+                @Html.HiddenFor(model => model.PVDetail.Payment_Type, new { @Value = "1" })
+                @Html.HiddenFor(model => model.PVDetail.Payment_Mode, new { @Value = "3" })
+                @Html.HiddenFor(model => model.PVDetail.VoucherType, new { @Value = "1" })
+                @Html.HiddenFor(model => model.PVDetail.Status, new { @Value = "0" })
+                @Html.HiddenFor(model => model.PVDetail.VoucherStatus, new { @Value = "0" })
+                @Html.HiddenFor(model => model.PVDetail.LocationCode, new { @Value = "0" })
+                @Html.HiddenFor(model => model.PVDetail.Credit_Account, new { @Value = 0 })
+                @Html.HiddenFor(model => model.PVDetail.TransTypeCode, new { @Value = "-2" })
+                @Html.HiddenFor(model => model.PVDetail.TransReasonCode, new { @Value = "0" })
+
+            </div>
+
+
+            <div class="card-body">
+                <div class="row text-center AppHidden">
+                    <div class="col-6">
+                        <div class="form-group clearfix">
+                            <div style="padding-right:15px" class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PVDetail.VoucherType, "1", new { id = "VoucherType1", @checked = "checked" })
+                                <label for="VoucherType1">REFUNDABLE</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PVDetail.VoucherType, "2", new { id = "VoucherType2", disabled = "disabled" })
+                                <label for="VoucherType2">NON-REFUNDABLE</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group clearfix">
+                            <div style="padding-right:10px" class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PVDetail.Payment_Mode, "1", new { id = "Payment_Mode1", disabled = "disabled" })
+                                <label for="Payment_Mode1">CHEQUE</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PVDetail.Payment_Mode, "2", new { id = "Payment_Mode2", disabled = "disabled" })
+                                <label for="Payment_Mode2">CASH</label>
+                            </div>
+                            <div style="padding-left:10px" class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PVDetail.Payment_Mode, "3", new { id = "Payment_Mode3", @checked = "checked" })
+                                <label for="Payment_Mode3">BANK TRANSFER</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="divRefundable" class="row AppHidden">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label for="CourtType">CASE LEVEL مرحلة التقاضي</label>
+                            @Html.DropDownList("CourtType", null, htmlAttributes: new { id = "PVDetail_CourtType", Name = "PVDetail.CourtType", @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="Payment_Head">PAY FOR سبب الصرف</label>
+                            @Html.DropDownList("Payment_Head", null, htmlAttributes: new { id = "PVDetail_Payment_Head", Name = "PVDetail.Payment_Head", @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="PaymentHeadDetail">DETAILS التفاصيل</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("PaymentHeadDetail", null, htmlAttributes: new { id = "PVDetail_PaymentHeadDetail", Name = "PVDetail.PaymentHeadDetail", @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button title="ADD PAY TO DETAIL" type="button" class="btn btn-info AddNewMaster" id="7">
+                                            ADD
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="Payment_To">PAY TO الدفع إلى</label>
+                            @Html.DropDownList("Payment_To", null, htmlAttributes: new { id = "PVDetail_Payment_To", Name = "PVDetail.Payment_To", @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="Payment_Head">BENEFICIARY المستفيد</label>
+                            @Html.DropDownList("PaymentToBenificry", null, htmlAttributes: new { id = "PVDetail_PaymentToBenificry", Name = "PVDetail.PaymentToBenificry", @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group clsPayToDetail AppHidden">
+                            @Html.LabelFor(model => model.PVDetail.PayToBankNameDisp)
+                            @Html.EditorFor(model => model.PVDetail.PayToBankNameDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group clsPayToDetail AppHidden">
+                            @Html.LabelFor(model => model.PVDetail.PayToAccountNumberDisp)
+                            @Html.EditorFor(model => model.PVDetail.PayToAccountNumberDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PVDetail.Amount)
+                            @Html.EditorFor(model => model.PVDetail.Amount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PVDetail.VatAmount)
+                            @Html.EditorFor(model => model.PVDetail.VatAmount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PVDetail.TotalAmount)
+                            @Html.EditorFor(model => model.PVDetail.TotalAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="Remarks">REMARKS ملاحظات</label>
+                            @Html.EditorFor(model => model.PVDetail.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="UploadedFile">SUPPORTING DOCUMENT المستندات الداعمة للطلب</label>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="uploadPVSupDocs" name="uploadPVSupDocs">
+                                    <label class="custom-file-label" for="uploadPVSupDocs">CHOOSE DOCUMENT</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-header bg-gradient-purple">
+                <h3 class="card-title">ALREADY CREATED PAYMENT VOUCHER<span style="float:right">آخر التحويلات في هذا الملف</span></h3>
+            </div>
+            <div class="card-body">
+                <table id="tblPVDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>CASE LEVEL</th>
+                            <th>PAY FOR</th>
+                            <th>DETAIL</th>
+                            <th>PAY TO</th>
+                            <th>BENEFICIRY</th>
+                            <th>AMOUNT</th>
+                            <th>STATUS</th>
+                            <th>W/D DATE</th>
+                            <th>REASON</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="ENF_DIV_UPDATE" class="card cls_EnfMainAll cls_MoneyTransfer cls_ENFInfoStage">
+    </div>
+    <div class="row">
+        <div class="card-footer text-center col-sm-12">
+            <button id="btnSubmitForm" type="button" class="btn btn-lg btn-cool-blues btn-rounded"><span class="btn-text-med">SAVE</span></button>&nbsp;&nbsp;
+        </div>
+    </div>
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <div id="ModalDiv_7" class="row AppHidden clsMstDesc">
+                        <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                    </div>
+                    <div id="ModalDiv_214" class="row AppHidden clsMstDesc">
+                        @Html.HiddenFor(model => model.PVDetail.PayToMstValue)
+                        <div class="col-12 clsDisableInModify">
+                            <div class="form-group">
+                                <label for="PayToMstDesc">BENEFICIARY المستفيد</label>
+                                @Html.EditorFor(model => model.PVDetail.PayToMstDesc, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="PayToBankName">BANK البنك</label>
+                                @Html.DropDownList("PayToBankName", null, htmlAttributes: new { id = "PVDetail_PayToBankName", Name = "PVDetail.PayToBankName", @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="PayToAccountNumber">ACC الحساب</label>
+                                @Html.EditorFor(model => model.PVDetail.PayToAccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="PayToContactNo">Contact Number</label>
+                                @Html.EditorFor(model => model.PVDetail.PayToContactNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="PayToEmail">Email</label>
+                                @Html.EditorFor(model => model.PVDetail.PayToEmail, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="PayToBankName">Language اللغة</label>
+                                @Html.DropDownList("PayToMessageLang", null, htmlAttributes: new { id = "PVDetail_PayToMessageLang", Name = "PVDetail.PayToMessageLang", @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+}

@@ -1,0 +1,115 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    function ProcessAuctionProcess() {
+        $("#DIV_ANN_DETAIL").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        var ForShowAnnDetail = ["8", "13", "16"];
+
+        if (ForShowAnnDetail.indexOf($("#AuctionProcess").val()) == -1) {
+            if ($("#AuctionProcess").val() == "11")
+                $("#div_Def_AnnType").removeClass("AppHidden");
+            else {
+                if ($('#EnforcementlevelId').val() == OfficeFileStatus.AuctionSession)
+                    $('#EnforcementlevelId').val(OfficeFileStatus.JudicalSale);
+            }
+        }
+        else
+            $("#DIV_ANN_DETAIL").removeClass("AppHidden");
+
+        LoadUpdate($('#EnforcementlevelId').val());
+    }
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('#txtJUDAuctionValue').val($('#JUDAuctionValue').val());
+        console.log(parseFloat($('#txtJUDAuctionValue').val()));
+        console.log($('#txtJUDAuctionValue').val());
+
+        if (parseFloat($('#txtJUDAuctionValue').val()) > 0)
+            $("#JUDAuctionValue").prop("readonly", true);
+        else
+            $("#JUDAuctionValue").prop("readonly", false);
+
+        $('#JUDAuctionValue').on("blur", function () {
+            $('#txtJUDAuctionValue').val($('#JUDAuctionValue').val());
+
+            if (parseFloat($('#txtJUDAuctionValue').val()) > 0)
+                $("#JUDAuctionValue").prop("readonly", true);
+            else
+                $("#JUDAuctionValue").prop("readonly", false);
+        });
+
+        $('#AuctionProcess').change(function () {
+            ProcessAuctionProcess();
+        });
+
+        $('#JUDAuctionRepeat').change(function () {
+            if ($('#txtJUDAuctionValue').val() == "") {
+                Swal.fire({
+                    type: "info",
+                    title: 'Value Required',
+                    html: 'PLEASE ENTER AUCTION VALUE'
+                });
+                return false;
+            }
+            var $txtJUDAuctionValue = parseFloat($('#txtJUDAuctionValue').val());
+            var $AuctionPCT = $(this).val() == "1" ? 0 : (parseInt($(this).val()) - 1) * 10;
+            var Res = $txtJUDAuctionValue - ($txtJUDAuctionValue * ($AuctionPCT / 100));
+            $('#JUDAuctionValue').val(Res);
+            $('#txtJUDAuctionValue').val(Res);
+        });
+        ProcessAuctionProcess();
+    });
+</script>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AuctionProcess)
+            @Html.DropDownList("AuctionProcess", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.JUDAuctionDate)
+            @Html.EditorFor(model => model.JUDAuctionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.JUDAuctionValue)
+            @Html.EditorFor(model => model.JUDAuctionValue, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <input type="hidden" id="txtJUDAuctionValue" />
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.JUDAuctionRepeat)
+            @Html.DropDownList("JUDAuctionRepeat", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+</div>
+<div id="DIV_ANN_DETAIL" class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AnnouncementTypeId)
+            @Html.DropDownList("AnnouncementTypeId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.AnnouncementCompleteDt)
+            @Html.EditorFor(model => model.AnnouncementCompleteDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    
+</div>

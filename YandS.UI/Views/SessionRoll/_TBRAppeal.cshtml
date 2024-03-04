@@ -1,0 +1,101 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+        processFileStatusChange($('#FileStatus').val());
+
+        $('#FileStatus').on("change", function () {
+            processFileStatusChange($('#FileStatus').val());
+        });
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@Html.HiddenFor(model => model.ActionLevel, new { @Value = "2" })
+<div style="background-color: darkred !important; color: white !important;padding-top:10px">
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10 text-center">
+                <h5>APPEAL SUBMISSION مطلوب استئناف الحكم</h5>
+        </div>
+        <div style="padding-bottom:10px;padding-right:20px;" class="col-sm-1"><span style="float:right"><a title="PRINT FORM" id="PrintFormButton" class="btn btn-sm btn-ToBeRegBanner-print" target="_blank" href="/CaseRegistration/PrintForm/@Model.CaseRegistrationId">PRINT FORM</a></span></div>
+    </div>
+</div>
+<div id="DIV_INVESTMENT_BANNER" class="card-header GeneralActive AppHidden">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h3><span>APPEAL WITHIN </span><span class="YandSTitleSpacing">(15 يوم)</span><span>مدةالإستئناف</span></h3>
+
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="CountLocationName">ACTION LEVEL</label>
+                    @Html.EditorFor(model => model.ActionLevelName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @Value = "APPEAL الإستئناف" } })
+                </div>
+
+            </div>
+            <div class="col-sm-4">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <label for="ConsultantId">ADVISOR المستشار</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("ConsultantId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" onclick="AddMasterValue('ADD CONSULTANT NAME','ConsultantId','1408')" class="btn btn-info" id="1408">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="FormPrintWorkRequired">WORK REQUIRED العمل المطلوب</label>
+                    @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="OfficeProcedure">NOTES الملاحظات</label>
+                    @Html.TextAreaFor(model => model.OfficeProcedure, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="FormPrintLastDate">LAST DATE الإنجاز قبل</label>
+                    @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label style="color:red" for="FileStatus">FILE STATUS حالة الملف</label>
+                    @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+
+            </div>
+            <div class="col-sm-4">
+                <div id="DIV_ACTION_DATE" class="form-group AppHidden">
+                    <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                    @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,330 @@
+﻿@model YandS.UI.Models.PayVoucher
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Voucher</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Modify Voucher</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-success">
+                <div class="card-header">
+                    <h4 class="card-title">Payment Voucher Modification</h4>
+                    <div class="float-right">
+                        <h4>PV Number : @Html.DisplayFor(model => model.PV_No) &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Voucher Date : @Html.DisplayFor(model => model.Voucher_Date)</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Voucher_No)
+                        @Html.HiddenFor(model => model.PV_No)
+                        @Html.HiddenFor(model => model.Voucher_Date)
+                        @Html.HiddenFor(model => model.Payment_Type)
+                        @Html.HiddenFor(model => model.Debit_Account)
+                        @Html.HiddenFor(model => model.Payment_Head)
+                        @Html.HiddenFor(model => model.Payment_To)
+                        @Html.HiddenFor(model => model.Credit_Account)
+                        @Html.HiddenFor(model => model.Payment_Mode)
+                        @Html.HiddenFor(model => model.VoucherType)
+                        @Html.HiddenFor(model => model.AuthorizeBy)
+                        @Html.HiddenFor(model => model.AuthorizeDate)
+                        @Html.HiddenFor(model => model.VoucherStatus)
+                        @Html.HiddenFor(model => model.CourtType)
+                        @Html.HiddenFor(model => model.LocationCode)
+                        @Html.HiddenFor(model => model.CreatedBy)
+                        @Html.HiddenFor(model => model.CreatedOn)
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label">  Payment Type</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.PaymentTypeName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label"> Payment Mode</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.PaymentModeName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label">  Authorize By</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.AuthorizeByName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label"> Authorize Date</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.AuthorizeDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Debit_Account)
+                                    @Html.EditorFor(model => model.DebitAccountName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div id="divCourtType" class="col-12 AppHidden">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CourtType)
+                                                @Html.EditorFor(model => model.CourtTypeName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.LocationCode)
+                                                @Html.EditorFor(model => model.LocationName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div id="DivReceivedOn" class="form-group AppHidden">
+                                    @Html.LabelFor(model => model.Received_on)
+                                    @Html.EditorFor(model => model.Received_on, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Cheque_Number)
+                                                @Html.EditorFor(model => model.Cheque_Number, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Cheque_Date)
+                                                @Html.EditorFor(model => model.Cheque_Date, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    @if (@ViewBag.VoucherDoc == "#")
+                                    {
+                                    <div class="alert alert-info alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        <h5><i class="icon fas fa-info"></i> Supporting Document!</h5>
+                                        No Supporting Document available!
+                                    </div>
+                                    }
+                                    else
+                                    {
+                                        <a target="_blank" title="view Document" href="~/Uploads/PVDocuments/@ViewBag.VoucherDoc">View Supporting Document</a>
+
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label">  Voucher Type</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.VoucherTypeName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-sm-6 col-form-label"> Voucher Status</label>
+                                                <div class="col-sm-6">
+                                                    @Html.EditorFor(model => model.VoucherStatusName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="divCredit_Account" class="form-group AppHidden">
+                                    @Html.LabelFor(model => model.Credit_Account)
+                                    @Html.EditorFor(model => model.CreditAccountName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+                                </div>
+                                <div id="divPayment_Head" class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div id="divPayment_Head" class="form-group">
+                                                @Html.LabelFor(model => model.Payment_Head)
+                                                @Html.EditorFor(model => model.PaymentHeadName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div id="divPayment_Head" class="form-group">
+                                                @Html.LabelFor(model => model.Payment_To)
+                                                @Html.EditorFor(model => model.PaymentToName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divCourtTypeName" class="form-group AppHidden">
+                                    <label for="CourtLocationName">Court Name</label>
+                                    <span id="CourtLocationName" class="form-control" readonly></span>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remarks)
+                                    @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div id="DivStatus" class="form-group AppHidden">
+                                    @Html.LabelFor(model => model.Status)
+                                    @Html.DropDownListFor(m => m.Status, Model.ListStatus.Select(x => new SelectListItem { Text = x.Mst_Desc, Value = x.Mst_Value.ToString() }), new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <input type="submit" value="Modify Voucher" class="btn btn-success" />
+                    @Html.ActionLink("Back to Main", "Index")
+                </div>
+            </div>
+
+        }
+    </section>
+    <!-- /.content -->
+</div>
+@section pagespecific {
+    <script type="text/javascript">
+        function onPreSubmit(item) {
+            if ($('#VoucherStatus').val() == "1" && $('#Status').val() == "0") {
+                $("#Status").val("3");
+            }
+           
+        }
+        $(document).ready(function () {
+            console.log("Payment Voucher Modify");
+            $("#Received_on").val("");
+
+            var PaymentType = $('#Payment_Type').val();
+            var VoucherType = $('#VoucherType').val();
+            var CName = $("#CourtTypeName").val();
+            var LocName = $("#LocationName").val();
+
+            $("#CourtLocationName").text(CName + " - " + LocName);
+
+            if (PaymentType == "1" && VoucherType == "2") {
+                console.log('if (PaymentType == "1" && VoucherType == "2") ');
+                console.log("PaymentType ::: = " + PaymentType);
+                console.log("VoucherType ::: = " + VoucherType);
+
+                $("#divCredit_Account").removeClass("AppHidden").addClass("AppHidden");
+                $("#divCourtType").removeClass("AppHidden").addClass("AppHidden");
+                $("#divCourtTypeName").removeClass("AppHidden").addClass("AppHidden");
+                $("#divPayment_Head").removeClass("AppHidden");
+            }
+            else if (PaymentType == "1" && VoucherType == "1") {
+                console.log('else if (PaymentType == "1" && VoucherType == "1") ');
+                console.log("PaymentType ::: = " + PaymentType);
+                console.log("VoucherType ::: = " + VoucherType);
+
+                $("#divCredit_Account").removeClass("AppHidden").addClass("AppHidden");
+                $("#divCourtType").removeClass("AppHidden");
+                $("#divCourtTypeName").removeClass("AppHidden");
+                $("#divPayment_Head").removeClass("AppHidden");
+            }
+            else if (PaymentType == "2" && (VoucherType == "1" || VoucherType == "2")) {
+                console.log('else if (PaymentType == "2" && (VoucherType == "1" || VoucherType == "2") ');
+                console.log("PaymentType ::: = " + PaymentType);
+                console.log("VoucherType ::: = " + VoucherType);
+
+                $("#divCredit_Account").removeClass("AppHidden");
+                $("#divPayment_Head").removeClass("AppHidden").addClass("AppHidden");
+                $("#divCourtType").removeClass("AppHidden").addClass("AppHidden");
+                $("#divCourtTypeName").removeClass("AppHidden").addClass("AppHidden");
+            }
+
+            //Vooucher Status Approved and status Voucher Created
+            if ($('#VoucherStatus').val() == "1" && $('#Status').val() == "0") {
+                $("#DivStatus").removeClass("AppHidden").addClass("AppHidden");
+                $("#DivReceivedOn").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else if ($('#VoucherStatus').val() == "1" && $('#Status').val() == "3") {
+                $("#DivStatus").removeClass("AppHidden");
+                $("#DivReceivedOn").removeClass("AppHidden");
+
+                $("#Cheque_Number").prop("readonly", true);
+                $("#Cheque_Date").datepicker('remove').prop("readonly", true);
+
+            }
+            else if ($('#VoucherStatus').val() == "1" && ($('#Status').val() == "1" || $('#Status').val() == "2")) {
+                $("#DivStatus").removeClass("AppHidden").prop("readonly", true);
+                $("#DivReceivedOn").removeClass("AppHidden").prop("readonly", true);;
+            }
+            else {
+                $("#DivStatus").removeClass("AppHidden").prop("readonly", true);
+                $("#DivReceivedOn").removeClass("AppHidden").prop("readonly", true);;
+            }
+
+            $('#Status').on("change", function () {
+                //var CurrentVal = $("#Payment_Type").val($('input[name="Payment_Type"]:checked').val());
+                var CurrentVal = $(this).val();
+                console.log($(this).val());
+                if (CurrentVal == "1" || CurrentVal == "2") {
+                    $("#Received_on").datepicker({
+                        format: "dd/mm/yyyy"                       
+                    });
+                    $("#Received_on").datepicker("setDate", new Date());
+                    $("#Received_on").prop('readOnly', true);
+                    $('#Received_on').datepicker('destroy');
+                }
+                else {
+                    $("#Received_on").val("");
+
+                }
+
+            });
+        });
+    </script>
+}

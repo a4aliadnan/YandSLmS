@@ -1,0 +1,73 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+@{
+    YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+    var FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+    var CaseLevelName = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && m.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+    string FeeNameDetail = string.Empty;
+    string DetailNumber = string.Empty;
+    string FeesDescription = string.Empty;
+    char[] charsToTrim1 = { '-' };
+    if (Model.FeeTypeCascadeDetail != null)
+    {
+        if (Model.FeeTypeCascadeDetail != "0")
+        {
+            FeeNameDetail = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && m.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+        }
+    }
+
+    if (Model.FeeTypeDetail != null)
+    {
+        DetailNumber = " - " + Model.FeeTypeDetail;
+    }
+
+    if (string.IsNullOrEmpty(FeeNameDetail))
+    {
+        FeesDescription = string.Format("{0} - {1}{2}", CaseLevelName, FeeName, DetailNumber);
+
+    }
+    else
+    {
+        FeesDescription = string.Format("{0} - {1} - {2}{3}", CaseLevelName, FeeName, FeeNameDetail, DetailNumber);
+
+    }
+
+    if (FeesDescription.ToUpper().Contains("PLEASE SELECT"))
+    {
+        FeesDescription = FeesDescription.Replace("PLEASE SELECT - ", "").TrimStart(charsToTrim1).TrimEnd(charsToTrim1).Trim();
+    }
+
+    var FeeAmount = Model.FeeAmount.ToString("0.###");
+
+    if (Model.VATPct > 0)
+    {
+
+        decimal FeeAmVAT = (decimal)(Model.FeeAmount * (Model.VATPct / 100));
+
+        ViewBag.FeeAmountVAT = FeeAmVAT.ToString("0.###");
+
+        decimal TTLlFeeAmount = (FeeAmVAT + Model.FeeAmount);
+        ViewBag.TotalFeeAmount = TTLlFeeAmount.ToString("0.###");
+        ViewBag.VATPct = Model.VATPct?.ToString("0.###") + "%";
+
+    }
+    else
+    {
+        ViewBag.FeeAmountVAT = "0";
+        ViewBag.TotalFeeAmount = FeeAmount;
+        ViewBag.VATPct = "0%";
+
+    }
+
+
+
+}
+<tr height="29" style="mso-height-source:userset;height:21.95pt">
+    <td class="auto-style3" height="29"></td>
+    <td class="auto-style4"></td>
+    <td class="auto-style13" colspan="12">@FeesDescription</td>
+    <td class="auto-style14" colspan="4">@FeeAmount</td>
+    <td class="auto-style14" colspan="3">@ViewBag.FeeAmountVAT</td>
+    <td class="auto-style14" colspan="4">@ViewBag.TotalFeeAmount</td>
+    <td class="auto-style4"></td>
+    <td class="auto-style4"></td>
+</tr>

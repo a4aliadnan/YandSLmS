@@ -1,0 +1,115 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+
+        console.log("_CaseRegCourtInfo Partial Page Loaded");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        //var form = $("#frm_CourtDetail");
+        ////console.log(form);
+        ////console.log(CourtDetailContainer);
+        //form.removeData('validator');
+        //form.removeData('unobtrusiveValidation');
+        //$.validator.unobtrusive.parse(form);
+    });
+</script>
+@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.CaseId)
+@if (ViewBag.Courtid == "1")
+{
+    @Html.HiddenFor(model => model.ApealByWho, new { @Value = "0" })
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationDate)
+                @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label>@ViewBag.CourtRefNo</label>
+                @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.CourtLocationid)
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationDate)
+                @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label>@ViewBag.CourtRefNo</label>
+                @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="col">
+            @if (ViewBag.Courtid == "2")
+            {
+                <div class="form-group">
+                    <label>
+                        APPEAL BY
+                    </label>
+                    @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label>
+                        SUPREME BY
+                    </label>
+                    @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            }
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.CourtLocationid)
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

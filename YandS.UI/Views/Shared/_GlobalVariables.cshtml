@@ -1,0 +1,806 @@
+﻿<style>
+    .disableDIV {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+</style>
+<script>
+    var GetIndexDataURL = '@Url.Action("AjaxIndexData", "CourtCases", new { area = string.Empty })';
+    var GetSessionRollURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+    var GetCaseDetailURL = '@Url.Action("GetCaseDetail", "SessionRoll", new { area = string.Empty })';
+    var GetCaseDetailAfterJudgement = '@Url.Action("GetCaseDetailAfterJudgement", "SessionRoll", new { area = string.Empty })';
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var GetDetailTableURL = '@Url.Action("GetDetailTable", "CommonTask", new { area = string.Empty })';
+    var GetSessionNotesURL = '@Url.Action("GetSessionNotes", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+    var SessionRollIndexURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+    var GetRequirementFormURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var GetClientClassificationURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var GetRegisterIdURL = '@Url.Action("GetRegisterId", "CommonTask", new { area = string.Empty })';
+    var DefendentTransferURL = '@Url.Action("ProcessDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var LoadOfficeFileStatusURL = '@Url.Action("LoadOfficeFileStatusddl", "CommonTask", new { area = string.Empty })';
+    var LoadCourtByGovernorateURL = '@Url.Action("LoadCourtByGovernorateDDL", "CommonTask", new { area = string.Empty })';
+    var LoadDependentDDLURL = '@Url.Action("LoadDependentDDL", "CommonTask", new { area = string.Empty })';
+    var GetPayToDetailURL = '@Url.Action("GetPayToDetail", "CommonTask", new { area = string.Empty })';
+    var AddNewPayToDetailURL = '@Url.Action("AddNewPayToDetail", "CommonTask", new { area = string.Empty })';
+    var TransferEmployeeToIndivisualURL = '@Url.Action("TransferEmployeeToIndivisual", "CommonTask", new { area = string.Empty })';
+    var GetTop5PVByPaymentURL = '@Url.Action("GetTop5PVByPayment", "CommonTask", new { area = string.Empty })';
+
+    var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+    var AuctionProcessObj = { "data": [{ "Mst_Value": 1, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 1, "From": 45, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 1, "From": 30, "To": 45, "ClassName": "tblThirdCondition" }, { "Mst_Value": 2, "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 2, "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "Mst_Value": 2, "From": 10, "To": 20, "ClassName": "tblThirdCondition" }, { "Mst_Value": 3, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 3, "From": 30, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 3, "From": 15, "To": 30, "ClassName": "tblThirdCondition" }, { "Mst_Value": 4, "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 4, "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "Mst_Value": 4, "From": 15, "To": 20, "ClassName": "tblThirdCondition" }, { "Mst_Value": 5, "From": 35, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 5, "From": 25, "To": 35, "ClassName": "tblSecondCondition" }, { "Mst_Value": 5, "From": 15, "To": 25, "ClassName": "tblThirdCondition" }, { "Mst_Value": 6, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 6, "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 6, "From": 20, "To": 40, "ClassName": "tblThirdCondition" }, { "Mst_Value": 7, "From": 35, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 7, "From": 25, "To": 35, "ClassName": "tblSecondCondition" }, { "Mst_Value": 7, "From": 20, "To": 25, "ClassName": "tblThirdCondition" }, { "Mst_Value": 8, "From": 40, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 8, "From": 30, "To": 40, "ClassName": "tblSecondCondition" }, { "Mst_Value": 8, "From": 20, "To": 30, "ClassName": "tblThirdCondition" }, { "Mst_Value": 9, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 9, "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 9, "From": 30, "To": 40, "ClassName": "tblThirdCondition" }, { "Mst_Value": 11, "From": 5, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 11, "From": 3, "To": 5, "ClassName": "tblSecondCondition" }, { "Mst_Value": 11, "From": 2, "To": 3, "ClassName": "tblThirdCondition" }, { "Mst_Value": 12, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 12, "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 12, "From": 25, "To": 40, "ClassName": "tblThirdCondition" }, { "Mst_Value": 13, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 13, "From": 45, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 13, "From": 30, "To": 45, "ClassName": "tblThirdCondition" }, { "Mst_Value": 14, "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 14, "From": 45, "To": 60, "ClassName": "tblSecondCondition" }, { "Mst_Value": 14, "From": 30, "To": 45, "ClassName": "tblThirdCondition" }, { "Mst_Value": 15, "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 15, "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "Mst_Value": 15, "From": 10, "To": 20, "ClassName": "tblThirdCondition" }, { "Mst_Value": 16, "From": 21, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 16, "From": 14, "To": 21, "ClassName": "tblSecondCondition" }, { "Mst_Value": 16, "From": 7, "To": 14, "ClassName": "tblThirdCondition" }, { "Mst_Value": 17, "From": 28, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 17, "From": 21, "To": 28, "ClassName": "tblSecondCondition" }, { "Mst_Value": 17, "From": 14, "To": 21, "ClassName": "tblThirdCondition" }, { "Mst_Value": 18, "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 18, "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "Mst_Value": 18, "From": 10, "To": 20, "ClassName": "tblThirdCondition" }, { "Mst_Value": 19, "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 19, "From": 25, "To": 30, "ClassName": "tblSecondCondition" }, { "Mst_Value": 19, "From": 20, "To": 25, "ClassName": "tblThirdCondition" }, { "Mst_Value": 20, "From": 100, "To": 999999, "ClassName": "tblFirstCondition" }, { "Mst_Value": 20, "From": 70, "To": 100, "ClassName": "tblSecondCondition" }, { "Mst_Value": 20, "From": 40, "To": 70, "ClassName": "tblThirdCondition" }] };
+    var dtObjDataTable = { "data": [{ "dtTableName": "ENF-AGAINSUR", "From": 90, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-AGAINSUR", "From": 60, "To": 90, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-AGAINSUR", "From": 40, "To": 60, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-ANN", "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-ANN", "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-ANN", "From": 20, "To": 40, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-ARORD", "From": 120, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-ARORD", "From": 90, "To": 120, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-ARORD", "From": 70, "To": 90, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-ARREQ", "From": 50, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-ARREQ", "From": 30, "To": 50, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-ARREQ", "From": 15, "To": 30, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-COURTFOL", "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-COURTFOL", "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-COURTFOL", "From": "", "To": "", "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-DEFTRANS", "From": 90, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-DEFTRANS", "From": 60, "To": 90, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-DEFTRANS", "From": 30, "To": 60, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-INQ", "From": 120, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-INQ", "From": 90, "To": 120, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-INQ", "From": 60, "To": 90, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-ONLINEREG", "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-ONLINEREG", "From": 30, "To": 60, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-ONLINEREG", "From": 15, "To": 30, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-RECFRCOURT", "From": 100, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-RECFRCOURT", "From": 70, "To": 100, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-RECFRCOURT", "From": 40, "To": 70, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-SUSPEND", "From": "", "To": "", "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-SUSPEND", "From": "", "To": "", "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-SUSPEND", "From": "", "To": "", "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-FILEREV", "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-FILEREV", "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-FILEREV", "From": 20, "To": 40, "ClassName": "tblThirdCondition" }, { "dtTableName": "ENF-TOMJUDG", "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "ENF-TOMJUDG", "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "dtTableName": "ENF-TOMJUDG", "From": 20, "To": 40, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-NewCase", "From": 60, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-NewCase", "From": 40, "To": 60, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-NewCase", "From": 20, "To": 40, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-AppSubmissionY", "From": 11, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-AppSubmissionY", "From": 9, "To": 11, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-AppSubmissionY", "From": 5, "To": 9, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-AppSubmissionN", "From": 20, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-AppSubmissionN", "From": 15, "To": 20, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-AppSubmissionN", "From": 10, "To": 15, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-SupSubmission", "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-SupSubmission", "From": 25, "To": 30, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-SupSubmission", "From": 15, "To": 25, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-PriDispute", "From": 12, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-PriDispute", "From": 8, "To": 12, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-PriDispute", "From": 4, "To": 8, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-AplDispute", "From": 5, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-AplDispute", "From": 3, "To": 5, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-AplDispute", "From": 2, "To": 3, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-SupDispute", "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-SupDispute", "From": 25, "To": 30, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-SupDispute", "From": 15, "To": 25, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-TRansfer", "From": 22, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-TRansfer", "From": 14, "To": 22, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-TRansfer", "From": 7, "To": 14, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-LegalNotice", "From": 40, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-LegalNotice", "From": 20, "To": 40, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-LegalNotice", "From": 0, "To": 20, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-CompDocs", "From": 30, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-CompDocs", "From": 20, "To": 30, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-CompDocs", "From": 7, "To": 20, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-Translation", "From": 21, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-Translation", "From": 14, "To": 21, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-Translation", "From": 7, "To": 14, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-ClientApproval", "From": 24, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-ClientApproval", "From": 12, "To": 24, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-ClientApproval", "From": 7, "To": 12, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-Scanned", "From": 9, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-Scanned", "From": 5, "To": 9, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-Scanned", "From": 3, "To": 5, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-OnlineSubm", "From": 21, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-OnlineSubm", "From": 14, "To": 21, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-OnlineSubm", "From": 7, "To": 14, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-CourtRequest", "From": 2, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-CourtRequest", "From": 1, "To": 2, "ClassName": "tblThirdCondition" }, { "dtTableName": "TBR-Payment", "From": 2, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-Payment", "From": 1, "To": 2, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-WithLawyer", "From": 21, "To": 999999, "ClassName": "tblFirstCondition" }, { "dtTableName": "TBR-WithLawyer", "From": 14, "To": 21, "ClassName": "tblSecondCondition" }, { "dtTableName": "TBR-WithLawyer", "From": 7, "To": 14, "ClassName": "tblThirdCondition" }] };
+    const OfficeFileStatus = {
+        PleaseSelect: "0",
+        Transfer: "OFS-1",
+        LegalNotice: "OFS-2",
+        WritingSubmission: "OFS-3",
+        SubmissionApproval: "OFS-4",
+        ApprovalForAppeal: "OFS-10",
+        ApprovalForSupreme: "OFS-11",
+        CompletingDocs: "OFS-13",
+        ReceiptOfFees: "OFS-14",
+        Translation: "OFS-15",
+        Scanned: "OFS-5",
+        OnlineRegTBR: "OFS-6",
+        CourtMsg: "OFS-7",
+        ForPayment: "OFS-8",
+        WithLawyer: "OFS-12",
+        Registered: "OFS-9",
+        RunningCase: "OFS-16",
+        JudgIssued: "OFS-17",
+        ToKnowSessionDate: "OFS-18",
+        RequestMeetJudge: "OFS-19",
+        Dispute: "OFS-20",
+        AuctionSession: "OFS-21",
+        OnlineRegENF: "OFS-22",
+        Announcement: "OFS-23",
+        ContactingAuthorities: "OFS-24",
+        JudicalSale: "OFS-25",
+        ArrestApplication: "OFS-26",
+        ArrestOrder: "OFS-27",
+        Suspendfd: "OFS-28",
+        RecoveryRedStamp_Close: "OFS-29",
+        RecoveryRedStamp_Re_Open: "OFS-30",
+        MeetJudge: "OFS-31",
+        AssigningJudge: "OFS-32",
+        JudgStamp: "OFS-33",
+        CorrectingJudg: "OFS-34",
+        PeriodOfAppeal: "OFS-35",
+        RedStamp: "OFS-36",
+        EnfcApproval: "OFS-37",
+        Refundable3_4: "OFS-38",
+        FileReview: "OFS-39",
+        OPP: "OFS-40",
+        ROP: "OFS-41",
+        MOL: "OFS-42",
+        PACP: "OFS-43",
+        MOCI: "OFS-44",
+        EstablishingCompanies: "OFS-45",
+        Arbition: "OFS-46",
+        AttendAssociation: "OFS-47",
+        WrittingContracts: "OFS-48",
+        ReviewingContracts: "OFS-49",
+        LegalServices: "OFS-50",
+        Closing_Settelment: "OFS-51",
+        Closing_Payments: "OFS-52",
+        Closing_AgainstClient: "OFS-53",
+        Closing_Consultants: "OFS-54",
+        Closing_Others: "OFS-55",
+        BlueStamp: "OFS-56",
+        DifferentPanel: "OFS-57",
+        Closing_ReSchedule: "OFS-58",
+        Disability: "OFS-59",
+        BeforeRegister: "OFS-60",
+        Liquidation: "OFS-61",
+        TransferFile: "OFS-62",
+        MissingDocuments: "OFS-63",
+        DefendentDeath: "OFS-64",
+        InitiateClosingFile: "OFS-65",
+        CriminalFile: "OFS-66",
+        LegalNoticeSub: "OFS-67",
+        ArrestAnnouncement: "OFS-68"
+    }
+    var DDLToAppend;
+    var JDLevelName = "";
+    function validateEmail(email) {
+        var re = new RegExp(/\S+@@\S+\.\S+/);
+        return re.test(email);
+    }
+
+    function validateContactNo(ContactNo) {
+        return true;
+    }
+    function ShowSessionNotes(P_ID) {
+
+        _parameters = { P_SessionRollId: parseInt(P_ID) };
+
+        $.ajax({
+            url: GetSessionNotesURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                if (data.length > 0) {
+                    $("#txtArea_SessionNote_Remark").text(data);
+                    $('#SessionNotesPopupModal').modal('show');
+                    $('textarea').autoResize();
+                }
+                else {
+                    $('#SessionNotesPopupModal').modal('hide');
+                }
+            }
+        });
+    }
+    function FormatAccount_ClientFileNo(row) {
+        var DataToDisplay = "";
+        if (row.AccountContractNo && row.ClientFileNo) {
+            if (row.AccountContractNo.length > 40) {
+                DataToDisplay = row.AccountContractNo.replace(/\W+/g, " ") + "<br />" + "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+            else {
+                DataToDisplay = row.AccountContractNo + "<br />" + "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+        }
+        else if (row.AccountContractNo && row.ClientFileNo == null) {
+            if (row.AccountContractNo.length > 40) {
+                DataToDisplay = row.AccountContractNo.replace(/\W+/g, " ");
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+            else {
+                DataToDisplay = row.AccountContractNo;
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+        }
+        else if (row.AccountContractNo == null && row.ClientFileNo) {
+            DataToDisplay = "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+            return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+        }
+
+        return DataToDisplay;
+    }
+    function SetLabelText() {
+        var DefDisputeDate = "ENFC DIS DATE تاريخ الحكم";
+        var PriDisputeDate = "PRI ENFC DIS DATE تاريخ الحكم الابتدائي";
+        var AplDisputeDate = "APP ENFC DIS DATE تاريخ الحكم الاستئنافي";
+        var SupDisputeDate = "SUP.DISPUTE DATE تاريخ حكم منازعة العليا";
+
+        var DefJDReceiveDate = "DISPUTE JUG.RECEIVE تاريخ استلام حكم المنازعة";
+        var PriJDReceiveDate = "DISPUTE PRI.JUG.RECEIVE تاريخ استلام حكم المنازعة الابتدائي";
+        var AplJDReceiveDate = "DISPUTE APL.JUG.RECEIVE تاريخ استلام حكم منازعة الاستئناف";
+        var SupJDReceiveDate = "DISPUTE SUP.JUG.RECEIVE تاريخ استلام حكم منازعة العليا";
+
+        var DefClaimSummary = "CLAIM SUMMARY طلباتنا في المنازعة";
+        var PriClaimSummary = "PRI CLAIM SUMMARY طلباتنا في المنازعة الابتدائية";
+        var AplClaimSummary = "APP CLAIM SUMMARY طلباتنا في منازعة الاستئناف";
+        var SupClaimSummary = "SUP CLAIM SUMMARY طلباتنا في منازعة العليا";
+
+        var DefJudgements = "DISPUTE SENTENCE حكم المنازعة";
+        var PriJudgements = "DISPUTE PRI SENTENCE حكم المنازعة الإبتدائي";
+        var AplJudgements = "DISPUTE APP SENTENCE حكم منازعة الاستئناف";
+        var SupJudgements = "DISPUTE SUP SENTENCE حكم منازعة العليا";
+
+        JDLevelName = DefJDReceiveDate;
+
+        if ($('#DisputeLevel').val() == "1") {
+            $("#labelDisputeDate").text(PriDisputeDate);
+            $("#labelJDReceiveDate").text(PriJDReceiveDate);
+            $("#labelClaimSummary").text(PriClaimSummary);
+            $("#labelJudgements").text(PriJudgements);
+            JDLevelName = PriJDReceiveDate;
+        }
+        else if ($('#DisputeLevel').val() == "2") {
+            $("#labelDisputeDate").text(AplDisputeDate);
+            $("#labelJDReceiveDate").text(AplJDReceiveDate);
+            $("#labelClaimSummary").text(AplClaimSummary);
+            $("#labelJudgements").text(AplJudgements);
+            JDLevelName = AplJDReceiveDate;
+        }
+        else if ($('#DisputeLevel').val() == "3") {
+            $("#labelDisputeDate").text(SupDisputeDate);
+            $("#labelJDReceiveDate").text(SupJDReceiveDate);
+            $("#labelClaimSummary").text(SupClaimSummary);
+            $("#labelJudgements").text(SupJudgements);
+            JDLevelName = SupJDReceiveDate;
+        }
+        else {
+            $("#labelDisputeDate").text(DefDisputeDate);
+            $("#labelJDReceiveDate").text(DefJDReceiveDate);
+            $("#labelClaimSummary").text(DefClaimSummary);
+            $("#labelJudgements").text(DefJudgements);
+            JDLevelName = DefJDReceiveDate;
+        }
+    }
+    function LoadOfficeFileStatus(p_Id, $select, $IsDisute) {
+        console.log(p_Id);
+        if ($IsDisute == undefined)
+            $IsDisute = "";
+
+        _parameters = { Id: p_Id, IsDisute: $IsDisute };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadOfficeFileStatusURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+                    //var $select = $('#SessionFileStatus');
+                    $select.find('option').remove();
+                    //var newOption = new Option("PLEASE SELECT", "0", true, true);
+                    //$select.append(newOption).trigger('change');
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption);//.trigger('change');
+
+                    }
+                    $select.val("0").trigger('change');
+                }
+                else {
+                    //var $select = $('#SessionFileStatus');
+                    $select.find('option').remove();
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function LoadCourtByGovernorate(p_Id, $select) {
+        _parameters = { Id: p_Id };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadCourtByGovernorateURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+                    //var $select = $('#SessionFileStatus');
+                    $select.find('option').remove();
+                    //var newOption = new Option("PLEASE SELECT", "0", true, true);
+                    //$select.append(newOption).trigger('change');
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption);//.trigger('change');
+
+                    }
+                    $select.val("0").trigger('change');
+                }
+                else {
+                    //var $select = $('#SessionFileStatus');
+                    $select.find('option').remove();
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function ValidateOfficeFileNo(p_OfficeFileNo) {
+        var NotValid = false;
+        if (p_OfficeFileNo == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FILE NUMBER'" : ValidationMessage + "<br />" + "PLEASE ENTER FILE NUMBER'";
+            NotValid = true;
+        }
+        else {
+            var loc = p_OfficeFileNo.substring(0, 1);
+            if (loc == "M" || loc == "S") {
+
+            }
+            else {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID FILE NUMBER'" : ValidationMessage + "<br />" + "PLEASE ENTER VALID FILE NUMBER'";
+                NotValid = true;
+
+            }
+        }
+
+        return NotValid;
+    }
+    function LoadDependentDDLByParentId(p_Id, $select, $skipIDs) {
+        if ($skipIDs == undefined)
+            $skipIDs = "";
+
+        _parameters = { Id: p_Id, SkipIds: $skipIDs };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadDependentDDLURL,
+            success: function (Result) {
+                if (Result.length > 0) {
+                    $select.find('option').remove();
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption);//.trigger('change');
+
+                    }
+                    $select.val("0").trigger('change');
+
+                    if (p_Id == "10007")
+                        $("#Payment_To").val("1900").trigger('change');
+
+                    if (p_Id == "1900")
+                        $("#PaymentToBenificry").val("0").trigger('change');
+                    
+                }
+                else {
+                    $select.find('option').remove();
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function GetMaskedAccountNo(P_ACCNO) {
+        console.log(P_ACCNO);
+        if (P_ACCNO != null) {
+            var MaskedAccountNo = "";
+            var cardnumber = P_ACCNO;
+            var first4 = cardnumber.substring(0, 3);
+            var last5 = cardnumber.substring(cardnumber.length - 2);
+
+            mask = cardnumber.substring(3, cardnumber.length - 2).replace(/\d/g, "*");
+            console.log(first4 + mask + last5);
+            MaskedAccountNo = first4 + mask + last5;
+            return MaskedAccountNo;
+        }
+    }
+    function SetPayToDetails(p_MstParentId, p_mst_Value, IsFromApprovedScreen = "N") {
+        $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+
+        if (p_mst_Value == "" || p_mst_Value == "0") {
+            ClearPayToFields(p_mst_Value);
+            return false;
+        }
+
+        _parameters = { MstParentId: p_MstParentId, Mst_Value: p_mst_Value };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetPayToDetailURL,
+            success: function (PayToRemarks) {
+                console.log(PayToRemarks);
+
+                if (PayToRemarks.PayToAccountNumber != "") {
+                    $("#PayToBankNameDisp").val(PayToRemarks.PayToBankName);
+                    $('#PayToAccountNumberDisp').val(IsFromApprovedScreen == "N" ? GetMaskedAccountNo(PayToRemarks.PayToAccountNumber) : PayToRemarks.PayToAccountNumber);
+                    $(".clsPayToDetail").removeClass("AppHidden");
+
+                    $("#PayToMstValue").val(p_mst_Value);
+                    $('#PayToBankName').val(PayToRemarks.PayToBankCode).trigger('change');
+                    
+                    $("#PayToAccountNumber").val(PayToRemarks.PayToAccountNumber);
+                    $("#PayToContactNo").val(PayToRemarks.PayToContactNo);
+                    $("#PayToEmail").val(PayToRemarks.PayToEmail);
+                    $('#PayToMessageLang').val(PayToRemarks.MessageLang).trigger('change');
+
+                }
+                else {
+                    ClearPayToFields(p_mst_Value);
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function ClearPayToFields(p_mst_Value) {
+        $("#PayToMstValue").val(p_mst_Value);
+        $("#PayToBankNameDisp").val("");
+        $('#PayToAccountNumberDisp').val("");
+        $("#PayToMstDesc").val("");
+        $('#PayToBankName').val("0").trigger('change');
+        $("#PayToAccountNumber").val("");
+        $("#PayToContactNo").val("");
+        $("#PayToEmail").val("");
+        $(".clsDisableInModify").removeClass("disableDIV");
+    }
+    
+    function EditMasterList(ModalTitle, CtrlToAppend, ParentId, p_mst_Value) {
+
+        if (p_mst_Value == "0" || p_mst_Value == "") {
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Select Item to Modify'
+            });
+
+            return false;
+        }
+
+        $(".clsMstDesc").removeClass("AppHidden").addClass("AppHidden");
+
+        if (ParentId == "214") {
+            $("#ModalDiv_214").removeClass("AppHidden");
+            $(".clsDisableInModify").addClass("disableDIV");
+            var data = $('#Payment_To').select2('data')
+            ModalTitle = "MODIFY PAY TO FOR  " + data[0].text;
+            $("#PayToMstDesc").val(data[0].text);
+        }
+        else if (ParentId == "7") {
+            if ($("#Payment_Head").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select PAY FOR سبب الصرف'
+                });
+
+                return false;
+            }
+
+            var data = $('#Payment_Head').select2('data');
+            ModalTitle = "MODIFY PAY FOR DETAIL FOR " + data[0].text;
+            $("#ModalDiv_7").removeClass("AppHidden");
+        }
+        else if (ParentId == "1898") {
+            
+            if ($("#Payment_To").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select PAY TO الدفع إلى'
+                });
+
+                return false;
+            }
+            else {
+                ParentId = parseInt($("#Payment_To").val());
+            }
+
+            $(".clsDisableInModify").addClass("disableDIV");
+            var data = $('#Payment_To').select2('data');
+            var data1 = $('#PaymentToBenificry').select2('data');
+
+            ModalTitle = "MODIFY PAY TO " + data[0].text + " BENEFICIARY FOR " + data1[0].text;
+            $("#PayToMstDesc").val(data1[0].text);
+            $("#ModalDiv_214").removeClass("AppHidden");
+        }
+
+        console.log("ModalTitle ::" + ModalTitle);
+        console.log("CtrlToAppend ::" + CtrlToAppend);
+        DDLToAppend = $("#" + CtrlToAppend);
+        $("#MstParentId").val(ParentId);
+        $("#ModalTitle").text(ModalTitle);
+        
+        $('#modal-AddMasterValue').modal('show');
+    }
+    function sentWAMessage(P_TO, P_MESSAGE) {
+
+        var SubmitURL = "http://whatsapp247.com/api/send.php?api_key=96891196581-c2cabd9d-8935-4b71-80e7-9665ba9c986a&mobile=" + P_TO + "&priority=10&message=" + P_MESSAGE;
+
+        var settings = {
+            "url": SubmitURL,
+            "method": "GET",
+            "timeout": 0,
+        };
+
+        //$.ajax(settings).done(function (response) {
+        //    console.log(response);
+        //});
+    }
+    function InitDropDownList($select) {
+        $select.find('option').remove();
+        var newOption = new Option("PLEASE SELECT", "0", true, true);
+        $select.append(newOption).trigger('change');
+    }
+    function Merge_PaymentModeNBankDetail(row) {
+        var DataToDisplay = "";
+        if (row.PaymentModeName && row.W_D_BANK) {
+            DataToDisplay = row.PaymentModeName + "<br />" + row.W_D_BANK + "<br />" + row.W_D_Date;
+            return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+        }
+        else if (row.PaymentModeName && row.W_D_BANK == null) {
+            DataToDisplay = row.PaymentModeName;
+            return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+        }
+        else if (row.PaymentModeName == null && row.W_D_BANK) {
+            DataToDisplay = row.W_D_BANK + "<br />" + row.W_D_Date;
+            return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+        }
+
+        return DataToDisplay;
+    }
+    function TransferEmployeeToIndivisual(p_mst_Value, p_enf = "N") {
+        if (p_enf == "Y") {
+            if ($("#PVDetail_Payment_To").val() == "1901") {
+
+                if ($("#PVDetail_PaymentToBenificry").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT BENEFICIARY'
+                    });
+                    return false;
+                }
+
+                Swal.fire({
+                    title: 'ARE YOU SURE?',
+                    text: "THIS EMPLOYEE WILL BE TRANSFER TO INDIVIDUAL AND REMOVED FROM SYSTEM",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Transfer!'
+                }).then((result) => {
+                    if (result.value) {
+                        _parameters = { PayMst_Value: p_mst_Value };
+
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            data: JSON.stringify(_parameters),
+                            url: TransferEmployeeToIndivisualURL,
+                            success: function (result) {
+                                console.log(result);
+
+                                if (result.Message == "Success") {
+                                    LoadDependentDDLByParentId("1903", $('#PVDetail_PaymentToBenificry'));
+                                }
+                                else {
+
+                                }
+                            },
+                            error: function (response) {
+                                console.log("error");
+                                console.log(response.responseText);
+                            },
+                            failure: function (response) {
+                                console.log("failure");
+                                console.log(response.responseText);
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT EMPLOYEES العاملين FROM PAY TO'
+                });
+                return false;
+            }
+
+        }
+        else {
+            if ($("#Payment_To").val() == "1901") {
+
+                if ($("#PaymentToBenificry").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT BENEFICIARY'
+                    });
+                    return false;
+                }
+
+                Swal.fire({
+                    title: 'ARE YOU SURE?',
+                    text: "THIS EMPLOYEE WILL BE TRANSFER TO INDIVIDUAL AND REMOVED FROM SYSTEM",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Transfer!'
+                }).then((result) => {
+                    if (result.value) {
+                        _parameters = { PayMst_Value: p_mst_Value };
+
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            data: JSON.stringify(_parameters),
+                            url: TransferEmployeeToIndivisualURL,
+                            success: function (result) {
+                                console.log(result);
+
+                                if (result.Message == "Success") {
+                                    LoadDependentDDLByParentId("1903", $('#PaymentToBenificry'));
+                                }
+                                else {
+
+                                }
+                            },
+                            error: function (response) {
+                                console.log("error");
+                                console.log(response.responseText);
+                            },
+                            failure: function (response) {
+                                console.log("failure");
+                                console.log(response.responseText);
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT EMPLOYEES العاملين FROM PAY TO'
+                });
+                return false;
+            }
+
+        }
+
+    }
+    function DisplayInMultiLine(row,ColName) {
+        var DataToDisplay = "";
+
+        switch (ColName) {
+            case "DATE_BRANCH":
+                if (row.Voucher_Date && row.LocationCode) {
+                    DataToDisplay = row.Voucher_Date + "<br />" + row.LocationCode;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                else if (row.Voucher_Date && row.LocationCode == null) {
+                    DataToDisplay = row.Voucher_Date;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+                }
+                else if (row.Voucher_Date == null && row.LocationCode) {
+                    DataToDisplay = row.LocationCode;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                break;
+            case "CASELEVEL_CASENO":
+                if (row.CaseLevel && row.CourtRefNo) {
+                    DataToDisplay = row.CaseLevel + "<br />" + row.CourtRefNo.split("^ ").join("<br/>");
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                else if (row.CaseLevel && row.CourtRefNo == null) {
+                    DataToDisplay = row.CaseLevel;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+                }
+                else if (row.CaseLevel == null && row.CourtRefNo) {
+                    DataToDisplay = row.CourtRefNo.split("^ ").join("<br/>");
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                break;
+            case "PAYFOR_DETAIL":
+                if (row.PaymentHeadName && row.PaymentHeadDetailName) {
+                    DataToDisplay = row.PaymentHeadName + "<br />" + row.PaymentHeadDetailName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                else if (row.PaymentHeadName && row.PaymentHeadDetailName == null) {
+                    DataToDisplay = row.PaymentHeadName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+                }
+                else if (row.PaymentHeadName == null && row.PaymentHeadDetailName) {
+                    DataToDisplay = row.PaymentHeadDetailName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                break;
+            case "PAYTO_BENEFICIARY":
+                if (row.PaymentToName && row.PaymentToBenificryName) {
+                    DataToDisplay = row.PaymentToName + "<br />" + row.PaymentToBenificryName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                else if (row.PaymentToName && row.PaymentToBenificryName == null) {
+                    DataToDisplay = row.PaymentToName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+                }
+                else if (row.PaymentToName == null && row.PaymentToBenificryName) {
+                    DataToDisplay = row.PaymentToBenificryName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                break;
+            case "BANK_ACCOUNT":
+                if (row.PayToBankName && row.PayToAccountNumber) {
+                    DataToDisplay = row.PayToBankName + "<br />" + row.PayToAccountNumber;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                else if (row.PayToBankName && row.PayToAccountNumber == null) {
+                    DataToDisplay = row.PayToBankName;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+
+                }
+                else if (row.PayToBankName == null && row.PayToAccountNumber) {
+                    DataToDisplay = row.PayToAccountNumber;
+                    return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+                }
+                break;
+        }
+
+        return DataToDisplay;
+    }
+    function SumTwoColumn(row, ColName) {
+        var DataToDisplay;
+
+        switch (ColName) {
+            case "INVOICE":
+                DataToDisplay = parseFloat(row.FeeAmount) + parseFloat(row.VAT_AMOUNT);
+                return "<div class='text-wrap'>" + DataToDisplay.toFixed(3).replace(".000","") + "</div>";
+                break;
+            case "PV":
+                DataToDisplay = parseFloat(row.FeeAmount) + parseFloat(row.VAT_AMOUNT);
+                return "<div class='text-wrap'>" + DataToDisplay.toFixed(3).replace(".000", "") + "</div>";
+                break;
+        }
+
+        return DataToDisplay;
+    }
+
+</script>
+<div class="modal fade" id="SessionNotesPopupModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title">NOTES ملاحظات</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="DIV_NOTES_BANNER" class="card-header GeneralActive">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h3><span id="txtArea_SessionNote_Remark"></span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+

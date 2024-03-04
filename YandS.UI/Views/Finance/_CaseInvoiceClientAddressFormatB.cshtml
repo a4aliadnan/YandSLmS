@@ -1,0 +1,75 @@
+﻿@model YandS.UI.Models.CaseInvoice
+<tr style="mso-yfti-irow:0;mso-yfti-firstrow:yes">
+    <td colspan="5" style="width:514.7pt;padding:0in 5.4pt 0in 5.4pt" valign="top" width="686">
+        <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;  text-align:center;line-height:normal">
+            <b>
+                @if (Model.ClientName.ToUpper().Trim() == "BANK MUSCAT" || Model.ClientName.ToUpper().Trim() == "MEETHAQ ISLAMIC BANKING")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM1100012379</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "OMANTEL")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">OMAN TELECOMMUNICATIONS COMPANY SAOG</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM1100006083</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">GHALA, MUSCAT OMAN</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "OMAN ARAB BANK")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM1100005523</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "HSBC-OMAN")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM1100000925</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "SAIPEM SPA - OMAN BRANCH")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">SAIPEM S.P.A - OMAN BRANCH</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN: OM1100031115</span> <br />
+                    <span style="font-size:10.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">MAJAN HOUSE, FIRST FLOOR<br />OFFICE NO. 102<br />P.O. BOX 661, P.C. 133<br />AL KHUWAIR, SULTANATE OF OMAN</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "TILAL DEVELOPMENT COMPANY")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">TILAL DEVELOPMENT COMPANY SAOC</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN: OM110007481X</span> <br />
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "AL MADINA - REAL STATE")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">ALMADINA REAL ESTATE COMPANY SAOC</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN: OM1100123183</span> <br />
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "SOHAR INTERNATIONAL")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM110000378X</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "SOHAR ISLAMIC")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM110000378X</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "NATIONAL ENGINEERING SERVICES PAKISTAN AND PARTNERS LLC")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM110005400X</span>
+                }
+                else if (Model.ClientName.ToUpper().Trim() == "OMASCO")
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">OMAN MARKETING AND SERVICES COMPANY LLC</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">VATIN : OM1100002437</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">TAX CARD NO. : 8093935</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">C.R. NO. : 1015354</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">PO BOX 2734, PO CODE 112 RUWI</span> <br />
+                    <span style="font-size:12.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">MUSCAT, SULTANATE OF OMAN</span>
+                }
+                else
+                {
+                    <span style="font-size:22.0pt; mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black">@Html.DisplayFor(model => model.ClientName)</span>
+                }
+
+            </b>
+        </p>
+    </td>
+</tr>

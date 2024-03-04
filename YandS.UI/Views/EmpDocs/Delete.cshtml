@@ -1,0 +1,70 @@
+﻿@model YandS.UI.Models.EmpDoc
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Employee Documents</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Employee</li>
+                        <li class="breadcrumb-item active"><a href="#">Delete Employee Documents</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-md-6 classCenter">
+            <div class="card card-danger">
+                <div class="card-header">
+                    <h3 class="card-title">Delete Documents for  : @ViewBag.EmployeeName</h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-danger">Are you sure you want to delete this?</p>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.DocTypeId)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.DocTypeName)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.OriginalFileName)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.OriginalFileName)
+                        </dd>
+                    </dl>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-save"></i> Delete</button> |
+                        <a class="btn btn-primary" href="@Url.Action("Index", "Employees")"><i class="fas fa-home"></i> Back to Employees</a> |
+                        <a class="btn btn-outline-primary" href="@Url.Action("Index", "EmpDocs", new { id = Model.EmployeId })"><i class="fas fa-file-pdf"></i> Back to Employee Docs</a>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>

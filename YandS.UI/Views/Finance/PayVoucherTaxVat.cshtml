@@ -1,0 +1,213 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - TAX and VAT";
+}
+<style>
+    div.dt-buttons {
+        width: auto !important;
+    }
+
+    .Tax {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .Tax:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .TaxActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .LawyerFeeVAT {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .LawyerFeeVAT:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .LawyerFeeVATActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    .ExpensesVAT {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .ExpensesVAT:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .ExpensesVATActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    .QuarterltVAT {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .QuarterltVAT:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .QuarterltVATActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+</style>
+<script>
+    var GetTabURL = '@Url.Action("GetTab", "Finance", new { area = string.Empty })';
+    var GetIndexDataURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { DataFor = @ViewBag.DataFor })';
+
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function LoadPartialView(data, container) {
+        console.log(container.attr("id"));
+        container.empty();
+        container.html(data);
+    }
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                    <h1>TAX AND VAT</h1>
+                </div>
+                <div class="col-sm-5 text-center">
+
+                </div>
+
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">FINANCE</li>
+                        <li class="breadcrumb-item active"><a href="#">TAX AND VAT</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <div style="padding-bottom:10px;" class="row">
+                        <div class="col">
+                            <button type="button" id="btn_Tax" style="font-size: 1rem !important;" class="btn btn-block Tax @ViewBag.TaxActive btn-lg navButton">TAX</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_LawyerFeeVAT" style="font-size: 1rem !important;" class="btn btn-block LawyerFeeVAT @ViewBag.LawyerFeeVATActive btn-lg navButton">LAWYER FEE VAT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_ExpensesVAT" style="font-size: 1rem !important;" class="btn btn-block ExpensesVAT @ViewBag.ExpensesVATActive btn-lg navButton">EXPENSES VAT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_QuarterltVAT" style="font-size: 1rem !important;" class="btn btn-block QuarterltVAT @ViewBag.QuarterltVATActive btn-lg navButton">QUARTERLT (VAT)</button>
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="PartialViewContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="ModificationContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+</div>
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Index PayVoucherTAX");
+
+            $(".navButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var _PartialViewName = "_LawyerFeeVAT";
+            var _Mode = "C";
+            var _Voucher_No = 0;
+
+            var PartialContainer = $("#PartialViewContainer");
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+            GetTab(PartialContainer, GetTabURL, _parameters);
+
+            $("#btn_LawyerFeeVAT").addClass("LawyerFeeVATActive");
+
+
+            $('.navButton').click(function () {
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                var btnClickedId = $(this).attr("id");
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                console.log(btnClickedId);
+                console.log(btnClickedClass);
+                console.log(btnClickedActiveClass);
+
+                $(this).addClass(btnClickedActiveClass);
+
+                _PartialViewName = "_" + btnClickedClass;
+                _Mode = "C";
+                _Voucher_No = 0;
+
+                PartialContainer = $("#PartialViewContainer");
+                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                GetTab(PartialContainer, GetTabURL, _parameters);
+            });
+        });
+    </script>
+}

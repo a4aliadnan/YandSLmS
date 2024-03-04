@@ -1,0 +1,112 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $(".deleteRow").on("click", function (e) {
+            //$(this).parents(".caseinvoicefeeRow:first").remove();
+            //console.log("Delete Hearing :: FollowupId = : " + this.id);
+            e.preventDefault();
+
+            _parameters = { FollowupId: this.id };
+
+            $.ajax({
+                url: DeleteFollowupURL,
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    LoadPartialView(data, ListFollowupContainer);
+                }
+            });
+        });
+    });
+
+</script>
+@model IEnumerable<YandS.UI.Models.CourtCasesFollowup>
+@if (Model.Count() > 0)
+{
+    <div class="card card-outline card-info">
+        <div class="card-header">
+            <h3 class="card-title">Hearing Followups</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <div class="container-fluid">
+                <!-- Timelime example  -->
+                <div class="row">
+                    <div class="col-md-12">
+                        @foreach (var item in Model)
+                        {
+
+                            <!-- The time line -->
+                            <div class="timeline">
+                                <!-- timeline time label -->
+                                <div class="time-label">
+                                    <span class="bg-red">@Html.DisplayFor(modelItem => item.HearingDate)</span>
+                                </div>
+                                <!-- /.timeline-label -->
+                                <!-- timeline item -->
+                                <div>
+                                    <i class="fas fa-comments bg-yellow"></i>
+                                    <div class="timeline-item">
+                                        @if (item.NextHearingDate == null)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            <span class="time"><i class="fas fa-clock"></i> Next Hearing Date : @Html.DisplayFor(modelItem => item.NextHearingDate)</span>
+                                        }
+                                        <h3 class="timeline-header"><a href="#">Hearing Detail</a></h3>
+                                        <div class="timeline-body">
+                                            @Html.DisplayFor(modelItem => item.HearingRemarks)
+                                        </div>
+                                        <div class="timeline-footer">
+                                            <button type="button" id=@item.FollowupId class="btn btn-danger deleteRow"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- END timeline item -->
+                            </div>
+
+                        }
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+}
+else
+{
+    <div class="card card-outline card-warning">
+        <div class="card-header">
+            <h3 class="card-title">Hearing Followups</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <div class="container-fluid">
+                <!-- Timelime example  -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="callout callout-info">
+                            <h5>Hearing Information</h5>
+                            <p>Please note no hearing information found!</p>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+}

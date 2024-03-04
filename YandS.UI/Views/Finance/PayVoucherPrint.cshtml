@@ -1,0 +1,30 @@
+﻿@model YandS.UI.Models.PayVoucher
+@{
+    ViewBag.Title = "Y & S Associates - Print Payment Voucher";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Print Voucher</title>
+</head>
+<body>
+    @if (Model.VoucherType == "1")
+    {
+        @Html.Partial("_Refunable", Model)
+
+    }
+    else if (Model.VoucherType == "2")
+    {
+        @Html.Partial("_NonRefunable", Model)
+
+    }
+    else
+    {
+        @Html.Partial("_IntraTransaction", Model)
+
+    }
+
+</body>
+</html>

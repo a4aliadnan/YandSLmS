@@ -1,0 +1,114 @@
+﻿@using Microsoft.AspNet.Identity
+@model IEnumerable<YandS.UI.Models.CourtCases>
+@{
+    ViewBag.Title = "Y & S Associates - Create Invoice List";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Case List to Create Invoice</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Create Invoice</li>
+                        <li class="breadcrumb-item active"><a href="#">Court Cases for Invoice</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Case List to Create Invoice</h3>
+            </div>
+            <div class="card-body">
+                @*<table class="table table-striped projects">*@
+                <table id="IndexTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+
+                            <th>@Html.DisplayNameFor(model => model.OfficeFileNo)</th>
+                            <th>@Html.DisplayNameFor(model => model.ClientCode)</th>
+                            <th>Defendant/Plaintiff Name</th>
+                            <th>@Html.DisplayNameFor(model => model.AgainstCode)</th>
+                            <th>@Html.DisplayNameFor(model => model.ReceptionDate)</th>
+                            <th>@Html.DisplayNameFor(model => model.CaseTypeCode)</th>
+                            <th style="width:70px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            if (User.IsSysAdmin())
+                            {
+                                <tr>
+
+                                    <td> @Html.DisplayFor(modelItem => item.OfficeFileNo)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.ClientName)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.DefClientName)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.AgainstName)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.ReceptionDate)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.CaseTypeName)</td>
+                                    <td class="project-actions text-right">
+                                        <a class="btn btn-success btn-sm" title="Create Invoice" href="@Url.Action("Create", "CaseInvoice", new { id = item.CaseId })" id=@item.CaseId><i class="fas fa-file-invoice-dollar"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                if (item.CreatedBy.Equals(Convert.ToInt32(HttpContext.Current.User.Identity.GetUserId())))
+                                {
+                                    <tr>
+
+                                        <td> @Html.DisplayFor(modelItem => item.OfficeFileNo)</td>
+                                        <td> @Html.DisplayFor(modelItem => item.ClientName)</td>
+                                        <td> @Html.DisplayFor(modelItem => item.DefClientName)</td>
+                                        <td> @Html.DisplayFor(modelItem => item.AgainstName)</td>
+                                        <td> @Html.DisplayFor(modelItem => item.ReceptionDate)</td>
+                                        <td> @Html.DisplayFor(modelItem => item.CaseTypeName)</td>
+                                        <td class="project-actions text-right">
+                                            <a class="btn btn-success btn-sm" title="Create Invoice" href="@Url.Action("Create", "CaseInvoice", new { id = item.CaseId })" id=@item.CaseId><i class="fas fa-file-invoice-dollar"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                console.log("Index CourtCases Document Page");
+                var bootstrapTooltip = $.fn.tooltip.noConflict();
+                $.fn.bstooltip = bootstrapTooltip;
+                $('.btn').bstooltip();
+
+                $('#IndexTable').DataTable({
+                    "paging": true,
+                    pageLength: 10,
+                    "lengthChange": false,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": false,
+                    "order": [[1, "asc"]],
+                    'aoColumnDefs': [{
+                        'bSortable': false,
+                        'aTargets': [-1, 3]
+                    }]
+                });
+            });
+    </script>
+}

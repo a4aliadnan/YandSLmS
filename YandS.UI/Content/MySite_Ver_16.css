@@ -1,0 +1,1801 @@
+﻿.classCenter{
+    margin-left:auto;
+    margin-right:auto;
+}
+.AppHidden{
+    display:none;
+}
+.warning {
+    background-color: burlywood !important;
+}
+.bgWhite {
+    background-color: white !important;
+}
+.PVcancel {
+    background-color: burlywood !important;
+}
+
+.PVBounce {
+    background-color: darkgrey !important;
+    color: white !important;
+    font-weight:bold;
+}
+
+.PVclear {
+    background-color: greenyellow !important;
+}
+
+.PVpending {
+    background-color: #FFFFC1 !important;
+    color: black !important;
+}
+.PVnotDeposit {
+    background-color: crimson !important;
+    color: white !important;
+}
+.PVRejected {
+    background-color: #D3D3D3 !important;
+    color: black !important;
+}
+
+.PVApproved {
+    background-color: #E2F0D9 !important;
+    color: black !important;
+}
+.PVInitiated {
+    background-color: aliceblue !important;
+    color:mediumpurple !important;
+}
+.fill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+}
+    .fill img {
+        flex-shrink: 0;
+        min-width: 100%;
+        min-height: 100%
+    }
+
+.CaseCancel {
+    background-color: burlywood !important;
+}
+
+.CaseAdminClose {
+    background-color: lightgrey !important;
+}
+.CaseClose {
+    background-color: #686868 !important;
+    color: white !important;
+}
+
+.CaseAccountClose {
+    background-color: black !important;
+    color: white !important;
+}
+
+.CaseToBeReg {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+    /*font-weight:bold;*/
+}
+.CaseBeforeCourt {
+    background-color: #b8d8a0 !important;
+    color: black !important;
+    /*font-weight:bold;*/
+}
+
+.CaseInPrimaryCourt {
+    background-color: #ffff8b !important;
+    color: black !important;
+}
+
+.CaseInApealCourt {
+    background-color: #f4b183 !important;
+    color: black !important;
+}
+
+.CaseInSupremeCourt {
+    background-color: #cc99ff !important;
+    color: black !important;
+}
+
+.CaseInEnforcementCourt {
+    background-color: #69d8ff !important;
+    color: black !important;
+}
+
+.CaseInvoiceUnPaid {
+    background-color: #FFA48F !important;
+    color: black !important;
+}
+
+.CaseInvoicePaid {
+    background-color: #BCE292 !important;
+    color: black !important;
+}
+
+.CaseInvoiceCancel {
+    background-color: #7F7F7F !important;
+    color: white !important;
+}
+
+.YandSTitleSpacing {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.YandSTitleSpacing2 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.CaseRegDelay15Days {
+    background-color: #ffff00 !important;
+    color: black !important;
+}
+
+.CaseRegDelay30Days {
+    background-color: #ff2d2d !important;
+    color: white !important;
+}
+
+.IsUrgentCase {
+    background-color: #f69393 !important;
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.CaseRegNewCase {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+    .CaseRegNewCase:hover {
+        background-color: #ffffcc !important;
+    }
+
+.CaseRegNewCaseActive {
+    background-color: #ffffcc !important;
+    color: black !important;
+}
+
+
+.CaseRegAppeal {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .CaseRegAppeal:hover {
+        background-color: #ffc000 !important;
+    }
+
+.CaseRegAppealActive {
+    background-color: #ffc000 !important;
+    color: black !important;
+}
+
+.CaseRegSupreme {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+    .CaseRegSupreme:hover {
+        background-color: #ffccff !important;
+    }
+
+.CaseRegSupremeActive {
+    background-color: #ffccff !important;
+    color: black !important;
+}
+
+.IndexTotalBG {
+    background-color: #ffff00 !important;
+}
+
+.CaseRegister {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+    .CaseRegister:hover {
+        background-color: #cdeeff !important;
+    }
+
+.CaseRegisterActive {
+    background-color: #cdeeff !important;
+    color: black !important;
+}
+
+.CasePayment {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+    .CasePayment:hover {
+        background-color: #ff7979 !important;
+    }
+
+.CasePaymentActive {
+    background-color: #ff7979 !important;
+    color: black !important;
+}
+
+.CaseRegIsMainRemarks {
+    background-color: #ccff99 !important;
+    color: black !important;
+}
+
+.PayVoucherCreateNew {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherCreateNew:hover {
+        background-color:#ff0000 !important;
+    }
+
+.PayVoucherCreateNewActive {
+    background-color: #ff0000 !important;
+    color: white !important;
+}
+
+.PayVoucherPending {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherPending:hover {
+        background-color: #fff2cc !important;
+    }
+
+.PayVoucherPendingActive {
+    background-color: #fff2cc !important;
+    color: black !important;
+}
+
+.PayVoucherPDC {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherPDC:hover {
+        background-color: #8bffff !important;
+    }
+
+.PayVoucherPDCActive {
+    background-color: #8bffff !important;
+    color: black !important;
+}
+
+
+.PayVoucherRApproved {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherRApproved:hover {
+        background-color: #ffbdff !important;
+    }
+
+.PayVoucherRApprovedActive {
+    background-color: #ffbdff !important;
+    color: black !important;
+}
+
+.PayVoucherNRApproved {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherNRApproved:hover {
+        background-color: #ddddff !important;
+    }
+
+.PayVoucherNRApprovedActive {
+    background-color: #ddddff !important;
+    color: black !important;
+}
+
+.PayVoucherRejected {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .PayVoucherRejected:hover {
+        background-color: #d9d9d9 !important;
+    }
+
+.PayVoucherRejectedActive {
+    background-color: #d9d9d9 !important;
+    color: black !important;
+}
+
+.PayTotalBG {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+    padding: 10px !important;
+}
+
+.SessionRollRegister {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionRollRegister:hover {
+        background-color: #ddf0c8 !important;
+    }
+
+.SessionRollRegisterActive {
+    background-color: #ddf0c8 !important;
+    color: black !important;
+}
+
+.SessionRollRegisterBar {
+    background-color: #ddf0c8 !important;
+    color: black !important;
+}
+
+.AllSessions {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .AllSessions:hover {
+        background-color: #97e4ff !important;
+    }
+
+.AllSessionsActive {
+    background-color: #97e4ff !important;
+    color: black !important;
+}
+
+.SessionPrint {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionPrint:hover {
+        background-color: #e1ccf0 !important;
+    }
+
+.SessionPrintActive {
+    background-color: #e1ccf0 !important;
+    color: black !important;
+}
+
+.SessionFollow {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionFollow:hover {
+        background-color: #ff9999 !important;
+    }
+
+.SessionFollowActive {
+    background-color: #ff9999 !important;
+    color: black !important;
+}
+
+.SessionTobeUpdated {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionTobeUpdated:hover {
+        background-color: #fbe5d6 !important;
+    }
+
+.SessionTobeUpdatedActive {
+    background-color: #fbe5d6 !important;
+    color: black !important;
+}
+
+.SessionSuspended {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionSuspended:hover {
+        background-color: #ff4b4b !important;
+    }
+
+.SessionSuspendedActive {
+    background-color: #ff4b4b !important;
+    color: black !important;
+}
+
+.SessionJudgement {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionJudgement:hover {
+        background-color: #dae3f3 !important;
+    }
+
+.SessionJudgementActive {
+    background-color: #dae3f3 !important;
+    color: black !important;
+}
+
+.SessionDiffPanel {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .SessionDiffPanel:hover {
+        background-color: #e2f0d9 !important;
+    }
+
+.SessionDiffPanelActive {
+    background-color: #e2f0d9 !important;
+    color: black !important;
+}
+
+.AllSessionCaseInfoBar {
+    background-color: #336c85 !important;
+    color: white !important;
+    border-color: yellow !important;
+    border: 3px solid;
+}
+
+.AllSessionInfoBar {
+    background-color: #ffc000 !important;
+    color: black !important;
+}
+
+.AllSessionResultBar {
+    background-color: #e1ccf0 !important;
+    color: black !important;
+}
+
+.AllSessionFollowBar {
+    background-color: #ff9999 !important;
+    color: black !important;
+}
+
+.AllSessionJudgementDetailBar {
+    background-color: #dae3f3 !important;
+    color: black !important;
+}
+
+.AllSessionPrimaryBar {
+    background-color: #ffffe1 !important;
+    color: black !important;
+}
+
+.AllSessionAppealBar {
+    background-color: #f7c5a3 !important;
+    color: black !important;
+}
+
+.AllSessionSupremeBar {
+    background-color: #e1ccf0 !important;
+    color: black !important;
+}
+
+.AllSessionEnforcementBar {
+    background-color: #97e4ff !important;
+    color: black !important;
+}
+
+.AllSessionExpenseBar {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+}
+
+.AllSessionPrintingBar {
+    background-color: #70ad47 !important;
+    color: black !important;
+}
+
+.circleButtonClose {
+    color: #4472c4 !important;
+}
+
+.circleButtonOpen {
+    color: #0bc637 !important;
+}
+
+.circleButtonPV {
+    color: #ff0000 !important;
+}
+
+.circleButtonRed {
+    color: #ff0000 !important;
+}
+
+.circleButtonWhite {
+    color: white !important;
+}
+
+.IsSessionCaseDismissed {
+    background-color: #ff0000 !important;
+    color: white !important;
+}
+
+.NoFavorbleDecision {
+    background-color: #ffabab !important;
+    color: black !important;
+}
+
+.CaseRegisterCaseLevelPrimary {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+}
+
+.CaseRegisterCaseLevelAppeal {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+}
+
+.CaseRegisterCaseLevelSupreme {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+}
+
+.CaseRegisterCaseLevelEnforcement {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+}
+
+th.dt-center, td.dt-center {
+    text-align: center;
+}
+
+.btn-ShowDetail-Active {
+    color: #c00000 !important;
+}
+
+.UpdateBoxBar {
+    background-color: #336c85 !important;
+    color: white !important;
+    border-color: yellow !important;
+    border: 3px solid;
+}
+
+.CaseInformationBar {
+    background-color: #336c85 !important;
+    color: white !important;
+    border-color: yellow !important;
+    border: 3px solid;
+}
+
+.CairoArabic {
+    font-family: 'Cairo' !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-display: swap !important;
+}
+
+.btn-cool-blues {
+    background: #2193b0; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #2193b0, #6dd5ed); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #2193b0, #6dd5ed); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: #fff !important;
+    min-width: 100px;
+}
+
+.btn-pink-moon {
+    background: #ec008c; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #fc6767, #ec008c); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #fc6767, #ec008c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: #fff !important;
+    min-width: 80px;
+}
+
+.btn-text-med {
+    font-size: 1.1rem !important;
+}
+
+.btn-rounded {
+    border-radius: 10px !important;
+}
+
+.text-wrap {
+    white-space: normal;
+}
+
+.width-400 {
+    width: 400px;
+}
+
+.width-300 {
+    width: 300px;
+}
+
+.width-200 {
+    width: 200px;
+}
+
+.width-100 {
+    width: 100px;
+}
+
+.width-150 {
+    width: 150px;
+}
+
+.width-50 {
+    width: 50px;
+}
+
+.width-75 {
+    width: 75px;
+}
+
+.width-80 {
+    width: 80px;
+}
+
+.VMiddle {
+    vertical-align: middle !important;
+}
+
+.CreateCase {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .CreateCase:hover {
+        background-color: #28a745 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.CreateCaseActive {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.General {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .General:hover {
+        background-color: #c00000 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.GeneralActive {
+    background-color: #c00000 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.BeforeCourt {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .BeforeCourt:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.BeforeCourtActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TobeRegister {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .TobeRegister:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.TobeRegisterActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Primary {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .Primary:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.PrimaryActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Appeal {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .Appeal:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.AppealActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Supreme {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .Supreme:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SupremeActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Enforcement {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .Enforcement:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.EnforcementActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ArabicInfoBanner {
+    background-color: #e2f0d9 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.enfGeneral {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .enfGeneral:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.enfGeneralActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.OnlineReg {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .OnlineReg:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.OnlineRegActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Announcement {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .Announcement:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.AnnouncementActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Inquiry {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .Inquiry:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.InquiryActive {
+    background-color: #002060 !important;
+    color: white !important;
+}
+
+.ArrestRequst {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .ArrestRequst:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.ArrestRequstActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ArrestOrder {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .ArrestOrder:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.ArrestOrderActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.JudicialSale {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .JudicialSale:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.JudicialSaleActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.Suspended {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .Suspended:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.SuspendedActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.DefendantTransfer {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .DefendantTransfer:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.DefendantTransferActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ClientReply {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .ClientReply:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.ClientReplyActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.RecoveryFromCourt {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .RecoveryFromCourt:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.RecoveryFromCourtActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.CourtFollow {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .CourtFollow:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.CourtFollowActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.AgainstInsurance {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .AgainstInsurance:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.AgainstInsuranceActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.AgainstClient {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .AgainstClient:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.AgainstClientActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ENFDetail {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .ENFDetail:hover {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+.ENFDetailActive {
+    background-color: #ffd243 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.ENFInfoStage {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .ENFInfoStage:hover {
+        background-color: #00aae6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.ENFInfoStageActive {
+    background-color: #00aae6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.MoneyTransfer {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .MoneyTransfer:hover {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+.MoneyTransferActive {
+    background-color: #ffd243 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.ENFAddressDetail {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .ENFAddressDetail:hover {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+.ENFAddressDetailActive {
+    background-color: #ffd243 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.ObjectionBanner {
+    background-color: #fbe5d6 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.PlaintBanner {
+    background-color: #f2f2f2 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.tblPausedCondition {
+    background-color: #ffff00 !important;
+    color: black !important;
+}
+
+.tblInitialCondition {
+    background-color: #a9da74 !important;
+    color: white !important;
+}
+
+.tblFirstCondition {
+    background-color: #c00000 !important;
+    color: white !important;
+}
+
+.tblSecondCondition {
+    background-color: #ffd9d9 !important;
+    color: black !important;
+}
+
+.tblThirdCondition {
+    background-color: #ffffe5 !important;
+    color: black !important;
+}
+
+.ENF_BasicInfoBanner {
+    background-color: #50634d !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.tblDefTransCondition {
+    background-color: #c5e0b4 !important;
+    color: black !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #e9f0e8;
+}
+
+.divCaseHistory {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .divCaseHistory:hover {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+.divCaseHistoryActive {
+    background-color: #ffd243 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.divAllJudgements {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .divAllJudgements:hover {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+.divAllJudgementsActive {
+    background-color: #ffd243 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.SealOfJudgement {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SealOfJudgement:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.SealOfJudgementActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.FileReview {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .FileReview:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.FileReviewActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ToMeetJudge {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .ToMeetJudge:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.ToMeetJudgeActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ContactResult {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .ContactResult:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.ContactResultActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.ToBeRegBanner {
+    background-color: #4a5b47 !important;
+    color: white !important;
+}
+
+.btn-ToBeRegBanner-print {
+    color: white !important;
+    border-color: white !important;
+    background-color: transparent;
+    font-size: 1rem;
+}
+
+    .btn-ToBeRegBanner-print:hover {
+        color: white !important;
+        border-color: white !important;
+        background-color: transparent;
+        font-size: 1rem;
+    }
+
+.TBRNewCase {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRNewCase:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRNewCaseActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRAppSubmission {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRAppSubmission:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRAppSubmissionActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRSupSubmission {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRSupSubmission:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRSupSubmissionActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRPriDispute {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRPriDispute:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRPriDisputeActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRAplDispute {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRAplDispute:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRAplDisputeActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRSupDispute {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRSupDispute:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.TBRSupDisputeActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+
+.TBRTRansfer {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRTRansfer:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRTRansferActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRLegalNotice {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRLegalNotice:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRLegalNoticeActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRCompDocs {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRCompDocs:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRCompDocsActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRTranslation {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRTranslation:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRTranslationActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRClientApproval {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRClientApproval:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRClientApprovalActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRScanned {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRScanned:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRScannedActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBROnlineSubm {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBROnlineSubm:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBROnlineSubmActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRCourtRequest {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRCourtRequest:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRCourtRequestActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRPayment {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRPayment:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRPaymentActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRWithLawyer {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRWithLawyer:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRWithLawyerActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRRemarks {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRRemarks:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+    }
+
+.TBRRemarksActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.TBRUrgent {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .TBRUrgent:hover {
+        background-color: #b40000 !important;
+        color: white !important;
+    }
+
+.TBRUrgentActive {
+    background-color: #b40000 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.OnHoleDoneBG {
+    background-color: #af0def !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.AllSessions {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .AllSessions:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.AllSessionsActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionPrint {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionPrint:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionPrintActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionTobeUpdated {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionTobeUpdated:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionTobeUpdatedActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionSuspended {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionSuspended:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionSuspendedActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionFollow {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionFollow:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionFollowActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionFollow {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionFollow:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionFollowActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionOnHold {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionOnHold:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionOnHoldActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionClientApproval {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionClientApproval:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionClientApprovalActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionJudgement {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionJudgement:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionJudgementActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionPauseEnfReq {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionPauseEnfReq:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionPauseEnfReqActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.SessionAppointment {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .SessionAppointment:hover {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.SessionAppointmentActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.btn-Detail {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.sessionRunningCategoryBar {
+    padding-top: 10px;
+    background-color: #50634d;
+    color: white;
+}
+
+.emphasized {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.INQGeneral {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .INQGeneral:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.INQGeneralActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.INQMoh {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .INQMoh:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.INQMohActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.INQRop {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .INQRop:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.INQRopActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.INQBank {
+    background-color: #e8e8e8 !important;
+    color: black !important;
+}
+
+    .INQBank:hover {
+        background-color: #4086a6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+.INQBankActive {
+    background-color: #4086a6 !important;
+    color: white !important;
+    font-weight: bold;
+}

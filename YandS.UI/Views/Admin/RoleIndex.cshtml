@@ -1,0 +1,75 @@
+﻿@model IEnumerable<YandS.UI.Models.ApplicationRole>
+@{
+    Layout = "~/Views/Shared/_LayoutRBAC.cshtml";
+}
+@{
+    ViewBag.Title = "Roles";
+}
+<script type="text/javascript">
+    function DeleteRole(id) {
+        if (confirm('Are you sure you want to permanently delete this role?')) {
+            // delete it!
+            //demonstrates using a dialog confirmation using JavaScript and NOT JQuery...
+            var _url = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1) + "RoleDelete/" + id;
+            window.location.href(_url);
+        } else {
+            // Do nothing!
+        }
+    };
+</script>
+<fieldset>
+    <legend>
+        <h3 style="font-weight:bold; font-size:x-large">
+            Roles
+        </h3>
+    </legend>
+    <table id="RoleTable" style="width: 90%">
+        <thead>
+        <th>
+            Role Name
+        </th>
+        <th>
+            Role Description
+        </th>
+        <th>
+            Is System Admin
+        </th>
+        <th style="width: 8%">
+            Action
+        </th>
+        </thead>
+        @{if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "RoleDetails", new { id = item.Id })
+                        </td>
+                        <td>
+                            @item.RoleDescription
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsSysAdmin)
+                        </td>
+                        <td>
+                            <center>
+                                <a href="@Url.Action("RoleEdit", "Admin", new { id = item.Id })">
+                                    <img src="@Url.Content("~/Content/Images/pen.png")" alt="Edit Role" />
+                                </a>
+                                <img src="@Url.Content("~/Content/Images/bin.png")" alt="Delete Role" onclick="DeleteRole('@item.Id')" />
+                            </center>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </table>
+    <br />
+    <div>
+        <input class="btn btn-default" type="button" value="Create Role" onclick="location.href='@Url.Action("RoleCreate", "Admin")'" />
+        <br />
+    </div>
+</fieldset>
+<br />
+@Html.ActionLink("Go to Users", "Index", "Admin")

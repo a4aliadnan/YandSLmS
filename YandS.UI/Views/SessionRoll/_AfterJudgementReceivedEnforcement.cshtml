@@ -1,0 +1,196 @@
+﻿<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $(".clsDecimal").regexMask(IsDecimal);
+        //$(".DIV_DisputeLevel").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_DisputeDetail").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+
+        processFileStatusChange($('#FileStatus').val());
+
+        $('#FileStatus').on("change", function () {
+            processFileStatusChange($('#FileStatus').val());
+        });
+
+        if ($('#EnforcementIsFavorable').val() == "N") {
+            $("#DIV_DisputeDetail").removeClass("AppHidden");
+            $('#DIV_SessionFileStatus').removeClass("AppHidden").addClass("AppHidden");
+        }
+        else
+            $('#DIV_SessionFileStatus').removeClass("AppHidden");
+
+        $('#EnforcementIsFavorable').on("change", function () {
+            $("#DIV_DisputeDetail").removeClass("AppHidden").addClass("AppHidden");
+            $('#DIV_SessionFileStatus').removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#EnforcementIsFavorable').val() == "N")
+                $("#DIV_DisputeDetail").removeClass("AppHidden");
+            else
+                $('#DIV_SessionFileStatus').removeClass("AppHidden");
+
+            $('textarea').autoResize();
+            LoadOfficeFileStatus($('#EnforcementIsFavorable').val(), $('#SessionFileStatus'), "Y");
+        });
+
+
+        $('#DisputeLevel').on("change", function () {
+            SetLabelText();
+            $('textarea').autoResize();
+        });
+
+        if ($('#AgainstCode').val() == "3") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        if ($('#hidJudFilter').val() == "Y") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        SetLabelText();
+        $('textarea').autoResize();
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@Html.HiddenFor(model => model.ActionLevel, new { @Value = "4" })
+
+<div id="DIV_ENFORCEMENT" class="card-body">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="DisputeLevel">ENFC DISPUTE مرحلة منازعة التنفيذ</label>
+                @Html.DropDownList("DisputeLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="EnforcementJudgementsDate"><span id="labelDisputeDate"></span></label>
+                @Html.EditorFor(model => model.EnforcementJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="EnforcementJDReceiveDate"><span id="labelJDReceiveDate"></span></label>
+                @Html.EditorFor(model => model.EnforcementJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="ClaimSummary"><span id="labelClaimSummary"></span></label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto" })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="EnforcementJudgements"><span id="labelJudgements"></span></label>
+                @Html.TextAreaFor(model => model.EnforcementJudgements, 1, 200, new { @class = "form-control", @dir = "auto" })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="">FAVORABLE مطابقة الحكم</label>
+                @Html.DropDownList("EnforcementIsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+
+    </div>
+    <div id="DIV_SessionFileStatus" class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label style="color:brown" for="SessionFileStatus">FILE STATUS حالة الملف</label>
+                @Html.DropDownList("SessionFileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+    <div id="DIV_DisputeDetail" class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <label for="ConsultantId">ADVISOR المستشار</label>
+                            <div class="input-group mb-3">
+                                @Html.DropDownList("ConsultantId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                <div class="input-group-append">
+                                    <button type="button" onclick="AddMasterValue('ADD CONSULTANT NAME','ConsultantId','1408')" class="btn btn-info" id="1408">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="FormPrintWorkRequired">WORK REQUIRED العمل المطلوب</label>
+                        @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="OfficeProcedure">NOTES الملاحظات</label>
+                        @Html.TextAreaFor(model => model.OfficeProcedure, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="FormPrintLastDate">LAST DATE الإنجاز قبل</label>
+                        @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label style="color:red" for="FileStatus">FILE STATUS حالة الملف</label>
+                        @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+
+                </div>
+                <div class="col-sm-4">
+                    <div id="DIV_ACTION_DATE" class="form-group AppHidden">
+                        <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                        @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

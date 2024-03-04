@@ -1,0 +1,47 @@
+﻿@model YandS.UI.Models.ApplicationRole
+@Html.HiddenFor(model => model.Id)
+
+<div class="box box-solid">
+    <div class="box-header with-border">
+        <h3 class="box-title">Add User To Role</h3>
+
+        <div class="box-tools">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body no-padding">
+        <label>User:  </label>
+        @Html.DropDownList("UserId", null, string.Empty, new { style = "width:250px" })
+        <input class="btn btn-default" type="button" id="AddUser" value="Add User To Role" />
+    </div>
+    <!-- /.box-body -->
+</div>
+@section pagespecific {
+    <script type="text/javascript">
+    $(document).ready(function () {
+        //$('#AddUser').attr("disabled", true);
+        $('#AddUser').click(function () {
+            var _userId = $('#UserId').val();
+            var _id = $('#Role_Id').val();
+
+            if (_userId == '') {
+                return false;
+            }
+
+            var _parameters = { userId: _userId, id: _id };
+            $.ajax({
+                url: "/Admin/AddUser2RoleReturnPartialView",
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#UsersTable').html(data);
+                    $('#UserId').val("");
+                }
+            });
+        });
+    });
+    </script>
+
+}

@@ -1,0 +1,24 @@
+﻿@model YandS.UI.Models.CaseInvoiceFeeCalculation
+@{
+    var ClaimAmount = Model.ClaimAmount.Value.ToString("0.###");
+
+    var varClaimAmountCalculated = (decimal)Model.ClaimAmount * (decimal)(Model.ClaimAmountPct / 100);
+
+    var varFeeAmountCalculated = (decimal)varClaimAmountCalculated * (decimal)(Model.FeeAmountPct / 100);
+
+    ViewBag.ClaimAmountCalculated = varClaimAmountCalculated.ToString("0.###");
+
+    ViewBag.FeeAmountCalculated = varFeeAmountCalculated.ToString("0.###");
+
+    ViewBag.ClaimAmountPct = Model.ClaimAmountPct.ToString("0.###");
+
+    ViewBag.FeeAmountPct = Model.FeeAmountPct.ToString("0.###");
+}
+<tr style="mso-yfti-irow:7;height:.4in">
+    <td style="width:45pt;border:none;border-right:solid windowtext 2.25pt; padding:0in 0in 0in 0in;height:.4in" valign="top" width="111"></td>
+    <td colspan="4" style="width: 463.5pt; border-top: none; border-left: none; border-bottom: solid windowtext 2.25pt; border-right: solid windowtext 2.25pt; mso-border-top-alt: solid windowtext 2.25pt; mso-border-left-alt: solid windowtext 2.25pt; mso-background-themecolor: background1; mso-background-themeshade: 217; padding: .7pt .7pt .7pt .7pt; height: .4in" width="597">
+        <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;text-align:center;line-height:normal">
+            <span style="font-size:12.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:Times New Roman;  mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;color:black">@ViewBag.ClaimAmountPct % of @ClaimAmount = @ViewBag.ClaimAmountCalculated and @ViewBag.FeeAmountPct % of @ViewBag.ClaimAmountCalculated = @ViewBag.FeeAmountCalculated<o:p></o:p></span>
+        </p>
+    </td>
+</tr>

@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Enforcement";
+}
+<style>
+    .EnfGovernorate {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .EnfGovernorate:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .EnfGovernorateActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+</style>
+<script>
+        
+    var _parameters = {};
+    var GetClientClassificationURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CreateClientMasterURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CheckDuplicateDetailURL = '@Url.Action("CheckDuplicateDetail", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+
+    $(document).ready(function () {
+        console.log("Enforcement Index Document Ready Page");
+        var _PartialViewName = "EnfGeneral";
+        var PartialContainer = $("#ENF_PartialViewContainer");
+
+        if ($("#hidIsCourtFollow").val() == "N" && $("#hidIsClientReply").val() == "N")
+            $("#enfbtn_EnfGeneral").addClass("enfGeneralActive");
+        else {
+
+            $("#div_IsCourtFollow").removeClass("AppHidden").addClass("AppHidden");
+            $("#div_courtCasesMailButton").removeClass("AppHidden").addClass("AppHidden");
+            $(".clsCourtCases").removeClass("active");
+
+            if ($("#hidIsCourtFollow").val() == "Y" && $("#hidIsClientReply").val() == "N") {
+                _PartialViewName = "CourtFollow";
+                $(".clsCourtFollow").removeClass("active").addClass("active");
+            }
+            else {
+                _PartialViewName = "ClientReply";
+                $(".clsClientReply").removeClass("active").addClass("active");
+
+            }
+        }
+    
+        _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+        $('.enfNavButton').click(function () {
+            $("#ENF_ModificationContainer").empty();
+            $("#hidIsAgainstClient").val("N");
+            $("#hidCurrentTableName").val("");
+            $("#hidDefendentTransferId").val("");
+
+            $(".enfNavButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedClass = $(this).attr("id").split('_')[1];
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+            $(this).addClass(btnClickedActiveClass);
+
+            _PartialViewName = btnClickedClass;
+            PartialContainer = $("#ENF_PartialViewContainer");
+
+
+            _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        });
+    });
+
+
+</script>
+<div id="div_IsCourtFollow" class="@ViewBag.IsCourtFollow">
+    <div style="padding-bottom:0px;padding-top:10px;" class="row NewTitleBanner">
+        <div class="col-sm-12 text-center"><h3>ENFORCEMENT تنفيذ الأحكام</h3></div>
+    </div>
+
+    <div style="padding-bottom:0px;padding-top:10px;" class="row">
+        <div class="col">
+            <button type="button" id="enfbtn_EnfGeneral" style="font-size: 1rem !important;" class="btn btn-block enfGeneral @ViewBag.enfGeneralActive btn-lg enfNavButton">ملفات التنفيذ<br />ENFORCEMENT FILES</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_OnlineReg" style="font-size: 1rem !important;" class="btn btn-block OnlineReg @ViewBag.OnlineRegActive btn-lg enfNavButton">التسجيل الإلكتروني<br />ONLINE REG.</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_Announcement" style="font-size: 1rem !important;" class="btn btn-block Announcement @ViewBag.AnnouncementActive btn-lg enfNavButton">الإعلان<br />ANNOUNCEMENT</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_Inquiry" style="font-size: 1rem !important;" class="btn btn-block Inquiry @ViewBag.InquiryActive btn-lg enfNavButton">استعلام الجهات<br />CONTACTING AUTHORITIES</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_ArrestRequst" style="font-size: 1rem !important;" class="btn btn-block ArrestRequst @ViewBag.ArrestRequstActive btn-lg enfNavButton">طلب الحبس<br />ARREST APPLICATION</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_ArrestOrder" style="font-size: 1rem !important;" class="btn btn-block ArrestOrder @ViewBag.ArrestOrderActive btn-lg enfNavButton">قرار بالحبس<br />ARREST ORDER</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_JudicialSale" style="font-size: 1rem !important;" class="btn btn-block JudicialSale @ViewBag.JudicialSaleActive btn-lg enfNavButton">البيع القضائي<br />JUDICIAL SALE</button>
+        </div>
+    </div>
+    <div style="padding-bottom:0px;padding-top:10px;" class="row">
+        <div class="col">
+            <button type="button" id="enfbtn_Suspended" style="font-size: 1rem !important;" class="btn btn-block Suspended @ViewBag.SuspendedActive btn-lg enfNavButton">وقف مؤقت<br />SUSPENDED</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_AgainstInsurance" style="font-size: 1rem !important;" class="btn btn-block AgainstInsurance @ViewBag.AgainstInsuranceActive btn-lg enfNavButton">ضد شركات التأمين<br />AGAINST INSURANCE</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_DefendantTransfer" style="font-size: 1rem !important;" class="btn btn-block DefendantTransfer @ViewBag.DefendantTransferActive btn-lg enfNavButton">تحويلات مالية<br />DEFENDANT TRANSFER</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_RecoveryFromCourt" style="font-size: 1rem !important;" class="btn btn-block RecoveryFromCourt @ViewBag.RecoveryFromCourtActive btn-lg enfNavButton">استرداد الصيغة<br />RECOVERY JUDGMENT</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_FileReview" style="font-size: 1rem !important;" class="btn btn-block FileReview @ViewBag.FileReviewActive btn-lg enfNavButton">دراسة الملف<br />FILE REVIEW</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_ToMeetJudge" style="font-size: 1rem !important;" class="btn btn-block ToMeetJudge @ViewBag.ToMeetJudgeActive btn-lg enfNavButton">مقابلة القاضي<br />TO MEET JUDGE</button>
+        </div>
+        <div class="col">
+            <button type="button" id="enfbtn_ContactResult" style="font-size: 1rem !important;" class="btn btn-block ContactResult @ViewBag.ContactResultActive btn-lg enfNavButton">نتائج الاتصالات<br />CONTACT'S RESULT</button>
+        </div>
+        @*<div class="col">
+            <button type="button" id="enfbtn_AgainstClient" style="font-size: 1rem !important;" class="btn btn-block AgainstClient @ViewBag.AgainstClientActive btn-lg enfNavButton">تنفيذ ضد الموكل<br />AGAINST CLIENT</button>
+        </div>*@
+    </div>
+
+    <div style="padding-bottom:0px;padding-top:10px;" class="row">
+        @*<div class="col">
+            <button type="button" id="enfbtn_SealOfJudgement" style="font-size: 1rem !important;" class="btn btn-block SealOfJudgement @ViewBag.SealOfJudgementActive btn-lg enfNavButton">ختم الأحكام<br />SEAL OF JUDGMENT</button>
+        </div>*@
+        
+        <div class="col">
+            @*<button type="button" id="enfbtn_EnfGovernorate" style="font-size: 1rem !important;" class="btn btn-block EnfGovernorate @ViewBag.EnfGovernorateActive btn-lg enfNavButton">المحافظة<br />GOVERNORATE</button>*@
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+        </div>
+    </div>
+
+</div>

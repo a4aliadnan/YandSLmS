@@ -1,0 +1,38 @@
+﻿@model YandS.UI.Models.ApplicationUser
+@{if (Model.Roles.Count == 0)
+    {
+        <h2><font color="red">No Associated Roles...</font></h2>
+        <br />
+    }
+    else
+    {
+        <table id="RoleTable" style="width: 800px">
+            <thead>
+            <th style="width: 30%">
+                Role
+            </th>
+            <th style="width: 60%">
+                Description
+            </th>
+            <th>
+                Action
+            </th>
+            </thead>
+            @foreach (var role in Model.Roles.OrderBy(r => r.RoleId))
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(role.Role.Name, "RoleDetails", new { id = role.RoleId })
+                    </td>
+                    <td>
+                        @role.Role.RoleDescription
+                    </td>
+                    <td>
+                        <center><img class="bin" src="@Url.Content("~/Content/images/bin.png")" alt="Delete" id="@role.RoleId" /></center>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br />
+    }
+}

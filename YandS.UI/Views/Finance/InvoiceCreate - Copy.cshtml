@@ -1,0 +1,570 @@
+﻿@model YandS.UI.Models.CaseInvoice
+@{
+    ViewBag.Title = "Y & S Associates - Case Invoice Creation";
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Case Invoice</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Case Invoice</li>
+                        <li class="breadcrumb-item active"><a href="#">Create Case Invoice</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm("InvoiceCreate", "Finance", FormMethod.Post, new { enctype = "multipart/form-data", id = "CreateInvoiceForm", onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Case Invoice Creation</h3>
+                    <div class="float-right">
+                        Branch Name : @ViewBag.BranchName - Invoice Date : @ViewBag.InvoiceDate
+                    </div>
+                </div>
+                <div class="card-header">
+                    <div class="text-center">
+                        <h4>@Html.DisplayFor(model => model.OfficeFileNo)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.ClientName)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.Defendant)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.CaseRegisterDate)</h4>
+                    </div>
+                </div>
+
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.CaseId, new { @Value = ViewBag.CaseId })
+                        @Html.HiddenFor(model => model.InvoiceStatus)
+                        @Html.HiddenFor(model => model.InvoiceDate)
+                        @Html.HiddenFor(model => model.buttonName)
+
+                        @if (!string.IsNullOrEmpty(ViewBag.SpecialInstructions))
+                        {
+                            <div class="row">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="alert alert-danger alert-dismissible">
+                                                <h5><i class="icon fas fa-ban"></i> Special Instructions!</h5>
+                                                @Html.Raw(ViewBag.SpecialInstructions)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.AccountContractNo)
+                                    @Html.EditorFor(model => model.AccountContractNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CourtType)
+                                    @Html.DropDownList("CourtType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ClientFileNo)
+                                    @Html.EditorFor(model => model.ClientFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CourtRefNo)
+                                    @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ClaimAmount)
+                                    @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+
+                            </div>
+                            <div class="col-sm-6">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Credit_Account)
+                                    @Html.DropDownList("Credit_Account", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-outline card-warning">
+                            <div class="card-header">
+                                <h3 class="card-title"> Add Fee Calculation</h3>
+                                <div class="icheck-primary d-inline" style="padding-left:20px">
+                                    @Html.CheckBoxFor(model => model.ShowInInvoice)
+                                    @Html.LabelFor(model => model.ShowInInvoice)
+                                </div>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                <!-- /.card-tools -->
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="InvoiceFeeCalculationDetail">
+                                            <div id="InvoiceFeeCalculationDetailHeader" class="AppHidden">
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <div class="form-group">
+                                                            <label>Claim Amount %</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <div class="form-group">
+                                                            <label>Calculated Claim Amount</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <div class="form-group">
+                                                            <label>Fee Amount %</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <div class="form-group">
+                                                            <label>Calculated Fee Amount</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @if (Model.FeeCaclId != null)
+                                            {
+                                                foreach (var FeeCaclId in Model.FeeCaclId)
+                                                {
+                                                    @Html.Partial("_CaseInvoiceFeeCalculation", FeeCaclId)
+                                                }
+                                            }
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="button" id="addFeeCalcType" name="addFeeCalcType" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Fee Calculation</button>
+                            </div>
+                        </div>
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Add Fee Detail</h3>
+
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                <!-- /.card-tools -->
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="InvoiceFeeDetail">
+                                            <div id="InvoiceFeeDetailHeader" class="AppHidden">
+                                                <div class="row">
+                                                    <div class="col-sm-10">
+                                                        <div class="col-sm-12">
+                                                            <div class="row">
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <label>Invoice Classification</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <label>Case Level</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-3">
+                                                                    <div class="form-group">
+                                                                        <label>Court Fee Type</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <label>Number</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-3">
+                                                                    <div class="form-group">
+                                                                        <label>PV Number</label>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <div class="col-sm-12">
+                                                            <div class="row">
+                                                                <div class="col-sm-8">
+                                                                    <div class="form-group">
+                                                                        <label>Amount</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-4">
+                                                                    <div class="form-group">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (Model.FeeId != null)
+                                            {
+                                                foreach (var FeeId in Model.FeeId)
+                                                {
+                                                    @Html.Partial("_CaseInvoiceFee", FeeId)
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="button" id="addFeeType" name="addFeeType" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Fee Type</button> | <button type="button" id="ViewInvoice" name="ViewInvoice" class="btn btn-warning ProcessInvoice"><i class="fas fa-file-download"></i> View Invoice</button> | <button type="button" id="PrintInvoice" name="PrintInvoice" class="btn btn-primary ProcessInvoice"><i class="fas fa-file-pdf"></i> Print Invoice</button><button style="float:right" type="button" class="btn btn-info" id="btdAddFeeType" data-toggle="modal" data-target="#modal-AddFeeType"><i class="fas fa-plus-circle"></i> Add New Fee Type</button> | <button style="float:right" type="button" id="btn-ViewInvoiceDetail" class="btn btn-warning" onclick="generate_modal_body()">Check Previous Invoices</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="UploadedFile">Supporting Document</label>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="upload" name="upload">
+                                    <label class="custom-file-label" for="upload">Choose Document</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer text-center">
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+                    <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreateIndex","Finance")';return false;" id=@Model.CaseId><i class="fas fa-home"></i> BACK TO LIST</button>
+                    <button id=@Model.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "1" })';return false;"><i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+                    <button id=@Model.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "2" })';return false;"><i class="fas fa-globe-europe"></i> TO APPEAL</button>
+                    <button id=@Model.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "3" })';return false;"><i class="fas fa-globe-europe"></i> TO SUPREME</button>
+                    <button id=@Model.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageEnforcementDetail", "CourtCases", new { CaseId = Model.CaseId })';return false;"><i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+                    <button id=@Model.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = Model.CaseId })';return false;"><i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+                </div>
+
+            </div>
+
+        }
+    </section>
+    <div class="modal fade" id="modal-ViewDefendent">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title">CHECK DETAIL</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table id="tblDefaulterDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <th>Invoice Date</th>
+                                <th>Case Level</th>
+                                <th>Invoice Classification</th>
+                                <th>Fee Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-AddFeeType">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Fee Type</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter Fee Type" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var InvoiceDetailURL = '@Url.Action("GetCaseInvoiceDetail", "CommonTask", new { area = string.Empty })';
+        var SetCaseNumberURL = '@Url.Action("GetCaseNumber", "Finance", new { area = string.Empty })';
+        var CollectionCount = 0;
+
+        function ProcessAddClient() {
+            //if (CollectionCount == 0) {
+            //    Swal.fire({
+            //        type: "error",
+            //        title: 'Error...',
+            //        html: "Please Add Fees Type First to add New Fees Type"
+            //    });
+            //    return false;
+            //}
+
+            if ($("#MstDesc").val() != "") {
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: CreateMasterTableDetailURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            var newOption = new Option(Result.name, Result.id, true, true);
+                            $("[id$='FeeTypeId']").append(newOption).trigger('change');
+                            //$("#FeeTypeId").append(newOption).trigger('change');
+                            $('#modal-AddFeeType').modal('hide');
+
+                        }
+                        else {
+                            $('#modal-AddFeeType').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+            }
+        }
+
+        function generate_modal_body() {
+            
+            if (typeof DefendentTable != 'undefined')
+                DefendentTable.destroy();
+
+            DefendentTable = $('#tblDefaulterDetail').DataTable({
+                lengthChange: false,
+                ajax: {
+                    url: InvoiceDetailURL,
+                    "dataSrc": "",
+                    type: 'POST',
+                    data: function (d) {
+                        d.P_CaseId = @ViewBag.CaseId;
+                    }
+                },
+                "columns": [
+                    { data: 'InvoiceNumber' },
+                    { data: 'InvoiceDate' },
+                    { data: 'CaseLevelName' },
+                    { data: 'InvClassificationName' },
+                    { data: 'FeeTypeName' },
+                    { data: 'FeeAmount' }
+                ],
+                initComplete: function () {
+                    $('#modal-ViewDefendent').modal('show');
+                }
+            });
+        }
+
+
+        function onPreSubmit(item) {
+            /* Checking Court Fee Selected or Not*/
+
+            if (CollectionCount == 0) {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: "Please Add Fees Type in Invoice"
+                });
+                return false;
+            }
+
+        }
+
+        $(function () {
+            console.log("Case Invoice Create");
+            bsCustomFileInput.init();
+        });
+
+        $(document).ready(function () {
+            $(".ProcessInvoice").on('click', function (e) {
+                console.log("ProcessInvoice :: button clicked");
+                e.preventDefault();
+                var clickedButtonName = this.id;
+                $("#buttonName").val(clickedButtonName);
+                $('#CreateInvoiceForm').trigger('submit');
+            });
+
+            $('#addFeeType').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/Finance/AddNewCourtFee',
+                    type: "GET",
+                    success: function (data, textStatus, jqXHR) {
+                        if ($("#InvoiceFeeDetailHeader").hasClass("AppHidden"))
+                            $("#InvoiceFeeDetailHeader").removeClass("AppHidden");
+
+                        $('#InvoiceFeeDetail').append(data);
+                        console.log(data);
+                        CollectionCount = CollectionCount + 1;
+                        console.log(CollectionCount);
+
+                        var form = $('form');
+                        form.data('validator', null);
+                        $.validator.unobtrusive.parse(form);
+                        bsCustomFileInput.init();
+
+                    }
+                });
+
+                return false;
+            });
+
+            $(".deleteRow").on("click", function () {
+                console.log(".deleteRow");
+                var container = $(this).closest('.caseinvoicefeeRow');
+                //$(this).parents(".caseinvoicefeeRow:first").remove();
+                container.remove();
+                CollectionCount = CollectionCount - 1;
+                console.log(CollectionCount);
+                return false;
+            });
+
+            $('#addFeeCalcType').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/Finance/AddNewFeeCalculation',
+                    type: "GET",
+                    success: function (data, textStatus, jqXHR) {
+                        if ($("#InvoiceFeeCalculationDetailHeader").hasClass("AppHidden"))
+                            $("#InvoiceFeeCalculationDetailHeader").removeClass("AppHidden");
+                        
+                        $('#InvoiceFeeCalculationDetail').append(data);
+
+                        var form = $('form');
+                        form.data('validator', null);
+                        $.validator.unobtrusive.parse(form);
+                    }
+                });
+
+                return false;
+            });
+
+            $(".deleteFeeCalcTypeRow").on("click", function () {
+                console.log(".deleteFeeCalcTypeRow");
+                var container = $(this).closest('.caseinvoicefeeCalculationRow');
+                //$(this).parents(".caseinvoicefeeRow:first").remove();
+                container.remove();
+                CollectionCount = CollectionCount - 1;
+                console.log(CollectionCount);
+                return false;
+            });
+
+            $("#CourtType").on("change", function () {
+                console.log("CourtType Change");
+                console.log(this.value);
+
+                if (this.value == "1")
+                    $("#CourtRefNo").val("TO BE REGISTER");
+                else {
+                    console.log("Case Id :: " + $("#CaseId").val());
+
+                    var _CaseId = parseInt($("#CaseId").val());
+                    var _CaseLevelId = this.value;
+
+                    _parameters = { CaseLevelId: _CaseLevelId, CaseId: _CaseId };
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        data: JSON.stringify(_parameters),
+                        url: SetCaseNumberURL,
+                        success: function (Result) {
+                            console.log(Result);
+
+                            if (Result.Message == "Success") {
+                                if (Result.RetResult == "") {
+                                    if (_CaseLevelId == "6") {
+                                        $("#CourtRefNo").val("NO SELECTION IN ENFORCEMENT");
+                                    }
+                                    else {
+                                        $("#CourtRefNo").val("NO SELECTION IN BEFORE COURT");
+                                    }
+                                }
+                                else 
+                                    $("#CourtRefNo").val(Result.RetResult);
+                            }
+                            else {
+                                Swal.fire({
+                                    type: "error",
+                                    title: 'Error...',
+                                    html: Result.ErrorMessage
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+}

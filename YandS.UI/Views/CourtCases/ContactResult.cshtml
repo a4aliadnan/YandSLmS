@@ -1,0 +1,297 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "ENF-CONTRESULT";
+
+    function LoadContractResultTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 25,
+            "lengthMenu": [[5, 10, 25, 50, 100, 1000, 99999], [5, 10, 25, 50, 100, 1000, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                    d.DateFrom = $("#ContactDateFrom").val();
+                    d.DateTo = $("#ContactDateTo").val();
+                    d.CallerName = $('#DEF_CallerName').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                { data: 'DefClientName', name: 'DefClientName', autoWidth: true },
+                { data: 'COURT', name: 'COURT', autoWidth: true },
+                { data: 'CourtRefNo', name: 'CourtRefNo', autoWidth: true },
+                { data: 'CurrentEnforcementLevel', name: 'CurrentEnforcementLevel', autoWidth: true },
+                { data: 'DEF_DateOfContact', name: 'DEF_DateOfContact', autoWidth: true },
+                { data: 'DEF_CallerName', name: 'DEF_CallerName', autoWidth: true },
+                { data: 'Notes', name: 'Notes', autoWidth: true },
+                { data: 'DEF_VisitDate', name: 'DEF_VisitDate', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+
+                            return '<a class="btn btn-info btn-sm btnLink" title="" id="M_' + row.CaseId + '" href="javascript:void(0)" data-original-title="Enforcement Management"><i class="fas fa-pencil-alt"></i></a>';
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': "_all" },
+                //{ 'orderable': false, 'targets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 1
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 2
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 4
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 5
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: 6
+                },
+                {
+                    targets: 7, render: function (data) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    }
+                },
+                {
+                    targets: 8, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: 9
+                }
+            ],
+            "drawCallback": function (settings) {
+                $("#ENF_ModificationContainer").empty();
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                /*$('.btn').bstooltip();
+
+                var info = table.page.info();
+
+                var MCTRecords = table.ajax.json().MuscatTotal;
+                var SLLRecords = table.ajax.json().SalalahTotal;
+                var recordsTotal = table.ajax.json().recordsTotal;
+
+
+
+                console.log("MUSCAT TOTAL " + MCTRecords);
+                console.log("SALALAH TOTAL " + SLLRecords);
+                $('#TTL').text(recordsTotal);
+
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                    //$('#TTL').text(recordsTotal);
+                }*/
+                //else {
+                //    if ($('#txtLocationId').val() == "M")
+                //        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                //    else
+                //        $('#MCTTTL').text("SALALAH : " + SLLRecords);
+                //}
+
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+        $('.table tbody').on('click', '.btnLink', function () {
+            var _Mode = this.id.split('_')[0];
+            var _id = parseInt(this.id.split('_')[1]);
+
+            var data = table.row($(this).parents('tr')).data();
+
+            console.log(data);
+            console.log(_id);
+            console.log(data.CaseId);
+
+            processbtnLinkClick(_Mode, data, dataForTable);
+            return false;
+        });
+
+    }
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $("#ContactDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            console.log(selected.date);
+            if (selected.date !== undefined) {
+                var minDate = new Date(selected.date.valueOf());
+                $('#ContactDateTo').datepicker('setStartDate', minDate);
+            }
+            else {
+                $('#ContactDateTo').datepicker('setDate', null);
+            }
+        });
+
+        $("#ContactDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            if (selected.date !== undefined) {
+                var maxDate = new Date(selected.date.valueOf());
+                $('#ContactDateFrom').datepicker('setEndDate', maxDate);
+            }
+            else {
+                $('#ContactDateFrom').datepicker('setDate', null);
+            }
+        });
+
+        $('#btnPrintResult').on("click", function () {
+            LoadContractResultTable();
+        });
+
+        LoadContractResultTable();
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+
+<div style="padding-bottom:0px;padding-top:10px;" class="row ContactResultActive">
+    <div class="col-sm-3 text-left text-white"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>CONTACT'S RESULT نتائج الاتصالات</h3></div>
+    <div class="col-sm-3 text-right text-white"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row ContactResultActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label for="ContactDateFrom">FROM</label>
+            @Html.EditorFor(model => model.ContactDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label for="ContactPrintDateTo">TO</label>
+            @Html.EditorFor(model => model.ContactDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="CountLocationId">CALLER NAME اسم المتصل</label>
+            @Html.DropDownList("DEF_CallerName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-3" style="padding-top:30px;">
+        <button id="btnPrintResult" type="button" class="btn btn-success"><i class="fas fa-file"></i> SHOW</button>
+    </div>
+
+</div>
+        <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+
+            <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width:35px !important;" class="all VMiddle text-center">FILE<br />NO.</th>
+                        <th class="VMiddle text-center">CLIENT NAME</th>
+                        <th style="width:130px !important;" class="VMiddle text-center">NAME</th>
+                        <th style="width:80px !important;"  class="VMiddle text-center">COURT</th>
+                        <th class="VMiddle text-center">ENFORCEMENT NO</th>
+                        <th style="width:150px !important;" class="VMiddle text-center">STAGE<br />المرحلة</th>
+                        <th class="VMiddle text-center">DATE OF CONTACT<br />تاريخ الاتصال</th>
+                        <th style="width:130px !important;" class="VMiddle text-center">CALLER NAME<br />اسم المتصل</th>
+                        <th class="VMiddle text-center">NOTES<br />الملاحظات</th>
+                        <th class="VMiddle text-center">VISIT DATE<br />تاريخ المراجعة</th>
+                        <th style="width:15px !important;" class="all"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>

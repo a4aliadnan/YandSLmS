@@ -1,0 +1,308 @@
+﻿@model YandS.UI.Models.CaseInvoice
+@{
+    ViewBag.Title = "Y & S Associates - Add Cheque/Transfer Detail to Case Invoice";
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>CASE INVOICE - PAY SCREEN</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">FINANCE</li>
+                        <li class="breadcrumb-item">CASE INVOICE</li>
+                        <li class="breadcrumb-item active"><a href="#">PAY SCREEN</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm("InvoiceEdit", "Finance", FormMethod.Post, new { id = "EditInvoiceForm", onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-primary">
+                <div class="card-header bg-gradient-blue">
+                    <h3 class="card-title">PAY SCREEN</h3>
+                    <div class="float-right">
+                        BRANCH NAME : @ViewBag.BranchName - INVOICE DATE : @Model.InvoiceDate
+                    </div>
+                </div>
+                <div class="card-header bg-maroon">
+                    <div class="text-center">
+                        <h4>@Html.DisplayFor(model => model.OfficeFileNo)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.ClientName)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.Defendant)<span class="YandSTitleSpacing">-</span>@Html.DisplayFor(model => model.InvoiceNumber)</h4>
+                    </div>
+                </div>
+
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.InvoiceId)
+                        @Html.HiddenFor(model => model.CaseId)
+                        @Html.HiddenFor(model => model.CourtType)
+                        @Html.HiddenFor(model => model.TransferType)
+                        @Html.HiddenFor(model => model.InvoiceNumber)
+
+                        @Html.HiddenFor(model => model.CreatedBy)
+                        @Html.HiddenFor(model => model.CreatedOn)
+                        @Html.HiddenFor(model => model.CourtRefNo)
+                        @Html.HiddenFor(model => model.ShowInInvoice)
+                        @Html.HiddenFor(model => model.CourtLocation)
+                        @Html.HiddenFor(model => model.IsLastInvoice)
+                        @Html.HiddenFor(model => model.ExpectedFees)
+                        @Html.HiddenFor(model => model.BeforeCourtStage)
+                        @Html.HiddenFor(model => model.EnforcementStage)
+                        @Html.HiddenFor(model => model.EnforcementStageNo)
+                        @Html.HiddenFor(model => model.CounsultingFeeType)
+                        @Html.HiddenFor(model => model.HourlyNoOfHours)
+                        @Html.HiddenFor(model => model.HourlyRate)
+                        @Html.HiddenFor(model => model.FixedAmount)
+                        @Html.HiddenFor(model => model.RetainershipMonth)
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.InvoiceStatus)
+                                    @Html.DropDownList("InvoiceStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.InvoiceDate)
+                                    @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TransferDate)
+                                    @Html.EditorFor(model => model.TransferDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    @Html.ValidationMessageFor(model => model.TransferDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 text-center" style="padding-top:35px">
+                                <div class="form-group clearfix">
+                                    <div style="padding-right:10px" class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.TransferType, "1", new { id = "TransferType1" })
+                                        <label for="TransferType1">CHEQUE</label>
+                                    </div>
+                                    <div class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.TransferType, "2", new { id = "TransferType2" })
+                                        <label for="TransferType2">CASH</label>
+                                    </div>
+                                    <div style="padding-left:10px" class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.TransferType, "3", new { id = "TransferType3" })
+                                        <label for="TransferType3">BANK TRANSFER</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="VoucherType1">DEPOSIT BANK</label>
+                                    @Html.DropDownList("Credit_Account", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div id="div-TransferNumber" class="form-group AppHidden">
+                                    <label for="VoucherType1">CHQ / RECEIPT NO.</label>
+                                    @Html.EditorFor(model => model.TransferNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div id="div-IsLastInvoice" class="card-body AppHidden">
+                            <div class="col-sm-12">
+                                <div class="alert alert-danger alert-dismissible  bg-yellow">
+                                    <div class="text-center">
+                                        <span>THIS IS THE LAST INVOICE SO PLEASE CLOSE THE FILE.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">FEE DETAIL</h3>
+                            </div>
+                            <div class="card-body">
+                                <table id="tblFeeDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>INVOICE CLASSIFICATION</th>
+                                            <th>CASE LEVEL</th>
+                                            <th>DESCRIPTION</th>
+                                            <th>DETAILS</th>
+                                            <th>NUMBER</th>
+                                            <th>AMOUNT</th>
+                                            <th>VAT</th>
+                                            <th>VAT AMT</th>
+                                            <th>TOTAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button> |
+                    <a class="btn btn-primary" href="@Url.Action("InvoiceManageIndex", "Finance")"><i class="fas fa-home"></i> Back to Main</a>
+                </div>
+            </div>
+
+        }
+    </section>
+</div>
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        function onPreSubmit(item) {
+            //console.log(item);
+            //console.log($("#div-IsLastInvoice").hasClass("AppHidden"));
+            var form = document.getElementById("EditInvoiceForm");
+            //item.preventDefault();
+
+            if ($("#InvoiceStatus").val() == "-1") {
+
+            }
+            else {
+                if ($("#InvoiceStatus").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: "PLEASE SELECT INVOICE STATUS"
+                    });
+                    return false;
+                }
+
+                $("#TransferType").val($('input[name="TransferType"]:checked').val());
+
+                if ($("#TransferDate").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'PLEASE ENTER PAID DATE'
+                    });
+                    return false;
+                }
+
+                if ($("#TransferType").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT PAYMENT MODE (O-CHEQUE, O-CASH OR O-BANK TRANSFER)'
+                    });
+                    return false;
+                }
+                else {
+                    if ($("#TransferType").val() == '1' || $("#TransferType").val() == '2') {
+                        if ($("#TransferNumber").val() == "") {
+                            Swal.fire({
+                                type: "error",
+                                title: 'ERROR...',
+                                html: 'PLEASE ENTER CHQ / RECEIPT NO.'
+                            });
+                            return false;
+                        }
+
+                    }
+                }
+
+                if ($("#Credit_Account").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: "PLEASE SELECT DEPOSIT BANK"
+                    });
+                    return false;
+                }
+
+                //InvoiceStatus
+
+            }
+
+            if ($("#IsLastInvoice").val() == "True") {
+                Swal.fire({
+                    type: "info",
+                    title: 'INFO...',
+                    html: "THIS IS THE LAST INVOICE SO PLEASE CLOSE THE FILE"
+                }).then(function () {
+                    form.submit();
+                });
+            }
+            else
+                form.submit();
+
+            return false;
+        }
+        var FeeDetailTable;
+        var GetFeeDetailURL = '@Url.Action("GetFeeDetailView", "CommonTask", new { area = string.Empty })';
+
+        $(document).ready(function () {
+
+            console.log("Case Invoice Edit");
+            console.log($("#IsLastInvoice").val());
+            if ($("#IsLastInvoice").val() == "True")
+                $("#div-IsLastInvoice").removeClass("AppHidden");
+
+            $(".chkReadOnly").prop("disabled", true);
+
+            bsCustomFileInput.init();
+
+            $('input[type=radio][name=TransferType]').change(function () {
+                if (this.value == '1' || this.value == '2') {
+                    //alert("CHEQUE");
+                    $("#div-TransferNumber").removeClass("AppHidden");
+
+                }
+                else {
+                    //alert("NOT CHEQUE");
+                    $("#TransferNumber").val("");
+                    $("#div-TransferNumber").removeClass("AppHidden").addClass("AppHidden");
+                }
+            });
+
+            FeeDetailTable = $('#tblFeeDetail').DataTable({
+                lengthChange: false,
+                searching: false,
+                paging: false,
+                info: false,
+                sorting: false,
+                ajax: {
+                    url: GetFeeDetailURL,
+                    "dataSrc": "",
+                    type: 'POST',
+                    data: function (d) {
+                        d.InvoiceId = $("#InvoiceId").val();
+                    }
+                },
+                "columns": [
+                    { data: 'InvClassification' },
+                    { data: 'CaseLevel' },
+                    { data: 'Descriptions' },
+                    { data: 'Details' },
+                    { data: 'Numbers' },
+                    { data: 'Amounts' },
+                    { data: 'VATPct' },
+                    { data: 'VATAmount' },
+                    { data: 'TotalAmount' }
+                ],
+                initComplete: function () {
+                    console.log("Completed");
+                }
+            });
+
+        });
+
+    </script>
+}

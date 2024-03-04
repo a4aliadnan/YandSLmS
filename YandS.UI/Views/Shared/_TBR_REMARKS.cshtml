@@ -1,0 +1,12 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@*<div class="card-header">
+        <div class="justify-content-between">
+            <span style="float:left; padding-top:30px;"><strong>REMARK  تعليق الإدارة</strong></span>
+            <span style="float:right"><a title="CLEAR" id="btnClear" class="btn btn-lg btn-danger" href="javascript:void(0)">CLEAR</a></span>
+        </div>
+    </div>*@
+@*<div class="form-group">
+    <label for="Remarks">REMARK  تعليق الإدارة</label>
+    @Html.TextAreaFor(model => model.MainRemarks, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Remarks" })
+</div>*@
+@Html.HiddenFor(model => model.MainRemarks)

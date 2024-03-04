@@ -1,0 +1,104 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,4})?$/);
+    function CalculateSuspendPeriod() {
+        console.log($('#EnforcementActionDate').val());
+        console.log($('#SuspensionPeriod').val());
+        var spanLabel = 'DAYS REMAINING الأيام المتبقية عن انتهاء الوقف';
+        $('#lblDaysRem_Passed').text(spanLabel);
+
+        if ($('#EnforcementActionDate').val() != "" && $('#SuspensionPeriod').val() != "") {
+            if (parseInt($('#SuspensionPeriod').val()) > 0) {
+                var $SuspensionPeriod = parseInt($('#SuspensionPeriod').val());
+                var $SuspensionStartDate = $("#EnforcementActionDate").val();
+                var $SuspensionEndDate = moment(moment($SuspensionStartDate, "DD/MM/YYYY")).add($SuspensionPeriod, 'days');
+
+                $("#SuspensionEndDate").val($SuspensionEndDate.format("DD/MM/YYYY"));
+
+                var intDaysRem_Passed = Math.ceil(moment.duration($SuspensionEndDate.diff(moment())).asDays());
+
+                var dispDaysRem_Passed = parseInt(intDaysRem_Passed) > 0 ? parseInt(intDaysRem_Passed) : parseInt(intDaysRem_Passed) * -1;
+
+
+                $("#DaysRemaining").val(dispDaysRem_Passed);
+
+                if (parseInt(intDaysRem_Passed) > 0)
+                    spanLabel = 'DAYS REMAINING الأيام المتبقية عن انتهاء الوقف';
+                else
+                    spanLabel = 'DAYS PASSED';
+
+                $('#lblDaysRem_Passed').empty();
+                $('#lblDaysRem_Passed').text(spanLabel);
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+    });
+</script>
+@Html.HiddenFor(model => model.EnforcementDispute, new { @Value = "1" })
+<div class="row clsRegisterNotShow">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="DisputeLevel">ENFORCEMENT DISPUTE</label>
+            @Html.DropDownList("DisputeLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="DisputeType">DISPUTE منازعة تنفيذ</label>
+            @Html.DropDownList("DisputeType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+</div>
+<div class="row clsRegisterNotShow">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="FormPrintWorkRequired">WORK REQUIRED العمل المطلوب</label>
+            @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label for="OfficeProcedure">NOTES الملاحظات</label>
+            @Html.TextAreaFor(model => model.OfficeProcedure, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="FormPrintLastDate">LAST DATE الإنجاز قبل</label>
+            @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label style="color:red" for="FileStatus">FILE STATUS حالة الملف</label>
+            @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+
+    </div>
+</div>

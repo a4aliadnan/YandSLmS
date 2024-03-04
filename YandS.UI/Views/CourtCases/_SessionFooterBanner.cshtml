@@ -1,0 +1,210 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var LoadCaseLevelURL = '@Url.Action("LoadCaseLevelByCaseId", "CommonTask", new { area = string.Empty })';
+    var GetPayVoucherCreatedListURL = '@Url.Action("GetPayVoucherCreatedList", "CommonTask", new { area = string.Empty })';
+    var LoadPayForURL = '@Url.Action("LoadPayFor", "CommonTask", new { area = string.Empty })';
+    var GetCaseDetailSRURL = '@Url.Action("GetCaseDetailByCaseId", "CommonTask", new { area = string.Empty })';
+    var CreatePayVoucherURL = '@Url.Action("PayVoucherCreate", "SessionRoll", new { area = string.Empty })';
+    var PayForRemarks = "";
+    var IsValidOfficeFileNo = true;
+    var PVDetailTable;
+
+    $(document).ready(function () {
+        console.log("Session Running");
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        bsCustomFileInput.init();
+        var DIV_TO_HIDE = [
+            "#FollowDIV",
+            "#ForMemoDIV",
+            "#NotesDIV"
+        ];
+
+        $('.btn-Detail').on("click", function () {
+
+            if ($(this).hasClass("AppOpen")) {
+                $("#" + this.id.split('_')[1]).removeClass("AppHidden").addClass("AppHidden");
+                $(this).removeClass("AppOpen");
+
+                switch (this.id.split('_')[1]) {
+                    case "FollowDIV":
+                        $("#Update_Follow").val("N");
+                        $("#ShowFollowup").val("False");
+                        break;
+                    case "ForMemoDIV":
+                        $("#Update_Suspend").val("N");
+                        $("#ShowSuspend").val("False");
+                        break;
+                }
+
+            }
+            else {
+                $("#" + this.id.split('_')[1]).removeClass("AppHidden");
+                $(this).addClass("AppOpen");
+
+                switch (this.id.split('_')[1]) {
+                    case "FollowDIV":
+                        $("#Update_Follow").val("Y");
+                        $("#ShowFollowup").val("True");
+                        break;
+                    case "ForMemoDIV":
+                        $("#Update_Suspend").val("Y");
+                        $("#ShowSuspend").val("True");
+                        break;
+                }
+            }
+
+            $('textarea').autoResize();
+        });
+                
+
+        var i;
+        for (i = 0; i < DIV_TO_HIDE.length; ++i) {
+            $(DIV_TO_HIDE[i]).removeClass("AppHidden").addClass("AppHidden");
+        }
+        
+                
+        ShowDIV();
+
+        $('#SessionNote_Remark').bind('input propertychange', function () {
+            ShowSessionNoteBanner();
+        });
+
+
+        $('#btnNOTESClear').on("click", function () {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
+            $("#spnNotesBanner").text("");
+            $("#SessionNote_Remark").val("");
+            $('textarea').autoResize();
+        });
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+@Html.HiddenFor(model => model.ShowFollowup)
+@Html.HiddenFor(model => model.ShowSuspend)
+@Html.HiddenFor(model => model.Update_Follow)
+@Html.HiddenFor(model => model.Update_Suspend)
+
+
+<div class="row SessionOnHoldActive">
+    <div class="col">
+        <button style="font-size:1rem !important;" type="button" id="btn_FollowDIV" class="btn btn-block btn-lg btn-Detail">FOLLOW UP<br />المتابعة</button>
+    </div>
+    <div class="col">
+        <button style="font-size:1rem !important;" type="button" id="btn_ForMemoDIV" class="btn btn-block btn-lg btn-Detail">WRITING PLEADINGS<br />كتابة مذكرات الرد أو التعقيب</button>
+    </div>
+    <div class="col">
+        <button style="font-size:1rem !important;" type="button" id="btn_NotesDIV" class="btn btn-block btn-lg btn-Detail"> NOTES<br />ملاحظات</button>
+    </div>
+</div>
+
+
+<div style="padding-top:10px" id="FollowDIV" class="">
+    <div class="sessionRunningCategoryBar">
+        <div class="row">
+            <div class="col-sm-1"><span style="padding-bottom:10px;padding-left:10px;"><a title="PRINT FORM" id="PrintFormButton" class="btn btn-sm btn-ToBeRegBanner-print" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintWorkForm">PRINT FORM</a></span></div>
+            <div class="col-sm-10 text-center">
+                <h5>FOLLOW UP  متابعة الإجراء في الملف</h5>
+            </div>
+            <div style="padding-bottom:10px;padding-right:20px;" class="col-sm-1"><button style="float:right" type="button" onclick="ClearDivElements('WorkRequired,SessionNotes,LastDate,FollowerId,Update_Follow,ShowFollowup','text,text,text,select2,text,text',',,,0,N,False','FollowDIV')" class="btn btn-sm btn-danger"><i class="fas fa-trash"> </i> CLEAR</button></div>
+        </div>
+    </div>
+    <div style="padding-top:10px" class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="WorkRequired">FOLLOW UP WORK REQUIRED المطلوب</label>
+                @Html.TextAreaFor(model => model.WorkRequired, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "PLEASE ENTER FOLLOW UP WORK REQUIRED" })
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SessionNotes">FOLLOW UP SESSION NOTES ملاحظات</label>
+                @Html.TextAreaFor(model => model.SessionNotes, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "PLEASE ENTER FOLLOW UP SESSION NOTES" })
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="LastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                @Html.EditorFor(model => model.LastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="FollowerId">FOLLOWER المكلف بالمتابعة</label>
+                @Html.DropDownList("FollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+</div>
+<div style="padding-top:10px" id="ForMemoDIV" class="">
+    <div class="sessionRunningCategoryBar">
+        <div class="row">
+            <div class="col-sm-1"><span style="padding-bottom:10px;padding-left:10px;"><a title="PRINT FORM" id="SuspendedPrintFormButton" class="btn btn-sm btn-ToBeRegBanner-print" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_SuspendedPrintWorkForm">PRINT FORM</a></span></div>
+            <div class="col-sm-10 text-center">
+                <h5>FOR MEMO مطلوب كتابة المذكرات</h5>
+            </div>
+            <div style="padding-bottom:10px;padding-right:20px;" class="col-sm-1"><button style="float:right" type="button" onclick="ClearDivElements('SuspendedWorkRequired,SuspendedSessionNotes,SuspendedLastDate,SuspendedFollowerId,Update_Suspend,ShowSuspend','text,text,text,select2,text,text',',,,0,N,False','ForMemoDIV')" class="btn btn-sm btn-danger"><i class="fas fa-trash"> </i> CLEAR</button></div>
+        </div>
+    </div>
+    <div style="padding-top:10px" class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SuspendedWorkRequired">FOR MEMO المطلوب</label>
+                @Html.TextAreaFor(model => model.SuspendedWorkRequired, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "PLEASE ENTER FOR MEMO" })
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SuspendedSessionNotes">MEMO NOTES</label>
+                @Html.TextAreaFor(model => model.SuspendedSessionNotes, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "PLEASE ENTER MEMO NOTES" })
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SuspendedLastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                @Html.EditorFor(model => model.SuspendedLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="FollowerId">ADVISOR المستشار</label>
+                @Html.DropDownList("SuspendedFollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+</div>
+<div style="padding-top:10px" id="NotesDIV" class="">
+    <div class="sessionRunningCategoryBar">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-10 text-center">
+                    <h5>NOTES ملاحظات</h5>
+                </div>
+                <div style="padding-bottom:10px;padding-right:20px;" class="col-sm-1"><button style="float:right" type="button" onclick="ClearDivElements('SessionNote_Remark','text','','NotesDIV')" class="btn btn-sm btn-danger"><i class="fas fa-trash"> </i> CLEAR</button></div>
+            </div>
+        </div>
+    </div>
+    <div style="padding-top:1rem" class="col-sm-12">
+        <div class="form-group">
+            @Html.TextAreaFor(model => model.SessionNote_Remark, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,35 @@
+﻿@model YandS.UI.Models.SendCodeViewModel
+@{
+    ViewBag.Title = "Two-Factor Authentication (2FA)";
+}
+
+<div>
+    <br />
+    <table>
+        <td><img src="~/Content/Images/key.png" /></td>
+        <td class="rbac-formtitle">@ViewBag.Title<p class="rbac-formtitlesub">Send security code via verified delivery service</p></td>
+    </table>
+</div>
+
+@using (Html.BeginForm("SendSecurityCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("rememberMe", @Model.RememberMe)
+    <hr />
+    <div class="form-group">            
+        <label class="col-md-2 control-label">Select Provider:</label>
+        <div class="col-md-6">
+            @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers, new { @class = "form-control" })
+        </div>                  
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Send Security Code" class="btn btn-default" />
+        </div>
+    </div>
+  
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

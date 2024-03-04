@@ -1,0 +1,1039 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Tobe Register";
+}
+<style>
+    .TBRLegalNoticeSub {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .TBRLegalNoticeSub:hover {
+            background-color: #4086a6 !important;
+            color: white !important;
+        }
+
+    .TBRLegalNoticeSubActive {
+        background-color: #4086a6 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+</style>
+<script>
+    var SubmitFormURL = '@Url.Action("IndexMain", "CaseRegistration", new { area = string.Empty })';
+    var GetCaseDetailURL = '@Url.Action("GetExistingOfficeInTBR", "CommonTask", new { area = string.Empty })';
+    var CreateClientMasterURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CheckDuplicateDetailURL = '@Url.Action("CheckDuplicateDetail", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    function LoadPrintRequirementForm(PartialViewName,redirectTo) {
+        var _PartialViewName = PartialViewName;
+        P_CaseId = parseInt($("#HFCaseId").val());
+        P_SessionRollId = 0;
+        var _Mode = "C";
+
+        var PartialContainer = $("#div_PrintRequirementForm");
+        PartialContainer.empty();
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                PartialContainer.html(data);
+                Swal.fire({
+                    type: 'success',
+                    title: '',
+                    width: 700,
+                    html: $("#ContentDIV").html()
+                }).then(function () {
+                    CopyToClipboard('swal2-content');
+
+                    if (redirectTo == undefined) {
+                        table.ajax.reload();
+                        $('html, body').animate({
+                            scrollTop: $("#PartialViewContainer").offset().top
+                        }, 1000);
+                    }
+                    else {
+                        //openInNewTab("/Uploads/INVDocuments/" + Result.FileName);
+                        var url = SessionRollIndexURL + "?id=-3&ViewToLoad=" + redirectTo;
+                        window.location.replace(url);
+                    }
+                });
+            }
+        });
+    }
+
+    function submitForm() {
+        var data = new FormData(jQuery('#frm_CaseRegister')[0]);
+
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.Category) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.Message
+                    });
+                }
+                else {
+                    if (result.redirectTo) {
+                        table.ajax.reload(function (json) {
+                            var info = table.page.info();
+                            var MCTRecords = table.ajax.json().MuscatTotal;
+                            var SLLRecords = table.ajax.json().SalalahTotal;
+                            var recordsTotal = table.ajax.json().recordsTotal;
+
+                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                $('#TTL').text(recordsTotal);
+                            }
+                        });
+                        $("#TBR_ModificationContainer").empty();
+                        LoadPrintRequirementForm("SaveResult", result.redirectTo);
+                    }
+                    else {
+                        if (result.ManualTrigger) {
+                            if (result.MessageWHM_Email) {
+
+                                console.log(result.WhatsAppMessage);
+                                var CleanMobNo = result.WhatsAppMessage.split("^")[0];
+                                var WAMessage = result.WhatsAppMessage.split("^")[1];
+                                var WAAPIKey = result.WhatsAppMessage.split("^")[2];
+
+                                var strurl = "https://whatsapp247.com/api/send.php?api_key=" + WAAPIKey + "&mobile=" + CleanMobNo + "&priority=20&message=" + WAMessage;
+                                console.log(strurl);
+                                var settings = {
+                                    "url": strurl,
+                                    "method": "GET",
+                                    "timeout": 0,
+                                };
+
+                                $.ajax(settings).done(function (response) {
+                                    console.log(response);
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Done!',
+                                        html: result.MessageWHM_Email + "<br /> " + response
+                                    });
+
+                                });
+                            }
+                            table.ajax.reload(function (json) {
+                                var info = table.page.info();
+                                var MCTRecords = table.ajax.json().MuscatTotal;
+                                var SLLRecords = table.ajax.json().SalalahTotal;
+                                var recordsTotal = table.ajax.json().recordsTotal;
+
+                                if ($("#txtUserRole").val() == "VoucherApproval") {
+                                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                    $('#TTL').text(recordsTotal);
+                                }
+                            });
+
+                            var data = table
+                                .row(function (idx, data, node) {
+                                    return data.OfficeFileNo === result.OfficeFileNo ?
+                                        true : false;
+                                })
+                                .data();
+
+                            processbtnLinkClick("T", data);
+                            LoadPrintRequirementForm("SaveResult");
+                        }
+                        else {
+                            if (result.sameDTLoad) {
+                                if (result.MessageWHM_Email) {
+                                    console.log(result.WhatsAppMessage);
+                                    var CleanMobNo = result.WhatsAppMessage.split("^")[0];
+                                    var WAMessage = result.WhatsAppMessage.split("^")[1];
+                                    var WAAPIKey = result.WhatsAppMessage.split("^")[2];
+
+                                    var strurl = "https://whatsapp247.com/api/send.php?api_key=" + WAAPIKey + "&mobile=" + CleanMobNo + "&priority=20&message=" + WAMessage;
+                                    console.log(strurl);
+                                    var settings = {
+                                        "url": strurl,
+                                        "method": "GET",
+                                        "timeout": 0,
+                                    };
+
+                                    $.ajax(settings).done(function (response) {
+                                        console.log(response);
+                                        Swal.fire({
+                                            type: 'success',
+                                            title: 'Done!',
+                                            html: result.MessageWHM_Email + "<br /> " + response
+                                        });
+
+                                    });
+                                }
+
+                                table.ajax.reload(function (json) {
+                                    var info = table.page.info();
+                                    var MCTRecords = table.ajax.json().MuscatTotal;
+                                    var SLLRecords = table.ajax.json().SalalahTotal;
+                                    var recordsTotal = table.ajax.json().recordsTotal;
+
+                                    if ($("#txtUserRole").val() == "VoucherApproval") {
+                                        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                        $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                        $('#TTL').text(recordsTotal);
+                                    }
+                                });
+                                $("#TBR_ModificationContainer").empty();
+                                LoadPrintRequirementForm("SaveResult");
+                            }
+                            else {
+                                CancelTBR();
+                                table.ajax.reload(function (json) {
+                                    var info = table.page.info();
+                                    var MCTRecords = table.ajax.json().MuscatTotal;
+                                    var SLLRecords = table.ajax.json().SalalahTotal;
+                                    var recordsTotal = table.ajax.json().recordsTotal;
+
+                                    if ($("#txtUserRole").val() == "VoucherApproval") {
+                                        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                                        $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                                        $('#TTL').text(recordsTotal);
+                                    }
+                                });
+                                $("#TBR_ModificationContainer").empty();
+                                $("#TBR_ModificationContainer").append("Loading...");
+                                $("#TBR_ModificationContainer").html(result);
+
+                                LoadPrintRequirementForm("SaveResult");
+                            }
+                        }
+                    }
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function LoadFileStatusPV(FileStatusId) {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        console.log("function LoadFileStatusPV(" + FileStatusId + ")");
+        console.log($('#FileStatus').val());
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#TBR_Modify_Detail");
+        //$(".clsForDisputeShow").removeClass("AppHidden").addClass("AppHidden");
+
+        switch (FileStatusId) {
+            case OfficeFileStatus.PleaseSelect:
+                $("#TBR_Modify_Detail").empty();
+                return false;
+                break;
+            case OfficeFileStatus.Transfer:
+                _PartialViewName = "TBR-TRANSFER";
+                break;
+            case OfficeFileStatus.LegalNotice:
+                _PartialViewName = "TBR-LEGAL_NOTICE";
+                break;
+            case OfficeFileStatus.WritingSubmission:
+                _PartialViewName = "TBR-WRITING_SUBMISSION";
+                //$("#TBR_Modify_Detail").empty();
+                //return false;
+                break;
+            case OfficeFileStatus.ApprovalForAppeal:
+            case OfficeFileStatus.ApprovalForSupreme:
+            case OfficeFileStatus.SubmissionApproval:
+            case OfficeFileStatus.CompletingDocs:
+            case OfficeFileStatus.ReceiptOfFees:
+            case OfficeFileStatus.Translation:
+                _PartialViewName = "TBR-ON_HOLD";
+                break;
+            case OfficeFileStatus.Scanned:
+                _PartialViewName = "TBR-SCANNED";
+                break;
+            case OfficeFileStatus.LegalNoticeSub:
+                _PartialViewName = "TBR-LEGAL_NOTICE_SUB";
+                break;
+            case OfficeFileStatus.OnlineRegTBR:
+                _PartialViewName = "TBR-ONLINE_SUBMISSION";
+                break;
+            case OfficeFileStatus.CourtMsg:
+                _PartialViewName = "TBR-COURT_NOTES";
+                break;
+            case OfficeFileStatus.ForPayment:
+                _PartialViewName = "TBR-PAYMENT";
+                break;
+            case OfficeFileStatus.Registered:
+                _PartialViewName = "TBR-REGISTERED";
+                break;
+            case "11":
+                _PartialViewName = "TBR-STOP_REGISTRATION";
+                break;
+            case OfficeFileStatus.WithLawyer:
+                _PartialViewName = "TBR-WITH_LAWYER";
+                break;
+            case OfficeFileStatus.PeriodOfAppeal:
+            case OfficeFileStatus.RedStamp:
+                $("#TBR_Modify_Detail").empty();
+                return false;
+                break;
+            default:
+                $("#TBR_Modify_Detail").empty();
+                return false;
+                break;
+        }
+
+        //if ($('#FileStatus').val() == "9") {
+        //    $("#DIV_NEXT_HEARING_DATE").removeClass("AppHidden");
+        //    $(".sessionDetail").removeClass("AppHidden");
+        //    $('textarea').autoResize();
+        //}
+        //else {
+        //    $("#DIV_NEXT_HEARING_DATE").removeClass("AppHidden").addClass("AppHidden");
+        //    $(".sessionDetail").removeClass("AppHidden").addClass("AppHidden");
+        //}
+
+        if ($('#FileStatus').val() == OfficeFileStatus.Transfer || $('#FileStatus').val() == OfficeFileStatus.Registered) {
+            $("#DIV_REMARKS").empty();
+            $('textarea').autoResize();
+
+            if ($('#FileStatus').val() == OfficeFileStatus.Registered && $('#IsFileStatusRegistered').val() == "N") {
+                $(".clsRegisterNotShow").removeClass("AppHidden").addClass("AppHidden");
+                $('#IsFileStatusRegistered').val("Y");
+            }
+        }
+        else {
+            if ($('#IsFileStatusRegistered').val() == "Y") {
+                $(".clsRegisterNotShow").removeClass("AppHidden");
+                $('#IsFileStatusRegistered').val("N");
+                $('textarea').autoResize();
+            }
+        }
+
+        _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $("#hidCaseRegistrationId").val() };
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+    }
+
+    function ValidateTBRMain() {
+        console.log("ValidateTBRMain()");
+        if ($("#FileStatus").val() == OfficeFileStatus.PleaseSelect) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+            NotValid = true;
+        }
+
+        if ($("#FileStatus").val() == OfficeFileStatus.Registered || $("#FileStatus").val() == OfficeFileStatus.PeriodOfAppeal || $("#FileStatus").val() == OfficeFileStatus.RedStamp) {
+            console.log("No Validate");
+        }
+        else {
+            if ($("#ActionLevel").val() == "2") {
+                if ($("#DepartmentType").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT INVESTMENT" : ValidationMessage + "<br />" + "PLEASE SELECT INVESTMENT";
+                    NotValid = true;
+
+                }
+
+                if ($("#FormPrintLastDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER LAST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER LAST DATE";
+                    NotValid = true;
+
+                }
+                else {
+                    var LastDate = $("#FormPrintLastDate").val();
+                    var dtLastDate = moment(moment(LastDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD"));
+                    var result = dtLastDate.diff(currDate, 'days');
+
+                    console.log(result);
+                    if ($("#DepartmentType").val() == "1" && result > 20) {
+                        ValidationMessage = ValidationMessage == "" ? "LAST DATE CANNOT BE GREATER THEN 20 DAYS" : ValidationMessage + "<br />" + "LAST DATE CANNOT BE GREATER THEN 20 DAYS";
+                        NotValid = true;
+
+                    }
+
+                    if ($("#DepartmentType").val() == "2" && result > 10) {
+                        ValidationMessage = ValidationMessage == "" ? "LAST DATE CANNOT BE GREATER THEN 10 DAYS" : ValidationMessage + "<br />" + "LAST DATE CANNOT BE GREATER THEN 10 DAYS";
+                        NotValid = true;
+
+                    }
+                }
+            }
+        }
+        
+
+        return NotValid;
+    }
+    function ValidateTransferred() {
+        console.log("ValidateTransferred()");
+
+        if (parseInt($("#ActionLevel").val()) > 1) {
+            if ($("#ConsultantId").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ADVISOR" : ValidationMessage + "<br />" + "PLEASE SELECT ADVISOR";
+                NotValid = true;
+            }
+        }
+
+        return NotValid;
+    }
+    function ValidateLegalNotice() {
+        console.log("ValidateLegalNotice()");
+
+        if ($("#SendDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SEND DATE'" : ValidationMessage + "<br />" + "PLEASE ENTER SEND DATE'";
+            NotValid = true;
+        }
+
+        //if ($("#OmanPostNo").val() == "") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER OMAN POST NO'" : ValidationMessage + "<br />" + "PLEASE ENTER OMAN POST NO'";
+        //    NotValid = true;
+        //}
+
+        if ($("#FirstReminderDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REMINDER DATE'" : ValidationMessage + "<br />" + "PLEASE ENTER REMINDER DATE'";
+            NotValid = true;
+        }
+
+        if ($('#View_OmanPostNoDocs').hasClass("AppHidden")) {
+            if ($('#upload').get(0).files.length === 0) {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ATTACH OMAN POST DOCUMENT'" : ValidationMessage + "<br />" + "PLEASE ATTACH OMAN POST DOCUMENT'";
+                NotValid = true;
+            }
+        }
+
+        return NotValid;
+    }
+    function ValidateWritingSubmission() {
+        console.log("ValidateWritingSubmission()");
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidateOnHold() {
+        console.log("ValidateOnHold()");
+
+        if ($("#OnHoldReasonDDL").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REASON" : ValidationMessage + "<br />" + "PLEASE SELECT REASON";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateScanned() {
+        console.log("ValidateScanned()");
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidateOnlineSubmission() {
+        console.log("ValidateWritingSubmission()");
+        console.log($("#DepartmentType").val());
+
+
+        if ($("#ActionLevel").val() == "1") {
+            if ($("#GovernorateId").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT GOVERNORATE" : ValidationMessage + "<br />" + "PLEASE SELECT GOVERNORATE";
+                NotValid = true;
+            }
+
+            if ($("#DepartmentType").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT INVESTMENT" : ValidationMessage + "<br />" + "PLEASE SELECT INVESTMENT";
+                NotValid = true;
+            }
+        }
+
+        if ($("#CourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+       /*
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#RegistrationDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "REGISTRATION DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "REGISTRATION DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+        */
+        return NotValid;
+    }
+    function ValidateCourtNotes() {
+        console.log("ValidateCourtNotes()");
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidatePayment() {
+        console.log("ValidatePayment()");
+
+        if ($("#hidTBRPayVoucher").val() == "Y") {
+            if ($("#CourtType").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CASE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT CASE LEVEL";
+                NotValid = true;
+            }
+
+            if ($("#Payment_Head").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PAY FOR" : ValidationMessage + "<br />" + "PLEASE SELECT PAY FOR";
+                NotValid = true;
+            }
+
+            if ($("#Payment_To").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PAY TO" : ValidationMessage + "<br />" + "PLEASE SELECT PAY TO";
+                NotValid = true;
+            }
+
+            if ($("#PaymentHeadDetail").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT DETAIL" : ValidationMessage + "<br />" + "PLEASE SELECT DETAIL";
+                NotValid = true;
+               
+            }
+
+            if ($("#PaymentToBenificry").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT BENEFICIARY" : ValidationMessage + "<br />" + "PLEASE SELECT BENEFICIARY";
+                NotValid = true;
+            }
+
+            if ($("#Cheque_Date").val() == "") { }
+            else {
+                $("#IsShowWithLawyer").val("Y");
+                //NotValid = ValidateWithLawyer();
+            }
+        }
+        else
+            NotValid = false;
+
+
+        return NotValid;
+    }
+    function ValidateRegistered() {
+        console.log("ValidateRegistered()");
+
+        if (parseInt($("#ActionLevel").val()) <= 3) {
+
+            if ($("#CaseLevelCode").val() == "0") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CASE LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT CASE LEVEL";
+                NotValid = true;
+            }
+
+            if ($("#CaseLevelCode").val() == "3") {
+                if ($("#CourtLocationid").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+                    NotValid = true;
+                }
+
+
+                if ($("#CourtRefNo").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY NO" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY NO";
+                    NotValid = true;
+                }
+
+                if ($("#RegistrationDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+                    NotValid = true;
+                }
+
+                if ($("#CaseLevelCode").val() == "5") {
+                }
+                else {
+                    if ($("#NextHearingDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER NEXT HEARING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER NEXT HEARING DATE";
+                        NotValid = true;
+                    }
+                }
+            }
+            else if ($("#CaseLevelCode").val() == "4") {
+                if ($("#CourtRefNo").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL NUMBER";
+                    NotValid = true;
+                }
+
+                if ($("#RegistrationDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+                    NotValid = true;
+                }
+
+
+                if ($("#CourtLocationid").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+                    NotValid = true;
+                }
+
+                if ($("#ApealByWho").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPEAL BY" : ValidationMessage + "<br />" + "PLEASE SELECT APPEAL BY";
+                    NotValid = true;
+                }
+
+                if ($("#CaseLevelCode").val() == "5") {
+                }
+                else {
+                    if ($("#NextHearingDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER NEXT HEARING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER NEXT HEARING DATE";
+                        NotValid = true;
+                    }
+                }
+            }
+            else if ($("#CaseLevelCode").val() == "5") {
+
+                if ($("#CourtRefNo").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME NUMBER";
+                    NotValid = true;
+                }
+
+                if ($("#RegistrationDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+                    NotValid = true;
+                }
+
+
+                if ($("#ApealByWho").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUPREME BY" : ValidationMessage + "<br />" + "PLEASE SELECT SUPREME BY";
+                    NotValid = true;
+                }
+
+                if ($("#CaseLevelCode").val() == "5") {
+                }
+                else {
+                    if ($("#NextHearingDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER NEXT HEARING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER NEXT HEARING DATE";
+                        NotValid = true;
+                    }
+                }
+            }
+        }
+        else {
+            console.log("ActionLevel :: " + $("#ActionLevel").val());
+            console.log("DisputeLevel :: " + $("#DisputeLevel").val());
+            console.log("DisputeType :: " + $("#DisputeType").val());
+
+            if ($("#DisputeType").val() == "1") {
+                if ($("#DisputeLevel").val() == "1") {
+
+                    if ($("#PrimaryObjectionNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER OBJECTION NO" : ValidationMessage + "<br />" + "PLEASE ENTER OBJECTION NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#PrimaryObjectionCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT OBJECTION COURT" : ValidationMessage + "<br />" + "PLEASE SELECT OBJECTION COURT";
+                        NotValid = true;
+                    }
+                }
+                else if ($("#DisputeLevel").val() == "2") {
+
+                    if ($("#ApealObjectionNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER OBJECTION NO" : ValidationMessage + "<br />" + "PLEASE ENTER OBJECTION NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#ApealObjectionCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT OBJECTION COURT" : ValidationMessage + "<br />" + "PLEASE SELECT OBJECTION COURT";
+                        NotValid = true;
+                    }
+                }
+                else if ($("#DisputeLevel").val() == "3") {
+
+                    if ($("#SupremeObjectionNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER OBJECTION NO" : ValidationMessage + "<br />" + "PLEASE ENTER OBJECTION NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#SupremeObjectionCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT OBJECTION COURT" : ValidationMessage + "<br />" + "PLEASE SELECT OBJECTION COURT";
+                        NotValid = true;
+                    }
+                }
+            }
+            if ($("#DisputeType").val() == "2") {
+                if ($("#DisputeLevel").val() == "1") {
+
+                    if ($("#PrimaryPlaintNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PLAINT NO" : ValidationMessage + "<br />" + "PLEASE ENTER PLAINT NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#PrimaryPlaintCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PLAINT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT PLAINT COURT";
+                        NotValid = true;
+                    }
+                }
+                else if ($("#DisputeLevel").val() == "2") {
+
+                    if ($("#ApealPlaintNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PLAINT NO" : ValidationMessage + "<br />" + "PLEASE ENTER PLAINT NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#ApealPlaintCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PLAINT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT PLAINT COURT";
+                        NotValid = true;
+                    }
+                }
+                else if ($("#DisputeLevel").val() == "3") {
+
+                    if ($("#SupremePlaintNo").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PLAINT NO" : ValidationMessage + "<br />" + "PLEASE ENTER PLAINT NO";
+                        NotValid = true;
+                    }
+
+                    if ($("#SupremePlaintCourt").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PLAINT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT PLAINT COURT";
+                        NotValid = true;
+                    }
+                }
+            }
+        }
+
+
+        return NotValid;
+    }
+    function ValidateStopRegistration() {
+        console.log("ValidateStopRegistration()");
+        NotValid = false;
+
+        return NotValid;
+    }
+    function ValidateWithLawyer() {
+        console.log("ValidateWithLawyer()");
+
+        if ($("#CourtFollow").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "COURT FOLLOW MUST BE YES" : ValidationMessage + "<br />" + "COURT FOLLOW MUST BE YES";
+            NotValid = true;
+        }
+
+        if ($("#LawyerId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT LAWYER" : ValidationMessage + "<br />" + "PLEASE SELECT LAWYER";
+            NotValid = true;
+        }
+
+        if ($("#CommissioningDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER COMMISSIONING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER COMMISSIONING DATE";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+    function ValidateJDFavorable() {
+        console.log("ValidateJDFavorable()");
+
+        if ($("#IsFavorable").val() == "" || $("#IsFavorable").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT FAVORABLE";
+            NotValid = true;
+        }
+        else if ($("#IsFavorable").val() == "Y") {
+            if ($("#JudgementsDate").val() == "") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER JUDGEMENT DATE" : ValidationMessage + "<br />" + "PLEASE ENTER JUDGEMENT DATE";
+                NotValid = true;
+            }
+            else {
+
+                var today = new Date();
+
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+
+                today = dd + '/' + mm + '/' + yyyy;
+
+                console.log(today);
+                console.log($("#JudgementsDate").val());
+
+                if (process($("#JudgementsDate").val()) > process(today)) {
+                    ValidationMessage = ValidationMessage == "" ? "JUDGEMENT DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "JUDGEMENT DATE CANNOT BE GREATER THEN CURRENT DATE";
+                    NotValid = true;
+                }
+            }
+
+            if ($("#JDReceiveDate").val() == "") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER JUDGEMENT RECEIVED DATE" : ValidationMessage + "<br />" + "PLEASE ENTER JUDGEMENT RECEIVED DATE";
+                NotValid = true;
+            }
+            else {
+
+                var today = new Date();
+
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+
+                today = dd + '/' + mm + '/' + yyyy;
+
+                console.log(today);
+                console.log($("#JDReceiveDate").val());
+
+                if (process($("#JDReceiveDate").val()) > process(today)) {
+                    ValidationMessage = ValidationMessage == "" ? "JUDGEMENT RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "JUDGEMENT RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE";
+                    NotValid = true;
+                }
+            }
+        }
+
+        return NotValid;
+    }
+    function AddbuttonPressHandler() {
+        var input = document.getElementById("OfficeFileNoMain");
+
+        // Execute a function when the user presses a key on the keyboard
+        input.addEventListener("keypress", function (event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("btnCaseSearchMain").click();
+            }
+        });
+    }
+    function GetCaseDetailMain(p_OfficeFileNo, dataForTable) {
+        ValidationMessage = "";
+        NotValid = false;
+
+        NotValid = ValidateOfficeFileNo(p_OfficeFileNo);
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+        $("#HFCaseId").val("");
+        $("#hidCaseRegistrationId").val("");
+        $("#CreateTBRInfoBanner").removeClass("AppHidden").addClass("AppHidden");
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo, DataForTable: dataForTable};
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetCaseDetailURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.jsondata);
+                console.log(Result.ProcessFlag);
+                console.log(Result.caseRegisteredExists);
+
+                if (Result.ProcessFlag == "Y") {
+                    var RegistrationLevel = "";
+                    if (Result.jsondata.length > 0) {
+                        $CaseId = Result.jsondata[0].CaseId;
+
+                        $("#HFCaseId").val($CaseId);
+                        if (Result.caseRegisteredExists > 0) {
+                            var data = table
+                                .row(function (idx, data, node) {
+                                    return data.OfficeFileNo === p_OfficeFileNo ?
+                                        true : false;
+                                })
+                                .data();
+
+                            processbtnLinkClick("T", data);
+                        }
+                        else {
+                            $("#OFB_ClientName").text(Result.jsondata[0].ClientName);
+                            $("#OFB_Defendant").text(Result.jsondata[0].Defendant);
+                            $("#OFB_OfficeFileNo").text(Result.jsondata[0].OfficeFileNo);
+                            $("#OFB_SessionRollClientName").text(Result.jsondata[0].SessionRollClientName);
+                            $("#OFB_SessionRollDefendentName").text(Result.jsondata[0].SessionRollDefendentName);
+                            $("#CreateTBRInfoBanner").removeClass("AppHidden");
+                        }
+                    }
+                    else {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ERROR...',
+                            html: 'FILE NO ' + p_OfficeFileNo +' NOT FOUND, PLEASE CREATE CASE!'
+                        });
+                    }
+                }
+                else {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.ProcessMessage
+                    });
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function CreateNewTBR() {
+
+        _PartialViewName = "_TBR_Create";
+        PartialContainer = $("#TBR_ModificationContainer");
+        _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: "0", ActionLevel: $("#hidActionLevel").val(), DisputeLevel: $("#hidDisputeLevel").val() };
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+
+    }
+    function CancelTBR() {
+        $("#OfficeFileNoMain").val("");
+        ResetHiddenItems();
+        $("#CreateTBRInfoBanner").removeClass("AppHidden").addClass("AppHidden");
+    }
+
+    function ShowInvesmentBanner() {
+        if ($('#ActionLevel').val() == "2" && $('#DepartmentType').val() == "2")
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden");
+        else
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden").addClass("AppHidden");
+    }
+
+    $(document).ready(function () {
+        console.log("Tobe Register Index Document Ready Page");
+        _PartialViewName = "TBRUrgent";
+        PartialContainer = $("#TBR_PartialViewContainer");
+
+        _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+        $('.tbrNavButton').click(function () {
+            $("#TBR_ModificationContainer").empty();
+            $("#hidActionLevel").val("");
+            $("#hidDisputeLevel").val("");
+
+            $(".tbrNavButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedClass = $(this).attr("id").split('_')[1];
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+            $(this).addClass(btnClickedActiveClass);
+
+            _PartialViewName = btnClickedClass;
+            PartialContainer = $("#TBR_PartialViewContainer");
+
+            if (_PartialViewName == "TBRAppSubmission") {
+                $("#hidActionLevel").val("2");
+                $("#hidDisputeLevel").val("0");
+            }
+            else if (_PartialViewName == "TBRSupSubmission") {
+                $("#hidActionLevel").val("3");
+                $("#hidDisputeLevel").val("0");
+            }
+            else if (_PartialViewName == "TBRPriDispute") {
+                $("#hidActionLevel").val("4");
+                $("#hidDisputeLevel").val("1");
+            }
+            else if (_PartialViewName == "TBRAplDispute") {
+                $("#hidActionLevel").val("4");
+                $("#hidDisputeLevel").val("2");
+            }
+            else if (_PartialViewName == "TBRSupDispute") {
+                $("#hidActionLevel").val("4");
+                $("#hidDisputeLevel").val("3");
+            }
+
+            _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        });
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row NewTitleBanner">
+    <div class="col-sm-12 text-center"><h3>TO BE REGISTER دعاوي مطلوب تسجيلها في بوابة المحامين</h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row">
+    <div class="col">
+        <button type="button" id="btn_TBRNewCase" style="font-size: 1rem !important;" class="btn btn-block TBRNewCase @ViewBag.TBRNewCaseActive btn-lg tbrNavButton">الدعاوي الجديدة<br />NEW CASE</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRAppSubmission" style="font-size: 1rem !important;" class="btn btn-block TBRAppSubmission @ViewBag.TBRAppSubmissionActive btn-lg tbrNavButton">كتابة الاستئناف<br />APP SUBMISSION</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRSupSubmission" style="font-size: 1rem !important;" class="btn btn-block TBRSupSubmission @ViewBag.TBRSupSubmissionActive btn-lg tbrNavButton">كتابة الطعن<br />SUP SUBMISSION</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRPriDispute" style="font-size: 1rem !important;" class="btn btn-block TBRPriDispute @ViewBag.TBRPriDisputeActive btn-lg tbrNavButton">منازعة ابتدائي<br />PRI DISPUT</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRAplDispute" style="font-size: 1rem !important;" class="btn btn-block TBRAplDispute @ViewBag.TBRAplDisputeActive btn-lg tbrNavButton">منازعة استئناف<br />APP DISPUT</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRSupDispute" style="font-size: 1rem !important;" class="btn btn-block TBRSupDispute @ViewBag.TBRSupDisputeActive btn-lg tbrNavButton">منازعة العليا<br />SUP DISPUT</button>
+    </div>
+
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row">
+    <div class="col">
+        <button type="button" id="btn_TBRTRansfer" style="font-size: 1rem !important;" class="btn btn-block TBRTRansfer @ViewBag.TBRTRansferActive btn-lg tbrNavButton">لكتابة الصحيفة<br />TRANSFER</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRLegalNotice" style="font-size: 1rem !important;" class="btn btn-block TBRLegalNotice @ViewBag.TBRLegalNoticeActive btn-lg tbrNavButton">كتابة الإنذار القانوني<br />WRITE A LEGAL NOTICE</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRLegalNoticeSub" style="font-size: 1rem !important;" class="btn btn-block TBRLegalNoticeSub @ViewBag.TBRLegalNoticeSubActive btn-lg tbrNavButton">سريان مدةالإنذار<br />SUBMIT LEGAL NOTICE</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRCompDocs" style="font-size: 1rem !important;" class="btn btn-block TBRCompDocs @ViewBag.TBRCompDocsActive btn-lg tbrNavButton">نواقص مستندات<br />COMPELETING DOCS</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRTranslation" style="font-size: 1rem !important;" class="btn btn-block TBRTranslation @ViewBag.TBRTranslationActive btn-lg tbrNavButton">انتظار الترجمة<br />TRANSLATION</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRClientApproval" style="font-size: 1rem !important;" class="btn btn-block TBRClientApproval @ViewBag.TBRClientApprovalActive btn-lg tbrNavButton">موافقة الموكل<br />CLIENT APPROVAL</button>
+    </div>
+    
+
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row">
+    <div class="col">
+        <button type="button" id="btn_TBRScanned" style="font-size: 1rem !important;" class="btn btn-block TBRScanned @ViewBag.TBRScannedActive btn-lg tbrNavButton">النسخ الإلكتروني<br />SCANNED</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBROnlineSubm" style="font-size: 1rem !important;" class="btn btn-block TBROnlineSubm @ViewBag.TBROnlineSubmActive btn-lg tbrNavButton">التسجيل الإلكتروني<br />ONLINE SUBMISSION</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRCourtRequest" style="font-size: 1rem !important;" class="btn btn-block TBRCourtRequest @ViewBag.TBRCourtRequestActive btn-lg tbrNavButton">طلبات المحكمة<br />COURT REQUEST</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRPayment" style="font-size: 1rem !important;" class="btn btn-block TBRPayment @ViewBag.TBRPaymentActive btn-lg tbrNavButton">سداد الرسم<br />PAYMENT</button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRWithLawyer" style="font-size: 1rem !important;" class="btn btn-block TBRWithLawyer @ViewBag.TBRWithLawyerActive btn-lg tbrNavButton">تسليم الصحيفة<br />WITH LAWYER </button>
+    </div>
+    <div class="col">
+        <button type="button" id="btn_TBRUrgent" style="font-size: 1rem !important;" class="btn btn-block TBRUrgent TBRUrgentActive @ViewBag.TBRUrgentActive btn-lg tbrNavButton">قضايا عاجلة<br />URGENT</button>
+    </div>
+</div>

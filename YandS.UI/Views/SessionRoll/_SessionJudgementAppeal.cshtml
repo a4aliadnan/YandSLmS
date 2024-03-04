@@ -1,0 +1,169 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+        $("#div_INVESTMENT").removeClass("AppHidden").addClass("AppHidden");
+
+        var ActionLevelCode = "3";
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $(".clsDecimal").regexMask(IsDecimal);
+
+        $('#AppealFinalJDAmount').bind('input propertychange', function () {
+            if (!$.trim($("#FinalJDAmount").val())) {
+                $("#FinalJDAmount").val($('#AppealFinalJDAmount').val());
+            }
+        });
+
+        $('#AppealFinalJudgedInterests').bind('input propertychange', function () {
+            if (!$.trim($("#FinalJudgedInterests").val())) {
+                $("#FinalJudgedInterests").val($('#AppealFinalJudgedInterests').val());
+            }
+        });
+
+        
+
+        if ($('#SavePV_Data').val() == undefined) {
+            $("#div_INVESTMENT").removeClass("AppHidden");
+
+            if ($('#AppealIsFavorable').val() == "N")
+                LoadCaseRegistrationPV(ActionLevelCode);
+
+            $('#AppealIsFavorable').on("change", function () {
+                if ($('#AppealIsFavorable').val() == "N")
+                    LoadCaseRegistrationPV(ActionLevelCode);
+                else
+                    LoadCaseRegistrationPV("0");
+            });
+        }
+
+        if ($('#AgainstCode').val() == "3") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        if ($('#hidJudFilter').val() == "Y") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        ShowInvesmentBanner();
+
+        $('#DepartmentType').on("change", function () {
+            ShowInvesmentBanner();
+        });
+
+        $('textarea').autoResize();
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div id="DIV_APPEAL" class="card-body">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CountLocationName">APPEAL COURT</label>
+                @Html.EditorFor(model => model.CountLocationName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CountLocationName">APPEAL NO</label>
+                @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+
+        </div>
+        <div class="col-sm-4">
+            <div id="div_INVESTMENT" class="form-group">
+                <label for="DepartmentType">INVESTMENT تبسيط الإجراءات</label>
+                @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="AppealJudgementsDate">APPEAL JUDGMENT DATE تاريخ الحكم</label>
+                @Html.EditorFor(model => model.AppealJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="AppealJudgements">APPEAL SENTENCE منطوق الحكم الاستئناف</label>
+                @Html.TextAreaFor(model => model.AppealJudgements, 1, 200, new { @class = "form-control", @dir = "auto" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group clsAgainstClient">
+                <label for="AppealFinalJDAmount">APP. JUG. AMOUNT مبلغ الحكم الاستئناف</label>
+                @Html.EditorFor(model => model.AppealFinalJDAmount, new { htmlAttributes = new { @class = "form-control clsDecimal" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group clsAgainstClient">
+                <label for="AppealFinalJudgedInterests">APP. JUG. INTEREST نسبة الحكم الاستئناف</label>
+                @Html.EditorFor(model => model.AppealFinalJudgedInterests, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="ClaimSummary">APPEAL CLAIM SUMMARY طلباتنا في الاستئناف</label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto" })
+            </div>
+        </div>
+        <div class="col-sm-3 AppHidden">
+            <div class="form-group">
+                <label for="AppealJDReceiveDate">APP.JUG.RECEIVE تاريخ استلام الحكم الاستئناف</label>
+                @Html.EditorFor(model => model.AppealJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="">FAVORABLE مطابقة الحكم</label>
+                @Html.DropDownList("AppealIsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row clsAgainstClient">
+        <div class="col-sm-3 AppHidden">
+            <div class="form-group">
+                <label for="FinalJDAmount">FINAL JD AMOUNT</label>
+                @Html.EditorFor(model => model.FinalJDAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-3 AppHidden">
+            <div class="form-group">
+                <label for="FinalJudgedInterests">FINAL JUDGED INTEREST</label>
+                @Html.EditorFor(model => model.FinalJudgedInterests, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+    </div>
+</div>

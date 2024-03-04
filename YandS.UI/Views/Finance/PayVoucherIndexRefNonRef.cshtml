@@ -1,0 +1,1885 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Pay Voucher";
+}
+<style>
+    div.dt-buttons {
+        width: auto !important;
+    }
+
+    .PayVoucherRApprovedNew {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PayVoucherRApprovedNew:hover {
+            background-color: #ffbdff !important;
+        }
+
+    .PayVoucherRApprovedNewActive {
+        background-color: #ffbdff !important;
+        color: black !important;
+    }
+
+    .PayVoucherNRApprovedNew {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PayVoucherNRApprovedNew:hover {
+            background-color: #ddddff !important;
+        }
+
+    .PayVoucherNRApprovedNewActive {
+        background-color: #ddddff !important;
+        color: black !important;
+    }
+
+    .PayVoucherRejectedNew {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PayVoucherRejectedNew:hover {
+            background-color: #d9d9d9 !important;
+        }
+
+    .PayVoucherRejectedNewActive {
+        background-color: #d9d9d9 !important;
+        color: black !important;
+    }
+
+    .PayVoucherArchieve {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PayVoucherArchieve:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .PayVoucherArchieveActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+</style>
+<script>
+    var GetTabURL = '@Url.Action("GetTab", "Finance", new { area = string.Empty })';
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function LoadPartialView(data, container) {
+        console.log(container.attr("id"));
+        container.empty();
+        container.html(data);
+    }
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                    <h1>PAYMENT VOUCHER</h1>
+                </div>
+                <div class="col-sm-5 text-center">
+
+                </div>
+
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">FINANCE</li>
+                        <li class="breadcrumb-item active"><a href="#">PAYMENT VOUCHER</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <div style="padding-bottom:10px;" class="row">
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherCreateNew" style="font-size: 1rem !important;" class="btn btn-block PayVoucherCreateNew @ViewBag.PayVoucherCreateNewActive btn-lg navButton">CREATE P.V</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherPending" style="font-size: 1rem !important;" class="btn btn-block PayVoucherPending @ViewBag.PayVoucherPendingActive btn-lg navButton">PENDING</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherRApprovedNew" style="font-size: 1rem !important;" class="btn btn-block PayVoucherRApprovedNew @ViewBag.PayVoucherRApprovedNewActive btn-lg navButton">COURT EXPENSES</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherNRApprovedNew" style="font-size: 1rem !important;" class="btn btn-block PayVoucherNRApprovedNew @ViewBag.PayVoucherNRApprovedNewActive btn-lg navButton">OTHER EXPENSES</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherRejectedNew" style="font-size: 1rem !important;" class="btn btn-block PayVoucherRejectedNew @ViewBag.PayVoucherRejectedNewActive btn-lg navButton">REJECT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherPDC" style="font-size: 1rem !important;" class="btn btn-block PayVoucherPDC @ViewBag.PayVoucherPDCActive btn-lg navButton">PDC</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherArchieve" style="font-size: 1rem !important;" class="btn btn-block PayVoucherArchieve @ViewBag.PayVoucherArchieveActive btn-lg navButton">ARCHIEVE</button>
+                        </div>
+                    </div>
+                    <div id="div_Archieve" class="row AppHidden">
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherRApproved" style="font-size: 1rem !important;" class="btn btn-block PayVoucherRApproved @ViewBag.PayVoucherRApprovedActive btn-lg navButton">R-APPROVED[OLD]</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_PayVoucherNRApproved" style="font-size: 1rem !important;" class="btn btn-block PayVoucherNRApproved @ViewBag.PayVoucherNRApprovedActive btn-lg navButton">NR-APPROVED[OLD]</button>
+                        </div>
+                        <div class="col">
+                            @*<button type="button" id="btn_PayVoucherRejected" style="font-size: 1rem !important;" class="btn btn-block PayVoucherRejected @ViewBag.PayVoucherRejectedActive btn-lg navButton">REJECT[OLD]</button>*@
+                        </div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                    </div>
+                </div>
+
+                <div id="div_PayVoucherCreateNew_Detail" class="AppHidden">
+                    <div id="PartialViewContainerBox">
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherPending_Detail" class="">
+                    <div id="divPENDING_CE" class="card">
+                        <div class="card-header enfGeneralActive">
+                            <div class="text-center">
+                                <span class="h3">COURT EXPENSES مصاريف قضائية</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="tblPENDING_CE" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:10px !important;" class="all VMiddle text-center">D.C</th>
+                                                <th style="width:30px !important;" class="all VMiddle text-center">Y&S NO</th>
+                                                <th style="width:100px !important;" class="VMiddle text-center">CLIENT</th>
+                                                <th style="width:100px !important;" class="VMiddle text-center">DEFENDANT</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">PAY FOR</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">DETAIL</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">PAY TO</th>
+                                                <th style="width:120px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                                <th style="width:200px !important;" class="VMiddle text-center">REMARKS</th>
+                                                <th style="width:50px !important;" class="VMiddle text-center">AMOUNT</th>
+                                                <th style="width:10px !important;" class="all"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divPENDING_OE" class="card">
+                        <div class="card-header enfGeneralActive">
+                            <div class="text-center">
+                                <span class="h3">OTHER EXPENSES مصاريف أخرى</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table id="tblPENDING_OE" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:10px !important;" class="all VMiddle text-center">D.C</th>
+                                                <th style="width:80px !important;" class="VMiddle text-center">PAY FOR</th>
+                                                <th style="width:80px !important;" class="VMiddle text-center">DETAIL</th>
+                                                <th style="width:80px !important;" class="VMiddle text-center">PAY TO</th>
+                                                <th style="width:80px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                                <th style="width:250px !important;" class="VMiddle text-center">REMARKS</th>
+                                                <th style="width:40px !important;" class="VMiddle text-center">AMOUNT</th>
+                                                <th style="width:10px !important;" class="all"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divPENDING_PDC" class="card">
+                        <div class="card-header GeneralActive">
+                            <div class="text-center">
+                                <span class="h3">PDCشيكات اقترب موعد صرفها</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12 text-center" style="padding-top:5px;padding-bottom:5px;"><h5>PDC <= 5 Days</h5></div>
+                                <div class="col-sm-12">
+                                    <table id="tblPENDING_PDC" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:10px !important;" class="all VMiddle text-center">DAYS LEFT</th>
+                                                <th style="width:80px !important;" class="all VMiddle text-center">BRANCH</th>
+                                                <th style="width:50px !important;" class="VMiddle text-center">CHQ DATE</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">PAY FROM</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">PAY FOR</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">DETAIL</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">PAY TO</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                                <th style="width:200px !important;" class="VMiddle text-center">REMARKS</th>
+                                                <th style="width:70px !important;" class="VMiddle text-center">REFERENCE NO</th>
+                                                <th style="width:60px !important;" class="VMiddle text-center">AMOUNT</th>
+                                                <th style="width:10px !important;" class="all"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_PayVoucherPDC_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherPDCActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>PDC</h3></div>
+                    </div>
+                    @if (User.IsInRole("VoucherApproval"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalPDC">@ViewBag.MCTTotalPDC</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalPDC">@ViewBag.SLLTotalPDC</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblNEWPDC" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10px !important;" class="all VMiddle text-center">DAYS LEFT</th>
+                                        <th style="width:80px !important;" class="all VMiddle text-center">BRANCH</th>
+                                        <th style="width:50px !important;" class="VMiddle text-center">CHQ DATE</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">PAY FROM</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">PAY FOR</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">DETAIL</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">PAY TO</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                        <th style="width:200px !important;" class="VMiddle text-center">REMARKS</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">REFERENCE NO</th>
+                                        <th style="width:60px !important;" class="VMiddle text-center">AMOUNT</th>
+                                        <th style="width:10px !important;" class="all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherRApprovedNew_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherRApprovedNewActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>COURT EXPENSES - APPROVED</h3></div>
+                    </div>
+                    @if (User.IsInRole("VoucherApproval"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalREFAPPROVED">@ViewBag.MCTTotalREFAPPROVED</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalREFAPPROVED">@ViewBag.SLLTotalREFAPPROVED</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblREFAPPROVEDNEW" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25px !important;" class="all VMiddle text-center">DATE<br />BRANCH</th>
+                                        <th style="width:10px !important;" class="VMiddle text-center">PV NO.</th>
+                                        <th style="width:50px !important;" class="all VMiddle text-center">Y&S NO</th>
+                                        <th style="width:120px !important;" class="VMiddle text-center">CLIENT</th>
+                                        <th style="width:120px !important;" class="VMiddle text-center">DEFENDANT</th>
+                                        <th style="width:60px !important;" class="VMiddle text-center">CASE LEVEL<br />CASE NO</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">PAY FOR</th>
+                                        <th style="width:70px !important;" class="VMiddle text-center">PAY TO</th>
+                                        <th style="width:30px !important;" class="VMiddle text-center">AMOUNT</th>
+                                        <th style="width:120px !important;" class="VMiddle text-center">TRANSFER DETAIL</th>
+                                        @*<th style="width:40px !important;" class="VMiddle text-center">REF PAID</th>*@
+                                        <th style="width:40px !important;" class="all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherNRApprovedNew_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherNRApprovedNewActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>OTHER EXPENSES - APPROVED</h3></div>
+                    </div>
+                    @if (User.IsInRole("VoucherApproval"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalNRAPPROVED">@ViewBag.MCTTotalNRAPPROVED</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalNRAPPROVED">@ViewBag.SLLTotalNRAPPROVED</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblNRAPPROVEDNEW" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25px !important;" class="all VMiddle text-center">DATE<br />BRANCH</th>
+                                        <th style="width:10px !important;" class="VMiddle text-center">PV NO.</th>
+                                        <th style="width:150px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                        <th style="width:150px !important;" class="VMiddle text-center">BENEFICIARY<br />BANK</th>
+                                        <th style="width:150px !important;" class="VMiddle text-center">PAY FOR</th>
+                                        <th style="width:150px !important;" class="VMiddle text-center">REMARKS</th>
+                                        <th style="width:40px !important;" class="VMiddle text-center">AMOUNT</th>
+                                        <th style="width:40px !important;" class="VMiddle text-center">VAT</th>
+                                        <th style="width:40px !important;" class="VMiddle text-center">TOTAL</th>
+                                        <th style="width:150px !important;" class="VMiddle text-center">TRANSFER DETAIL</th>
+                                        <th style="width:40px !important;" class="all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherRejectedNew_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherRejectedNewActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>REJECT</h3></div>
+                    </div>
+                    @if (User.IsInRole("ShowRejectedTotal"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalREJECT">@ViewBag.MCTTotalREJECT</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalREJECT">@ViewBag.SLLTotalREJECT</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblREJECTNEW" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="all">BRANCH</th>
+                                        <th>DATE</th>
+                                        <th>TYPE</th>
+                                        <th>REASON</th>
+                                        <th>Y&S NO</th>
+                                        <th>CASE LEVEL</th>
+                                        <th>PAY FOR</th>
+                                        <th>DETAIL</th>
+                                        <th>PAY TO</th>
+                                        <th>AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherRApproved_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherRApprovedActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>REFUNDABLE - APPROVED</h3></div>
+                    </div>
+                    @if (User.IsInRole("VoucherApproval"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalREFAPPROVED">@ViewBag.MCTTotalREFAPPROVED</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalREFAPPROVED">@ViewBag.SLLTotalREFAPPROVED</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblREFAPPROVED" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="all">BRANCH</th>
+                                        <th>DATE</th>
+                                        <th>PV NO.</th>
+                                        <th>Y&S NO</th>
+                                        <th>CLIENT</th>
+                                        <th>DEFENDANT</th>
+                                        <th>CASE LEVEL</th>
+                                        <th>PAY FOR</th>
+                                        <th>REMARKS</th>
+                                        <th>PAY TO</th>
+                                        <th>AMOUNT</th>
+                                        @*<th>VAT AMOUNT</th>
+                                            <th>TOTAL AMOUNT</th>*@
+                                        <th>REF NO.</th>
+                                        <th>MODE</th>
+                                        <th>W/D BANK</th>
+                                        <th>PAID DATE</th>
+                                        <th>REF PAID</th>
+                                        <th class="all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="div_PayVoucherNRApproved_Detail" class="">
+                    <div style="padding-bottom:0px;" class="row PayVoucherNRApprovedActive">
+                        <div class="col-sm-12 text-center" style="padding-top:10px;"><h3>NON REFUNDABLE - APPROVED</h3></div>
+                    </div>
+                    @if (User.IsInRole("VoucherApproval"))
+                    {
+                        <div style="padding-bottom:0px;" class="row">
+                            @*<div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:left;">
+                                        <h3 class="PayTotalBG">MUSCAT&nbsp;:&nbsp;<span id="MCTTotalNRAPPROVED">@ViewBag.MCTTotalNRAPPROVED</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+
+                                </div>
+                                <div style="padding:0px !important" class="col-sm-3">
+                                    <div style="float:right;">
+                                        <h3 class="PayTotalBG">SALALAH&nbsp;:&nbsp;<span id="SLLTotalNRAPPROVED">@ViewBag.SLLTotalNRAPPROVED</span></h3>
+                                    </div>
+                                </div>*@
+                        </div>
+                    }
+                    <div style="padding-top:10px;" class="row">
+                        <div style="padding-bottom:0px;" class="col-sm-12">
+                            <table id="tblNRAPPROVED" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="all">BRANCH</th>
+                                        <th>DATE</th>
+                                        <th>PV NO.</th>
+                                        <th>PAY FOR</th>
+                                        <th>REMARKS</th>
+                                        <th>PAY TO</th>
+                                        <th>AMOUNT</th>
+                                        @*<th>VAT AMOUNT</th>
+                                            <th>TOTAL AMOUNT</th>*@
+                                        <th>REF NO.</th>
+                                        <th>MODE</th>
+                                        <th>W/D BANK</th>
+                                        <th>PAID DATE</th>
+                                        <th class="all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtCurrentTAB" value="@ViewBag.StartTAB" />
+    <input type="hidden" id="txtLoadTable" value="@ViewBag.LoadTable" />
+    <input type="hidden" id="txtVoucher_No" value="@ViewBag.Voucher_No" />
+    <input type="hidden" id="ErrorReturn" value="@ViewBag.ErrorReturn" />
+    <input type="hidden" id="txtMode" value="@ViewBag.mode" />
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</div>
+@section pagespecific {
+    <script type="text/javascript">
+        var GetIndexDataURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { DataFor = @ViewBag.DataFor })';
+        var dtPENDING_CE;
+        var dtPENDING_OE;
+        var dtPENDING_PDC;
+        var dtREFAPPROVED;
+        var dtNRAPPROVED;
+        var dtREFAPPROVEDNEW;
+        var dtNRAPPROVEDNEW;
+        var dtNEWPDC;
+        var dtREJECT;
+        var dtREJECTNEW;
+        var TableTotalURL = '@Url.Action("GetTableTotal", "CaseRegistration", new { area = string.Empty })';
+        var GetCaseDetailURL = '@Url.Action("GetCaseDetailByCaseId", "CommonTask", new { area = string.Empty })';
+        var IsValidOfficeFileNo = true;
+        var GetDocNameURL = '@Url.Action("GetPVDocName", "CommonTask", new { area = string.Empty })';
+        function openInNewTab(url) {
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+
+        function processbtnLinkClick(_Mode, _Voucher_No) {
+
+            if (_Mode == "D") {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+
+                        var form = $('#__AjaxAntiForgeryForm');
+                        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                        $.ajax({
+                            url: "/Finance/PayVoucherDeleteRefNonRef",
+                            type: 'POST',
+                            cache: false,
+                            data: {
+                                __RequestVerificationToken: token,
+                                id: _Voucher_No
+                            },
+                            statusCode: {
+                                401: function (response) {
+                                    alert(response);
+                                }
+                            },
+                            success: function (result) {
+                                if (result.redirectTo) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'Your file has been deleted.',
+                                        'success'
+                                    )
+                                    $(result.redirectTo).click();
+                                }
+                                else {
+                                    //console.log(result);
+                                    var errorHtml = $('<div />').append(result).find('.content').html();
+                                    //console.log(errorHtml);
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error deleting!',
+                                        html: errorHtml,
+                                        width : '50%'
+                                        //grow: 'row'
+                                    });
+                                    //Swal.fire("Error deleting!", errorHtml, "error");
+
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                Swal.fire("Error deleting!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                    $("#div_" + $(this).attr("id").split('_')[1] + "_Detail").removeClass("AppHidden").addClass("AppHidden");
+                    $("#div_" + $(this).attr("id").split('_')[1] + "_Heading").removeClass("AppHidden").addClass("AppHidden");
+                });
+
+                var btnClickedId = "btn_PayVoucherCreateNew";
+                var btnClickedActiveClass = btnClickedId.split('_')[1] + "Active";
+
+                var DivToShow = $("#div_" + btnClickedId.split('_')[1] + "_Detail");
+                var DivToShowHeading = $("#div_" + btnClickedId.split('_')[1] + "_Heading");
+
+                $("#btn_PayVoucherCreateNew").addClass(btnClickedActiveClass);
+                DivToShow.removeClass("AppHidden");
+                DivToShowHeading.removeClass("AppHidden");
+
+                var _PartialViewName = "";
+
+                if (_Mode == "A")
+                    _PartialViewName = "_PayVoucherApprove";
+                else
+                    _PartialViewName = "_PayVoucherEdit";
+
+                var PartialContainer = $("#PartialViewContainerBox");
+                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                GetTab(PartialContainer, GetTabURL, _parameters);
+            }
+        }
+
+        $(document).ready(function () {
+            console.log("Index PayVoucherRefNonRef New IndexPage");
+            console.log("Table to Load :: " + $("#txtLoadTable").val());
+            console.log("Current TAB :: " + $("#txtCurrentTAB").val());
+
+            $(".navButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+                $("#div_" + $(this).attr("id").split('_')[1] + "_Detail").removeClass("AppHidden").addClass("AppHidden");
+                $("#div_" + $(this).attr("id").split('_')[1] + "_Heading").removeClass("AppHidden").addClass("AppHidden");
+            });
+
+            if ($("#txtCurrentTAB").val() == "btn_PayVoucherCreateNew") {
+                var btnClickedId = $("#txtCurrentTAB").val();
+                var btnClickedClass = btnClickedId.split('_')[1];
+                var btnClickedActiveClass = btnClickedId.split('_')[1] + "Active";
+
+                var DivToShow = $("#div_" + btnClickedId.split('_')[1] + "_Detail");
+                var DivToShowHeading = $("#div_" + btnClickedId.split('_')[1] + "_Heading");
+
+                $("#" + $("#txtCurrentTAB").val()).addClass(btnClickedActiveClass);
+                DivToShow.removeClass("AppHidden");
+                DivToShowHeading.removeClass("AppHidden");
+
+                if ($("#ErrorReturn").val() == "Y" && $("#txtMode").val() == "C") {
+                }
+                else if ($("#ErrorReturn").val() == "N" && $("#txtMode").val() == "M") {
+                    var _PartialViewName = "_PayVoucherCreateRefunable";
+                    var _Voucher_No = parseInt($("#txtVoucher_No").val());
+                    var _Mode = "C";
+
+                    var PartialContainer = $("#PartialViewContainerBox");
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                    GetTab(PartialContainer, GetTabURL, _parameters);
+
+                }
+            }
+            else if ($("#txtCurrentTAB").val() == "btn_PayVoucherPending") {
+                var btnClickedId = $("#txtCurrentTAB").val();
+                var btnClickedClass = btnClickedId.split('_')[1];
+                var btnClickedActiveClass = btnClickedId.split('_')[1] + "Active";
+
+                var DivToShow = $("#div_" + btnClickedId.split('_')[1] + "_Detail");
+                var DivToShowHeading = $("#div_" + btnClickedId.split('_')[1] + "_Heading");
+
+                $("#" + $("#txtCurrentTAB").val()).addClass(btnClickedActiveClass);
+                DivToShow.removeClass("AppHidden");
+                DivToShowHeading.removeClass("AppHidden");
+
+                ReloadTable($("#txtLoadTable").val());
+
+            }
+            else
+                ReloadTable($("#txtLoadTable").val());
+
+            function ReloadTable(table) {
+                console.log("ReloadTable :: " + table);
+                //$('.btnLink').unbind();
+
+                if (table == "dtPENDING") {
+
+                    if (typeof dtPENDING_CE != 'undefined')
+                        dtPENDING_CE.destroy();
+
+                    dtPENDING_CE = $('#tblPENDING_CE').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": -1,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - PENDING',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "PENDING_CE";
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysCounter', name: 'DaysCounter', autoWidth: false },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: false },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: false },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: false },
+                            { data: 'PaymentHeadDetailName', name: 'PaymentHeadDetailName', autoWidth: false },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: false },
+                            { data: 'PaymentToBenificryName', name: 'PaymentToBenificryName', autoWidth: false },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: false },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: false },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval")
+                                            return '<a class="btn btn-info btn-sm btnLink" title="Approve / Reject Voucher" id="A_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                                        else {
+                                            if (data.Status == "0" && data.VoucherStatus == "0")
+                                                return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                                return null;
+                                            else {
+                                                if (data.Status == "1" && data.VoucherStatus == "1")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                    return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if (data.VoucherStatus == "2")
+                                                    return null;
+                                                else if (data.Status == "2")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a>';
+                                                else
+                                                    return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            }
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[0, "desc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtPENDING_CE' html Table 'tblPENDING' Initiated !!");
+                            var recordsTotal = dtPENDING_CE.ajax.json().recordsTotal;
+                            console.log("TOTAL " + recordsTotal);
+                            if (recordsTotal === 0)
+                                $("#divPENDING_CE").removeClass("AppHidden").addClass("AppHidden");
+
+                            $("#tblPENDING_CE_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtPENDING_CE.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtPENDING_CE.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+
+                    if (typeof dtPENDING_OE != 'undefined')
+                        dtPENDING_OE.destroy();
+
+                    dtPENDING_OE = $('#tblPENDING_OE').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": -1,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - PENDING',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "PENDING_OE";
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysCounter', name: 'DaysCounter', autoWidth: false },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: false },
+                            { data: 'PaymentHeadDetailName', name: 'PaymentHeadDetailName', autoWidth: false },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: false },
+                            { data: 'PaymentToBenificryName', name: 'PaymentToBenificryName', autoWidth: false },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: false },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: false },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval")
+                                            return '<a class="btn btn-info btn-sm btnLink" title="Approve / Reject Voucher" id="A_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                                        else {
+                                            if (data.Status == "0" && data.VoucherStatus == "0")
+                                                return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                                return null;
+                                            else {
+                                                if (data.Status == "1" && data.VoucherStatus == "1")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                    return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if (data.VoucherStatus == "2")
+                                                    return null;
+                                                else if (data.Status == "2")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a>';
+                                                else
+                                                    return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            }
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[0, "desc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [1, 2, 3, 4, 5]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtPENDING_OE' html Table 'tblPENDING' Initiated !!");
+                            var recordsTotal = dtPENDING_OE.ajax.json().recordsTotal;
+                            console.log("TOTAL " + recordsTotal);
+                            if (recordsTotal === 0)
+                                $("#divPENDING_OE").removeClass("AppHidden").addClass("AppHidden");
+
+                            $("#tblPENDING_OE_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtPENDING_OE.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtPENDING_OE.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+
+                    if (typeof dtPENDING_PDC != 'undefined')
+                        dtPENDING_PDC.destroy();
+
+                    dtPENDING_PDC = $('#tblPENDING_PDC').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": -1,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - PENDING',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "PENDING_PDC";
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysLeft', name: 'DaysLeft', autoWidth: true },
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                            { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: false },
+                            { data: 'PaymentHeadDetailName', name: 'PaymentHeadDetailName', autoWidth: false },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: false },
+                            { data: 'PaymentToBenificryName', name: 'PaymentToBenificryName', autoWidth: false },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                            { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval")
+                                            return '<a class="btn btn-info btn-sm btnLink" title="Approve / Reject Voucher" id="A_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                                        else {
+                                            if (data.Status == "0" && data.VoucherStatus == "0")
+                                                return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                                return null;
+                                            else {
+                                                if (data.Status == "1" && data.VoucherStatus == "1")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                    return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                                else if (data.VoucherStatus == "2")
+                                                    return null;
+                                                else if (data.Status == "2")
+                                                    return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a>';
+                                                else
+                                                    return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            }
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[0, "desc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [2, 3, 4, 5, 6, 7, 8, 9]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtPENDING_PDC' html Table 'tblPENDING' Initiated !!");
+                            var recordsTotal = dtPENDING_PDC.ajax.json().recordsTotal;
+                            console.log("TOTAL " + recordsTotal);
+                            if (recordsTotal === 0)
+                                $("#divPENDING_PDC").removeClass("AppHidden").addClass("AppHidden");
+
+                            $("#tblPENDING_PDC_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtPENDING_PDC.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtPENDING_PDC.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+
+                }
+                else if (table == "dtNEWPDC") {
+                    if (typeof dtNEWPDC != 'undefined')
+                        dtNEWPDC.destroy();
+
+                    dtNEWPDC = $('#tblNEWPDC').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": -1,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - PDC',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "NEWPDC";
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysLeft', name: 'DaysLeft', autoWidth: true },
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'FutureChequeDate', name: 'FutureChequeDate', autoWidth: true },
+                            { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: false },
+                            { data: 'PaymentHeadDetailName', name: 'PaymentHeadDetailName', autoWidth: false },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: false },
+                            { data: 'PaymentToBenificryName', name: 'PaymentToBenificryName', autoWidth: false },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                            { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                            return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm btnLink" title="Approve / Reject Voucher" id="A_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                                        else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                            return '<a class="btn btn-danger btn-sm btnLink" title="Cancel Voucher" id="D_' + row.Voucher_No + '" href="#"><i class="fas fa-trash"></i></a> <a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                                        else {
+                                            return null;
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[0, "asc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [2, 3, 4, 5, 6, 7, 8, 9]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtNEWPDC' html Table 'tblNEWPDC' Initiated !!");
+                            $("#tblNEWPDC_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtNEWPDC.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtNEWPDC.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+                else if (table == "dtREFAPPROVEDNEW") {
+                    if (typeof dtREFAPPROVEDNEW != 'undefined')
+                        dtREFAPPROVEDNEW.destroy();
+
+                    dtREFAPPROVEDNEW = $('#tblREFAPPROVEDNEW').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - REFUNDABLE - APPROVED',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "REFAPPROVEDNEW";
+                            }
+                        },
+                        "columns": [
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "DATE_BRANCH"); } },
+                            { data: 'PV_No', name: 'PV_No', autoWidth: false },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: false },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: false },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "CASELEVEL_CASENO"); } },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYFOR_DETAIL"); } },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYTO_BENEFICIARY"); } },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: false },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return Merge_PaymentModeNBankDetail(row); } },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                            return '<a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtREFAPPROVED' html Table 'tblREFAPPROVED' Initiated !!");
+                            var MuscatTTL = dtREFAPPROVEDNEW.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtREFAPPROVEDNEW.ajax.json().SalalahTotal;
+                            $("#MCTTotalREFAPPROVED").text(MuscatTTL);
+                            $("#SLLTotalREFAPPROVED").text(SalalahTTL);
+                            //console.log(MuscatTTL);
+                            //console.log(SalalahTTL);
+
+                            $("#tblREFAPPROVEDNEW_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtREFAPPROVEDNEW.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtREFAPPROVEDNEW.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+                else if (table == "dtNRAPPROVEDNEW") {
+                    if (typeof dtNRAPPROVEDNEW != 'undefined')
+                        dtNRAPPROVEDNEW.destroy();
+
+                    dtNRAPPROVEDNEW = $('#tblNRAPPROVEDNEW').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - NON REFUNDABLE - APPROVED',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "NRAPPROVEDNEW";
+                            }
+                        },
+                        "columns": [
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "DATE_BRANCH"); } },
+                            { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYTO_BENEFICIARY"); } },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "BANK_ACCOUNT"); } },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYFOR_DETAIL"); } },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: false },
+                            { data: 'Amount', name: 'Amount', autoWidth: false },
+                            { data: 'VatAmount', name: 'VatAmount', autoWidth: false },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: false },
+                            { data: null, name: null, autoWidth: false, render: function (data, type, row) { return Merge_PaymentModeNBankDetail(row); } },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                            return '<a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        "columnDefs": [
+                            { 'orderable': false, 'targets': [-1] },
+                            { "className": "dt-center", "targets": "_all" },
+                            {
+                                render: function (data, type, full, meta) {
+                                    if (data) {
+                                        return "<div class='text-wrap'>" + data + "</div>";
+                                    }
+                                    else
+                                        return "";
+                                },
+                                targets: [1, 5, 6, 7, 8]
+                            }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtNRAPPROVEDNEW' html Table 'tblNRAPPROVED' Initiated !!");
+                            var MuscatTTL = dtNRAPPROVEDNEW.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtNRAPPROVEDNEW.ajax.json().SalalahTotal;
+                            $("#MCTTotalNRAPPROVED").text(MuscatTTL);
+                            $("#SLLTotalNRAPPROVED").text(SalalahTTL);
+                            //console.log(MuscatTTL);
+                            //console.log(SalalahTTL);
+
+                            $("#tblNRAPPROVEDNEW_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtNRAPPROVEDNEW.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtNRAPPROVEDNEW.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+                else if (table == "dtREJECTNEW") {
+                    if (typeof dtREJECTNEW != 'undefined')
+                        dtREJECTNEW.destroy();
+
+                    dtREJECTNEW = $('#tblREJECTNEW').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - REJECT',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "REJECTNEW";
+                            }
+                        },
+                        "columns": [
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                            { data: 'VoucherTypeName', name: 'VoucherTypeName', autoWidth: true },
+                            { data: 'RejectReason', name: 'RejectReason', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                            { data: 'PaymentHeadDetailName', name: 'PaymentHeadDetailName', autoWidth: true },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                            //{ data: 'Amount', name: 'Amount', autoWidth: true },
+                            //{ data: 'VatAmount', name: 'VatAmount', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true }],
+                        "order": [[1, "desc"]],
+                        initComplete: function () {
+                            console.log("DataTable 'dtREJECT' html Table 'tblREJECT' Initiated !!");
+                            var MuscatTTL = dtREJECTNEW.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtREJECTNEW.ajax.json().SalalahTotal;
+                            $("#MCTTotalREJECT").text(MuscatTTL);
+                            $("#SLLTotalREJECT").text(SalalahTTL);
+
+                            $("#tblREJECTNEW_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtREJECTNEW.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtREJECTNEW.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+                else if (table == "dtREFAPPROVED") {
+                    if (typeof dtREFAPPROVED != 'undefined')
+                        dtREFAPPROVED.destroy();
+
+                    dtREFAPPROVED = $('#tblREFAPPROVED').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - REFUNDABLE - APPROVED',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "REFAPPROVED";
+                            }
+                        },
+                        "columns": [
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                            { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                            { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                            //{ data: 'Amount', name: 'Amount', autoWidth: true },
+                            //{ data: 'VatAmount', name: 'VatAmount', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true },
+                            { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                            { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                            { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                            { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                            { data: 'REF_PAID', name: 'REF_PAID', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                            return '<a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        'aoColumnDefs': [
+                            { 'bSortable': false, 'aTargets': [15,-1] }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtREFAPPROVED' html Table 'tblREFAPPROVED' Initiated !!");
+                            var MuscatTTL = dtREFAPPROVED.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtREFAPPROVED.ajax.json().SalalahTotal;
+                            $("#MCTTotalREFAPPROVED").text(MuscatTTL);
+                            $("#SLLTotalREFAPPROVED").text(SalalahTTL);
+                            //console.log(MuscatTTL);
+                            //console.log(SalalahTTL);
+
+                            $("#tblREFAPPROVED_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtREFAPPROVED.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtREFAPPROVED.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+                else if (table == "dtNRAPPROVED") {
+                    if (typeof dtNRAPPROVED != 'undefined')
+                        dtNRAPPROVED.destroy();
+
+                    dtNRAPPROVED = $('#tblNRAPPROVED').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - NON REFUNDABLE - APPROVED',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "NRAPPROVED";
+                            }
+                        },
+                        "columns": [
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                            { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                            { data: 'Remarks', name: 'Remarks', autoWidth: true },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                            //{ data: 'Amount', name: 'Amount', autoWidth: true },
+                            //{ data: 'VatAmount', name: 'VatAmount', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true },
+                            { data: 'BillNumber', name: 'BillNumber', autoWidth: true },
+                            { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                            { data: 'W_D_BANK', name: 'W_D_BANK', autoWidth: true },
+                            { data: 'W_D_Date', name: 'W_D_Date', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "1")
+                                            return '<a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if ($("#txtUserRole").val() == "VoucherApproval" && parseInt(data.Status) > 0 && parseInt(data.VoucherStatus) > 0)
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else {
+                                            if (data.Status == "1" && data.VoucherStatus == "1")
+                                                return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                            else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Voucher" id="E_' + row.Voucher_No + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-print"></i></a> <a class="btn btn-danger btn-sm ShowDocsPV" title="SHOW SUPPORTING DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        }
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        'aoColumnDefs': [
+                            { 'bSortable': false, 'aTargets': [-1] }
+                        ],
+                        initComplete: function () {
+                            console.log("DataTable 'dtNRAPPROVED' html Table 'tblNRAPPROVED' Initiated !!");
+                            var MuscatTTL = dtNRAPPROVED.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtNRAPPROVED.ajax.json().SalalahTotal;
+                            $("#MCTTotalNRAPPROVED").text(MuscatTTL);
+                            $("#SLLTotalNRAPPROVED").text(SalalahTTL);
+                            //console.log(MuscatTTL);
+                            //console.log(SalalahTTL);
+
+                            $("#tblNRAPPROVED_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtNRAPPROVED.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtNRAPPROVED.search("").draw();
+                                    }
+                                    return;
+                                });
+
+                            //$('.btnLink').on("click", function (event) {
+                            //    event.preventDefault();
+                            //    alert("Click");
+                            //    var _Mode = $(this).attr("id").split('_')[0]
+                            //    var _Voucher_No = parseInt($(this).attr("id").split('_')[1])
+                            //    processbtnLinkClick(_Mode, _Voucher_No);
+                            //    return false;
+                            //});
+                        }
+                    });
+                }
+                else if (table == "dtREJECT") {
+                    if (typeof dtREJECT != 'undefined')
+                        dtREJECT.destroy();
+
+                    dtREJECT = $('#tblREJECT').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 25,
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Payment Voucher - REJECT',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "REJECT";
+                            }
+                        },
+                        "columns": [
+                            { data: 'LocationCode', name: 'LocationCode', autoWidth: true },
+                            { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                            { data: 'VoucherTypeName', name: 'VoucherTypeName', autoWidth: true },
+                            { data: 'RejectReason', name: 'RejectReason', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'CaseLevel', name: 'CaseLevel', autoWidth: true },
+                            { data: 'PaymentHeadName', name: 'PaymentHeadName', autoWidth: true },
+                            { data: 'PaymentToName', name: 'PaymentToName', autoWidth: true },
+                            //{ data: 'Amount', name: 'Amount', autoWidth: true },
+                            //{ data: 'VatAmount', name: 'VatAmount', autoWidth: true },
+                            { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true }],
+                        "order": [[1, "desc"]],
+                        initComplete: function () {
+                            console.log("DataTable 'dtREJECT' html Table 'tblREJECT' Initiated !!");
+                            var MuscatTTL = dtREJECT.ajax.json().MuscatTotal;
+                            var SalalahTTL = dtREJECT.ajax.json().SalalahTotal;
+                            $("#MCTTotalREJECT").text(MuscatTTL);
+                            $("#SLLTotalREJECT").text(SalalahTTL);
+
+                            $("#tblREJECT_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        dtREJECT.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        dtREJECT.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+            }
+
+            $('.navButton').click(function () {
+               // console.log(GetURLParameter());
+                var btnClickedId = $(this).attr("id");
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                $("#div_Archieve").removeClass("AppHidden").addClass("AppHidden");
+
+                console.log(btnClickedId);
+                console.log(btnClickedClass);
+                console.log(btnClickedActiveClass);
+
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                    $("#div_" + $(this).attr("id").split('_')[1] + "_Detail").removeClass("AppHidden").addClass("AppHidden");
+                    $("#div_" + $(this).attr("id").split('_')[1] + "_Heading").removeClass("AppHidden").addClass("AppHidden");
+                });
+
+                if ($(this).attr("id") == "btn_PayVoucherArchieve") {
+                    $(this).addClass(btnClickedActiveClass);
+                    $("#div_Archieve").removeClass("AppHidden");
+                }
+                else {
+
+                    if ($(this).attr("id") == "btn_PayVoucherRApproved" || $(this).attr("id") == "btn_PayVoucherNRApproved" || $(this).attr("id") == "btn_PayVoucherRejected") {
+                        $("#div_Archieve").removeClass("AppHidden");
+                    }
+
+                    var TableToLoad = "";
+                    switch ($(this).attr("id")) {
+                        case "btn_PayVoucherPending":
+                            ReloadTable("dtPENDING");
+                            break;
+                        case "btn_PayVoucherPDC":
+                            ReloadTable("dtNEWPDC");
+                            break;
+                        case "btn_PayVoucherRApproved":
+                            ReloadTable("dtREFAPPROVED");
+                            break;
+                        case "btn_PayVoucherNRApproved":
+                            ReloadTable("dtNRAPPROVED");
+                            break;
+                        case "btn_PayVoucherRejected":
+                            ReloadTable("dtREJECT");
+                            break;
+                        case "btn_PayVoucherRApprovedNew":
+                            ReloadTable("dtREFAPPROVEDNEW");
+                            break;
+                        case "btn_PayVoucherNRApprovedNew":
+                            ReloadTable("dtNRAPPROVEDNEW");
+                            break;
+                        case "btn_PayVoucherRejectedNew":
+                            ReloadTable("dtREJECTNEW");
+                            break;
+                    }
+
+
+
+                    var DivToShow = $("#div_" + $(this).attr("id").split('_')[1] + "_Detail");
+                    var DivToShowHeading = $("#div_" + $(this).attr("id").split('_')[1] + "_Heading");
+
+                    $(this).addClass(btnClickedActiveClass);
+                    DivToShow.removeClass("AppHidden");
+                    DivToShowHeading.removeClass("AppHidden");
+                    $("#txtCurrentTAB").val(btnClickedId);
+
+                    if ($(this).attr("id") == "btn_PayVoucherCreateNew") {
+                        $("#txtVoucher_No").val("0");
+                        //$("#PartialViewContainerBox").removeClass("AppHidden").addClass("AppHidden");
+
+                        var _PartialViewName = "_PayVoucherCreateRefunable";
+                        var _Voucher_No = parseInt($("#txtVoucher_No").val());
+                        var _Mode = "C";
+
+                        var PartialContainer = $("#PartialViewContainerBox");
+                        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, Voucher_No: _Voucher_No };
+
+                        GetTab(PartialContainer, GetTabURL, _parameters);
+                    }
+                }
+            });
+
+            $('.table tbody').on('click', '.ShowDocsBTR', function () {
+                GetDocName(this.id, "PVTransfers");
+                return false;
+            });
+
+            $('.table tbody').on('click', '.ShowDocsPV', function () {
+                GetDocName(this.id, "PVDocuments");
+                return false;
+            });
+
+            $('.table tbody').on('click', '.btnLink', function () {
+                var _Mode = this.id.split('_')[0]
+                var _Voucher_No = parseInt(this.id.split('_')[1])
+
+                processbtnLinkClick(_Mode, _Voucher_No);
+                return false;
+            });
+
+            function GetDocName(p_id, p_type) {
+                console.log("p_id");
+                console.log(p_id);
+
+                console.log("p_type");
+                console.log(p_type);
+
+                _parameters = { Id: p_id, type: p_type };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: GetDocNameURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            if (Result.FileName == "#") {
+                                Swal.fire({
+                                    type: "error",
+                                    title: 'Error...',
+                                    html: "Document not Found"
+                                });
+                            }
+                            else {
+                                openInNewTab("/Uploads/" + p_type + "/" + Result.FileName);
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+}

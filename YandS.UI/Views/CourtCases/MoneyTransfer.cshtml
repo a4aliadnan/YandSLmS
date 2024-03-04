@@ -1,0 +1,293 @@
+﻿<script type="text/javascript">
+    var GetGetDefendentTransferDataURL = '@Url.Action("GetDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var DefendentTRansferDataTable;
+    var objDTO = {};
+    var ValidationMessage = "";
+    var NotValid = false;
+    var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+    function processDefendentTransfer(data) {
+        console.log(data);
+        _parameters = { objDTO: data };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: DefendentTransferURL,
+            success: function (Result) {
+
+                if (Result.ProcessFlag == "Y") {
+                    //DefendentTRansferDataTable.ajax.reload(function (json) {
+                    //    console.log(json);
+                    //    SetSum();
+                    //});
+
+                    //if ($('#btnAddAmount').hasClass("btn-warning")) {
+                    //    $('#btnAddAmount').removeClass("btn-warning").addClass("btn-info");
+                    //    $('#btnAddAmountLabel').text("ADD");
+                    //}
+
+                    //$('#frmDate').val("");
+                    //$('#frmAmount').val("");
+
+                    table.ajax.reload(function (json) {
+                        var info = table.page.info();
+                        var MCTRecords = table.ajax.json().MuscatTotal;
+                        var SLLRecords = table.ajax.json().SalalahTotal;
+                        var recordsTotal = table.ajax.json().recordsTotal;
+
+                        if ($("#txtUserRole").val() == "VoucherApproval") {
+                            $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                            $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                            $('#TTL').text(recordsTotal);
+                        }
+                    });
+
+                    if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
+                        table2.ajax.reload(function (json) {
+                            var info = table2.page.info();
+                            var MCTRecords = table2.ajax.json().MuscatTotal;
+                            var SLLRecords = table2.ajax.json().SalalahTotal;
+                            var recordsTotal = table2.ajax.json().recordsTotal;
+
+                            if ($("#txtUserRole").val() == "VoucherApproval") {
+                                $('#MCTTTL2').text("MUSCAT : " + MCTRecords);
+                                $('#SLLTTL2').text("SALALAH : " + SLLRecords);
+                                $('#TTL2').text(recordsTotal);
+                            }
+                        });
+                    }
+
+                    Swal.fire({
+                        type: "success",
+                        title: 'SUCCESS',
+                        html: "DATA PROCESSED SUCCESSFULLY"
+                    });
+                }
+                else {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ProcessMessage
+                    });
+                }
+            }
+        });
+    }
+
+    function SetSum() {
+        var sum = $('#DefendentTRansferHtmlTable').DataTable().column(1).data().sum();
+        $('#frmTotal').val(sum);
+    }
+
+    $(document).ready(function () {
+        console.log("Modify Enforcement --> MONEY TRANSFER Partail View Document Page");
+
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#frmAmount").regexMask(IsDigitmask);
+
+        $('#btnAddAmount').on("click", function () {
+            NotValid = false;
+            ValidationMessage = "";
+
+            if ($("#MoneyTrRequestDate").val() == "") {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REQUEST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REQUEST DATE";
+                NotValid = true;
+            }
+            else {
+
+                var today = new Date();
+
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+
+                today = dd + '/' + mm + '/' + yyyy;
+
+                console.log(today);
+                console.log($("#MoneyTrRequestDate").val());
+
+                if (process($("#MoneyTrRequestDate").val()) > process(today)) {
+                    ValidationMessage = ValidationMessage == "" ? "REQUEST DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "REQUEST DATE CANNOT BE GREATER THEN CURRENT DATE";
+                    NotValid = true;
+                }
+            }
+
+            if ($("#frmDate").val() == "") {
+                //ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER DATE";
+                //NotValid = true;
+            }
+            else {
+
+                var today = new Date();
+
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+
+                today = dd + '/' + mm + '/' + yyyy;
+
+                console.log(today);
+                console.log($("#frmDate").val());
+
+                if (process($("#frmDate").val()) > process(today)) {
+                    ValidationMessage = ValidationMessage == "" ? "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE";
+                    NotValid = true;
+                }
+
+                if ($('#frmAmount').val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                    NotValid = true;
+                }
+                else if (parseFloat($('#frmAmount').val()) <= 0) {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                    NotValid = true;
+                }
+            }
+
+            
+
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'INVALID DATA',
+                    html: ValidationMessage
+                });
+
+                return false;
+
+            }
+
+
+            if (parseInt($("#hidDefendentTransferId").val()) > 0) {
+
+                objDTO["DataFor"] = "UPDATE";
+                objDTO["DefendentTransferId"] = parseInt($("#hidDefendentTransferId").val());
+                objDTO["CaseId"] = parseInt($('#HFCaseId').val());
+                objDTO["CaseLevelCode"] = "6";
+                objDTO["TransferDate"] = $('#frmDate').val();
+                objDTO["Amount"] = parseFloat($('#frmAmount').val());
+                objDTO["MoneyTrRequestDate"] = $('#MoneyTrRequestDate').val();
+                objDTO["MoneyTrCompleteDate"] = $('#MoneyTrCompleteDate').val();
+            }
+            else {
+                objDTO = {
+                    DataFor: "CREATE",
+                    DefendentTransferId: 0,
+                    CaseId: parseInt($("#HFCaseId").val()),
+                    CaseLevelCode: "6",
+                    TransferDate: $('#frmDate').val(),
+                    Amount: parseFloat($('#frmAmount').val()),
+                    MoneyTrRequestDate: $('#MoneyTrRequestDate').val(),
+                    MoneyTrCompleteDate: $('#MoneyTrCompleteDate').val()
+                };
+            }
+
+            processDefendentTransfer(objDTO);
+        });
+
+        $('#btnResetForm').on("click", function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    objDTO = {
+                        DataFor: "DELETE_ALL",
+                        CaseId: parseInt($("#HFCaseId").val()),
+                        CaseLevelCode: "6"
+                    };
+
+                    processDefendentTransfer(objDTO);
+
+                    $('#MoneyTrRequestDate').val("");
+                }
+            });
+        });
+    });
+        
+</script>
+<div class="card">
+    <div class="card-header MoneyTransferActive">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8 text-center"><h3 class="text-center">TO FOLLOW  MONEY TRANSFER متابعة تحويل أموال من المحكمة</h3></div>
+            <div class="col-sm-2"><span style="float:right"><button id="btnResetForm" type="button" class="btn btn-lg btn-warning"><i class="fas fa-trash"> </i> DELETE</button></span></div>
+        </div>
+    </div>
+    <div class="card-body">
+        <input type="hidden" id="DefendentTransferId" value="@ViewBag.DefendentTransferId" />
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="MoneyTrRequestDate">REQUEST DATE تاريخ الطلب</label>
+                    <input id="MoneyTrRequestDate" value="@ViewBag.MoneyTrRequestDate" class="form-control form-control-lg datepicker" type="text" placeholder="REQUEST DATE">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="frmDate">COURT TRANSFER DATE تاريخ تحويل المحكمة</label>
+                    <input id="frmDate" value="@ViewBag.TransferDate" class="form-control form-control-lg datepicker" type="text" placeholder="TRANSFER DATE">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="frmAmount">AMOUNT</label>
+                    <input id="frmAmount" value="@ViewBag.Amount" class="form-control form-control-lg" type="text" placeholder="AMOUNT">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="MoneyTrCompleteDate">TRANSFER COMPLETED  DATE تاريخ استلام الموكل للتحويل</label>
+                    <input id="MoneyTrCompleteDate" value="@ViewBag.MoneyTrCompleteDate" class="form-control form-control-lg datepicker" type="text" placeholder="COMPLETED  DATE">
+                </div>
+            </div>
+            @*<div class="col-sm-2">
+                <div class="form-group">
+                    <label for="frmTotal">TOTAL</label>
+                    <input id="frmTotal" class="form-control form-control-lg" type="text" readonly>
+                </div>
+            </div>*@
+        </div>
+        @*<div style="padding-bottom:10px !important;padding-top:15px;" class="row">
+            <table id="DefendentTRansferHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width:200px;">TRANSFER DATE</th>
+                        <th style="width:250px;">AMOUNT</th>
+                        <th style="width:200px;"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>*@
+    </div>
+    <div class="card-footer text-center col-sm-12">
+        <button id="btnAddAmount" type="button" class="btn btn-lg btn-cool-blues btn-rounded"><span class="btn-text-med" id="btnAddAmountLabel">Save</span></button>
+    </div>
+</div>

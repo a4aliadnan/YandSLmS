@@ -1,0 +1,139 @@
+﻿<script type="text/javascript">
+    var CaseDataTable;
+    $(document).ready(function () {
+        if (typeof CaseDataTable != 'undefined')
+            CaseDataTable.destroy();
+
+        CaseDataTable = $('#CaseHtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": false,
+            "pageLength": 100,
+            //dom: 'Blfrtip',
+            dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'Invoice Notification',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "CASE-TABLE";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFN', name: 'OfficeFN', autoWidth: true },
+                { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                { data: 'COURT', name: 'COURT', autoWidth: true },
+                { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: true },
+                { data: 'ReasonDesc', name: 'ReasonDesc' },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<a class="btn btn-info btn-sm btnLink" title="Update Invoice Processed" id="E_' + row.UIDENT + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            //"order": [[2, "asc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': "_all" },
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                console.log(data.DaysCounterUpdateDate);
+
+                if (data.DaysCounterUpdateDate >= 0 ) {
+                    rowColor = "InvoiceProcessed";
+                }
+                else {
+                    if (data.DaysCounter >= 15) {
+                        rowColor = "UrgentProcess";
+                    }
+                }
+
+                $(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable CaseDataTable Initiated !!");
+
+                $("#CaseHtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            CaseDataTable.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            CaseDataTable.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+    $('.table tbody').on('click', '.btnLink', function () {
+        if ($(this).parents('tr').hasClass("InvoiceProcessed")) {
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Invoice Already Processed'
+            });
+        }
+        else {
+            var _Mode = this.id.split('_')[0];
+
+            var data = CaseDataTable.row($(this).parents('tr')).data();
+
+            //console.log(data);
+            //console.log(_id);
+            //console.log(data.UIDENT);
+
+            processbtnLinkClick(_Mode, data);
+
+        }
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="CaseHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th class="all">F.N</th>
+                <th>D.C</th>
+                <th>COURT</th>
+                <th>CLIENT</th>
+                <th>DEFENDANT</th>
+                <th>A/C NO.</th>
+                <th>REASON</th>
+                <th class="all"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

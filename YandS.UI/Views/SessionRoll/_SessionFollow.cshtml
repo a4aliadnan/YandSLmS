@@ -1,0 +1,286 @@
+﻿<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        $('.clsFollowup').removeClass("active");
+        $('.clsSessionRoll').removeClass("active").addClass("active");
+
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": -1,
+            //dom: 'Blfrtip',
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'Session Roll - FOLLOW',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "FOLLOW";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFN', name: 'OfficeFN', autoWidth: true },
+                { data: 'NextHearingDate', name: 'NextHearingDate', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        var dtLastDate = moment(moment(data.NextHearingDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                        var currDate = moment(moment(new Date()).format("YYYY-MM-DD"));
+                        var result = dtLastDate.diff(currDate, 'days');
+
+                        if (parseInt(result) == 1)
+                            return result + " Day";
+                        else if (parseInt(result) > 1)
+                            return result + " Days";
+                        else {
+                            if (parseInt(result) < -1)
+                                return parseInt(result) * 1 + " Days";
+                            else if (parseInt(result) == -1)
+                                return parseInt(result) * 1 + " Day";
+                            else
+                                return "";
+                        }
+                    }
+                },
+                { data: 'SessionRollClientName', name: 'SessionRollClientName', autoWidth: true },
+                { data: 'SessionRollDefendentName', name: 'SessionRollDefendentName', autoWidth: true },
+                { data: 'CountLocationName', name: 'CountLocationName', autoWidth: true },
+                { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
+                { data: 'WorkRequired', name: 'WorkRequired', autoWidth: true },
+                { data: 'SessionNotes', name: 'SessionNotes', autoWidth: true },
+                { data: 'FollowerName', name: 'FollowerName', autoWidth: true },
+                {
+                    data: 'DaysCounterFollow', name: 'DaysCounterFollow', autoWidth: true, render: function (data, type, row) {
+                        if (parseInt(data) == 1)
+                            return data + " Day";
+                        else if (parseInt(data) > 1)
+                            return data + " Days";
+                        else {
+                            if (parseInt(data) < 0)
+                                return parseInt(data) * -1 + " Days";
+                            else
+                                return "";
+                        }
+                            
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if ($("#txtUserRole").val() == "VoucherApproval")
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="Cancel Sessions Roll" id="D_' + row.SessionRollId + '" href="#"><i class="fas fa-trash"></i></a>';
+                            else {
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [[1, "asc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': [-1] },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 4
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 5
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+
+                    },
+                    targets: 6
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 7
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 8
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 9
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 10
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                var dtLastDate = moment(moment(data.NextHearingDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                var currDate = moment(moment(new Date()).format("YYYY-MM-DD"));
+                var result = dtLastDate.diff(currDate, 'days');
+
+
+                if (parseInt(result) >= 0 && parseInt(result) <= 1)
+                    rowColor = "tblFirstCondition";
+                else if (parseInt(result) >= 2 && parseInt(result) <= 3)
+                    rowColor = "tblSecondCondition";
+                else if (parseInt(result) >= 4 && parseInt(result) <= 5)
+                    rowColor = "tblThirdCondition";
+
+                $(row).addClass(rowColor);
+            },
+            "drawCallback": function (settings) {
+                if (SmartFilter) {
+                    SmartFilter = false;
+                    $("#ModificationContainer").empty();
+                }
+            },
+            initComplete: function () {
+                console.log("DataTable table Initiated !!");
+                var info = table.page.info();
+                var MCTTTL = table.column(0).data().filter(function (value, index) {
+                    return value.substring(0, 1) == "M" ? true : false;
+                }).count();
+
+                var SSLTTL = table.column(0).data().filter(function (value, index) {
+                    return value.substring(0, 1) == "S" ? true : false;
+                }).count();
+                $('#FollowTTL').text(info.recordsTotal);
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTTTL);
+                    $('#SLLTTL').text("SALALAH : " + SSLTTL);
+                }
+                else {
+                    if ($('#txtLocationId').val() == "M")
+                        $('#MCTTTL').text("MUSCAT : " + MCTTTL);
+                    else
+                        $('#MCTTTL').text("SALALAH : " + SSLTTL);
+                }
+                $("#HtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            SmartFilter = true;
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            SmartFilter = true;
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+    $('.table tbody').on('click', '.btnLink', function () {
+        var _Mode = this.id.split('_')[0];
+        var _id = parseInt(this.id.split('_')[1]);
+
+        var data = table.row($(this).parents('tr')).data();
+       
+        processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId, data);
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SessionFollowActive">
+    <div class="col-sm-3 text-left"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>REQUIREMENT متابعة الإجراء</h3></div>
+    <div class="col-sm-3 text-right"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SessionFollowActive">
+    <div class="col-sm-12 text-center"><h3><span id="FollowTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width:50px !important" class="all VMiddle text-center">F.N</th>
+                <th class="VMiddle">NEXT<br />HEARING DATE<br />موعد الجلسة<br />القادمة</th>
+                <th style="width:15px !important" class="VMiddle text-center">D.C</th>
+                <th style="width:100px !important" class="VMiddle">CLIENT<br />الموكل</th>
+                <th style="width:100px !important" class="VMiddle">DEF الخصم</th>
+                <th style="width:100px !important" class="VMiddle">COURT<br />المحكمة</th>
+                <th class="VMiddle">COURT DECISION<br />قرار المحكمة</th>
+                <th style="width:100px !important" class="VMiddle">FOLLOW UP<br />WORK REQUIRED<br />المطلوب</th>
+                <th style="width:100px !important" class="VMiddle">FOLLOW UP<br />SESSION NOTES</th>
+                <th style="width:70px !important" class="VMiddle">FOLLOWER<br />المكلف<br />بالمتابعة</th>
+                <th style="width:50px !important" class="VMiddle">SESSION<br />AFTER<br />الجلسة بعد</th>
+                <th class="all"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

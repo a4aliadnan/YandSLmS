@@ -1,0 +1,137 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+        if ($('input[name="RealEstateYesNo"]:checked').val() == "Y") {
+            $(".clsRealEstate").removeClass("AppHidden");
+        }
+        $('input[type=radio][name=RealEstateYesNo]').change(function () {
+            console.log("rdoRealEstate Change");
+            console.log(this.value);
+
+            $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+            if (this.value == "Y")
+                $(".clsRealEstate").removeClass("AppHidden");
+        });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.AddNewMaster').on("click", function () {
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "4") {
+                ModalTitle = "Add Court";
+                DDLToAppend = $("#CourtLocationid");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#GovernorateId').on("change", function () {
+            LoadCourtByGovernorate($('#GovernorateId').val(), $('#CourtLocationid'));
+        });
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+@Html.HiddenFor(model => model.DetailId, new { @Value = ViewBag.hid_DetailId })
+@Html.HiddenFor(model => model.Courtid, new { @Value = "3" })
+@Html.HiddenFor(model => model.ClaimSummary)
+
+<div class="card">
+    <div class="card-header CaseRegSupremeActive">
+        <div class="text-center">
+            <span class="h3">SUPREME المحكمة العليا</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="DivClearable" class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label>CASE LEVEL</label>
+                    <span class="form-control" disabled="disabled">SUPREME COURT</span>
+                </div>
+                <div class="form-group">
+                    <label>SUPREME NO</label>
+                    @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CourtRefNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label>SUPREME BY</label>
+                    @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    @Html.ValidationMessageFor(model => model.ApealByWho, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.CourtLocationid)
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.CourtLocationid, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RegistrationDate)
+                    @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    <label>GOVERNORATE المحافظة</label>
+                    @Html.DropDownList("GovernorateId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div style="padding-top:10px;padding-left:5px;" class="col-sm-8">
+
+            </div>
+            <div style="padding-top:10px;" class="col-sm-2">
+                <div class="form-group text-right">
+                    <label>REAL ESTATE DETAIL</label>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div style="color: black !important;padding-top:10px;" class="text-left">
+                    <div class="icheck-primary d-inline">
+                        @Html.RadioButtonFor(m => m.RealEstateYesNo, "Y", new { id = "radioRealEstate1" })
+                        <label for="radioRealEstate1">YES</label>
+                    </div>
+                    <div class="icheck-primary d-inline">
+                        @Html.RadioButtonFor(m => m.RealEstateYesNo, "N", new { id = "radioRealEstate2" })
+                        <label for="radioRealEstate2">NO</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group clsRealEstate">
+                    @Html.TextAreaFor(model => model.RealEstateDetail, 3, 200, new { @class = "form-control", @placeholder = "Please Enter Real Estate Detail   " })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

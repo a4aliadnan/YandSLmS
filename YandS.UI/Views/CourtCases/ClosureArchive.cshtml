@@ -1,0 +1,112 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("ClosureArchive PartialView");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $('textarea').autoResize();
+
+        $('.btnSave').on("click", function () {
+            console.log(".btnSave CLICK");
+            $('#FileClosureDetail_btnSave').val(this.id);
+            ValidationMessage = "";
+            NotValid = false;
+
+            if ($("#FileClosureDetail_btnSave").val() == "btnClosureArchiveSave") {
+                if ($("#FileClosureDetail_StoreDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER STORE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER STORE DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_StoreDate").val());
+
+                    if (process($("#FileClosureDetail_StoreDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "STORE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "STORE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+
+                if ($("#FileClosureDetail_StoreNotes").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER STORE NOTES" : ValidationMessage + "<br />" + "PLEASE ENTER STORE NOTES";
+                    NotValid = true;
+                }
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+            else
+                submitClosureForm();
+
+
+        });
+    });
+</script>
+<div id="divClosureArchive" class="card">
+    <div class="card-header FinalClosureBanner">
+        <div class="text-center">
+            <span class="h3">STORE THE FILE IN THE ARCHIVE وصول الملف إلى الأرشيف</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.StoreDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.StoreDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.StoreNotes)
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.FileClosureDetail.StoreNotes, 1, 200, new { @class = "form-control", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnClosureArchiveSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>

@@ -1,0 +1,267 @@
+﻿@Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+    var CourtDetailContainer = "";
+    var P_Courtid = "0";
+    var P_CaseId = 0;
+    var P_Detail = 0;
+
+    var GetCourtDetailURL = '@Url.Action("CourtPView", "CourtCases", new { area = string.Empty })';
+    var GetListFollowupURL = '@Url.Action("GetHearingDetail", "CourtCases", new { area = string.Empty })';
+    var CreateFollowupURL = '@Url.Action("CreateCourtFollowup", "CourtCases", new { area = string.Empty })';
+    var DeleteFollowupURL = '@Url.Action("DeleteCourtFollowup", "CourtCases", new { area = string.Empty })';
+    var GetSessionRollIdURL = '@Url.Action("GetSessionRollId", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+    var GetCourtDetailURL = '@Url.Action("CourtPView", "CourtCases", new { area = string.Empty })';
+    var GetSupCourtDetailURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+
+    var DetailViewName = "";
+
+    var bkClientReply = "";
+    var bkRequirements = "";
+    var bkFirstEmailDate = "";
+
+    var bkCourtFollow = "";
+    var bkCourtFollow_LawyerId = "";
+    var bkCourtFollowRequirement = "";
+    var bkCommissioningDate = "";
+
+    function ProcessCourtDetail(form) {
+        console.log("function ProcessCourtDetail($form)");
+        var $form = form;
+        $form.validate();
+        if ($form.valid()) {
+            $.ajax({
+                url: GetCourtDetailURL,
+                method: "POST",  // post
+                data: $form.serialize(),
+                success: function (partialResult) {
+                    //LoadPartialView(partialResult, CourtDetailContainer);
+                    //P_Detail = parseInt($("#hid_DetailId").val());
+
+                    location.reload();
+
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            $.each($form.validate().errorList, function (key, value) {
+                $errorSpan = $("span[data-valmsg-for='" + value.element.id + "']");
+                $errorSpan.html("<span style='color:red'>" + value.message + "</span>");
+                $errorSpan.show();
+            });
+        }
+    }
+    function formatDate(d) {
+        date = new Date(d)
+        var dd = date.getDate();
+        var mm = date.getMonth() + 1;
+        var yyyy = date.getFullYear();
+        if (dd < 10) { dd = '0' + dd }
+        if (mm < 10) { mm = '0' + mm };
+        return d = dd + '/' + mm + '/' + yyyy
+    }
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+            var _MstDesc = $("#MstDesc").val();
+            var _MstParentId = parseInt($("#MstParentId").val());
+
+            _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: CreateMasterTableDetailURL,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+
+    function process(date) {
+        var parts = date.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    function ValidateMain() {
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUPREME BY" : ValidationMessage + "<br />" + "PLEASE SELECT SUPREME BY";
+            NotValid = true;
+        }
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+
+    function Validate_SessionFollowSupreme() {
+        if ($("#SessionRollDefendentName").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER DEFENDENT NAME" : ValidationMessage + "<br />" + "PLEASE ENTER DEFENDENT NAME";
+            NotValid = true;
+        }
+
+        if ($("#SessionClientId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SESSION CLIENT" : ValidationMessage + "<br />" + "PLEASE SELECT SESSION CLIENT";
+            NotValid = true;
+        }
+
+        return NotValid;
+
+    }
+    function Validate_SessionUpdate() {
+
+
+        if ($("#CurrentHearingDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER UPDATE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER UPDATE DATE";
+            NotValid = true;
+        }
+
+        if ($("#CourtDecision").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER COURT DECISION" : ValidationMessage + "<br />" + "PLEASE ENTER COURT DECISION";
+            NotValid = true;
+        }
+
+        //if ($("#SessionRemarks").val() == "") {
+        //    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REMARKS" : ValidationMessage + "<br />" + "PLEASE ENTER REMARKS";
+        //    NotValid = true;
+        //}
+
+
+        return NotValid;
+
+    }
+    function Validate_SessionJudgementSupreme() {
+
+
+        if ($("#SupremeJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#SupremeJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#SupremeJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME SENTENCE";
+            NotValid = true;
+        }
+
+        
+
+        if ($("#SupremeFinalJDAmount").val() == "") {
+            NotValid = false;
+        }
+        else {
+            if (isNaN($("#SupremeFinalJDAmount").val())) {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID SUPREME FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID SUPREME FINAL JD AMOUNT";
+                NotValid = true;
+            }
+
+        }
+        if ($("#SupremeFinalJudgedInterests").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME JUDGED INTERESTS";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function Validate_SessionClose() {
+
+
+        if ($("#ClosureDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER CLOSURE DATE";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+
+
+        var P_Courtid = 0;
+        var P_CaseId = 0;
+        var P_Detail = 0;
+        var P_PVURL = GetCourtDetailURL;
+        var CourtDetailContainer = $("#div-CourtDetail");
+
+
+    $(document).ready(function () {
+        P_CaseId = parseInt($("#HFCaseId").val());
+        P_Courtid = $("#hid_Courtid").val();
+        P_Detail = parseInt($("#hid_DetailId").val());
+        P_SessionRollId = parseInt($("#hid_SessionRollId").val());
+        P_CaseLevelCode = $("#hid_CaseLevelCode").val();
+
+        if (P_Detail == 0) {
+            console.log("No Court Detail found! :: __CaseDetail_Modify Partial Page");
+        }
+
+        P_PVURL = GetSupCourtDetailURL;
+        var _PartialViewName = "_SessionRollSupremeUpdate";
+        _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId, CaseLevel: P_CaseLevelCode };
+        GetTabFromSessionRoll(CourtDetailContainer, P_PVURL, _parameters);
+
+    });
+
+</script>
+<div id="div-CourtDetail"></div>

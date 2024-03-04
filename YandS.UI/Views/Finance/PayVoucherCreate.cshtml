@@ -1,0 +1,594 @@
+﻿@model YandS.UI.Models.PayVoucher
+@{
+    ViewBag.Title = "Y & S Associates - Payment Voucher Create";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Voucher</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Create Voucher</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Payment Voucher Creation</h3>
+                    <div class="float-right">
+                        Voucher Date : @ViewBag.VoucherDate
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Payment_Type, new { @Value = "1" })
+                        @Html.HiddenFor(model => model.Payment_Mode)
+                        @Html.HiddenFor(model => model.VoucherType, new { @Value = "2" })
+                        @Html.HiddenFor(model => model.Status, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.VoucherStatus, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.CourtType, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.LocationCode, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.Credit_Account, new { @Value = 0 })
+                        @Html.HiddenFor(model => model.TransTypeCode, new { @Value = "-2" })
+                        @Html.HiddenFor(model => model.TransReasonCode, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.Debit_Account, new { @Value = 0 })
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group clearfix">
+                                        <div class="icheck-primary d-inline">
+                                            @Html.RadioButtonFor(m => m.Payment_Mode, "1", new { id = "Payment_Mode1" })
+                                            <label for="Payment_Mode1">Cheque</label>
+                                        </div>
+                                        <div class="icheck-primary d-inline">
+                                            @Html.RadioButtonFor(m => m.Payment_Mode, "2", new { id = "Payment_Mode2" })
+                                            <label for="Payment_Mode2">Cash</label>
+                                        </div>
+                                        <div class="icheck-primary d-inline">
+                                            @Html.RadioButtonFor(m => m.Payment_Mode, "3", new { id = "Payment_Mode3" })
+                                            <label for="Payment_Mode3">Bank Transfer</label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        @Html.LabelFor(model => model.Payment_Head)
+                                        <div class="input-group mb-3">
+                                            @Html.DropDownList("Payment_Head", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-info AddNewMaster" id="7">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Payment_Head, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remarks)
+                                    @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UploadedFile">Supporting Document</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="upload" name="upload" data-val="true" data-val-required="Supporting Documents are required.">
+                                            <label class="custom-file-label" for="upload">Choose Document</label>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        @Html.LabelFor(model => model.Payment_To)
+                                        <div class="input-group mb-3">
+                                            @Html.DropDownList("Payment_To", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-info AddNewMaster" id="214">
+                                                    Add Except Employee and Location
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Payment_To, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <label id="divMedBills" class="AppHidden" for="Payment_Head_Remarks">Medical Bill No</label>
+                                        <label id="divPetrolKM" class="AppHidden" for="Payment_Head_Remarks">Vehicle KM</label>
+                                        <label id="divlblPHeadRem" class="" for="Payment_Head_Remarks">Payment Head Remarks</label>
+                                        <div class="input-group mb-3">
+                                            @Html.EditorFor(model => model.Payment_Head_Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                                            <div class="input-group-append">
+                                                <button type="button" id="btn-MedBills" class="btn btn-warning AppHidden" onclick="generate_modal_body('MedBills')">Check</button>
+                                                <button type="button" id="btn-PetrolKM" class="btn btn-warning AppHidden" onclick="generate_modal_body('PetrolKM')">Check</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CaseInvoices)
+                                    @Html.EditorFor(model => model.CaseInvoices, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button> |
+                    <a class="btn btn-primary" href="@Url.Action("PayVoucherIndex", "Finance")"><i class="fas fa-home"></i> Back to Main</a>
+                </div>
+            </div>
+
+        }
+    </section>
+    <div class="modal fade" id="modal-ViewDefendent">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title">CHECK DETAIL</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table id="tblDefaulterDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>PV Number</th>
+                                <th>Voucher Date</th>
+                                <th>Amount</th>
+                                <th>Remarks</th>
+                                <th>Petrol KM</th>
+                                <th>Consumption</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+        var GetPetrolKMDetailURL = '@Url.Action("GetPetrolKMDetail", "CommonTask", new { area = string.Empty })';
+        var GetMedicalBillURL = '@Url.Action("GetMedicalBillDetail", "CommonTask", new { area = string.Empty })';
+        var DefendentTable;
+        var DDLToAppend;
+
+        function is_number(input) {
+            if (input === '')
+                return false;
+            let regex = new RegExp(/[^0-9]/, 'g');
+            return (input.match(regex) === null);
+        }
+
+        function onPreSubmit(item) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            $("#Payment_Mode").val($('input[name="Payment_Mode"]:checked').val());
+            console.log($("#Amount").val());
+            console.log($("#Payment_Mode").val());
+
+            if ($("#Payment_Mode").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select Payment Mode (O-Cheque, O-Cash OR O-Bank Transfer)'
+                });
+                return false;
+            }
+
+            if ($("#Amount").val() == "") {
+                Toast.fire({
+                    type: 'error',
+                    title: 'Please enter Valid Amount.'
+                });
+                return false;
+
+            }
+
+            var SelectedPHead = $('#Payment_Head').val();
+            var PaymentHeadRemarks = $('#Payment_Head_Remarks').val();
+
+            if (SelectedPHead == "5") {
+                if (PaymentHeadRemarks == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter KM Reading'
+                    });
+                    return false;
+                }
+
+                if (is_number(PaymentHeadRemarks))
+                    console.log("data is integer");
+                else {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid KM Reading ONLY NUMBERS'
+                    });
+                    return false;
+                }
+            }
+            else if (SelectedPHead == "21") {
+                if (PaymentHeadRemarks == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Medical Bill Number'
+                    });
+                    return false;
+                }
+            }
+        }
+
+        function ProcessAddClient() {
+            if ($("#MstDesc").val() != "") {
+                var url = "";
+                var _MstDesc = ""
+                var _MstParentId = 0;
+                var _Remarks = "";
+
+                if (parseInt($("#MstParentId").val()) == 214) {
+                    url = CreateMasterTableDetailForPayToURL;
+                    _MstDesc = $("#MstDesc").val();
+                    _MstParentId = parseInt($("#MstParentId").val());
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+                }
+                else {
+                    url = CreateMasterTableDetailURL;
+                    _MstDesc = $("#MstDesc").val();
+                    _MstParentId = parseInt($("#MstParentId").val());
+                    _Remarks = "N";
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+                }
+
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: url,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            var newOption = new Option(Result.name, Result.id, true, true);
+                            DDLToAppend.append(newOption).trigger('change');
+                            $('#modal-AddMasterValue').modal('hide');
+
+                        }
+                        else {
+                            $('#modal-AddMasterValue').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+            }
+        }
+        function generate_modal_body(ModalToGenerateId) {
+            //var ModalToGenerateId = this.id.split('-')[1] ;
+            var SelectedPHead = $('#Payment_Head').val();
+            var SelectedPayTO = $('#Payment_To').val();
+            var PaymentHeadRemarks = $('#Payment_Head_Remarks').val();
+
+            console.log(SelectedPHead);
+            console.log(SelectedPayTO);
+            console.log(PaymentHeadRemarks);
+
+
+            if (SelectedPayTO.substring(0, 1) == "0" || SelectedPayTO.substring(0, 1) == "P") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Select Employee from Pay To Dropdown'
+                });
+                return false;
+            }
+
+
+            if (SelectedPHead == "5") {
+                // TODO Show Petrol History
+               
+                if (typeof DefendentTable != 'undefined')
+                    DefendentTable.destroy();
+
+                DefendentTable = $('#tblDefaulterDetail').DataTable({
+                    lengthChange: false,
+                    ajax: {
+                        url: GetPetrolKMDetailURL,
+                        "dataSrc": "",
+                        type: 'POST',
+                        data: function (d) {
+                            d.P_EmployeeNo = SelectedPayTO;
+                        }
+                    },
+                    "columns": [
+                        { data: 'PV_No' },
+                        { data: 'Voucher_Date' },
+                        { data: 'Amount' },
+                        { data: 'Remarks' },
+                        { data: 'Payment_Head_Remarks' },
+                        { data: 'RunningKM' }
+                    ],
+                    initComplete: function () {
+                        $('#modal-ViewDefendent').modal('show');
+                    }
+                });
+            }
+            else if (SelectedPHead == "21") {
+                //TODO Check Medical Bill Exists
+                if (PaymentHeadRemarks == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Medical Bill Number to check'
+                    });
+                    return false;
+                }
+
+                _parameters = { EmployeeNumber: SelectedPayTO };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: GetMedicalBillURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            if (Result.MedicalBillNos == "No Previous Record" || Result.MedicalBillNos == "") {
+                                Swal.fire({
+                                    type: "info",
+                                    title: 'No Previous Medical Bill',
+                                    html: "No Previous Medical Bill No Matching with " + PaymentHeadRemarks
+                                });
+                            }
+                            else {
+                                console.log(Result.MedicalBillNos);
+                                if (Result.MedicalBillNos.indexOf(PaymentHeadRemarks) >= 0) {
+                                    Swal.fire({
+                                        type: "warning",
+                                        title: 'Medical Bill Found',
+                                        html: "Medical Bill No " + PaymentHeadRemarks + " already exists"
+                                    });
+                                }
+                                else {
+                                    Swal.fire({
+                                        type: "info",
+                                        title: 'No Previous Medical Bill',
+                                        html: "No Previous Medical Bill No Matching with " + PaymentHeadRemarks
+                                    });
+                                }
+                            }
+                        }
+                        else {
+                            $('#modal-AddMasterValue').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+
+            return false;
+        }
+
+        $(document).ready(function () {
+            console.log("Payment Voucher Create");
+            bsCustomFileInput.init();
+            $("#Amount").val("");
+            $("#Payment_Head_Remarks").prop("readonly", true);
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "7") {
+                    ModalTitle = "Add Payment Head";
+                    DDLToAppend = $("#Payment_Head");
+                }
+                else if (this.id == "214") {
+                    ModalTitle = "Add Pay To";
+                    DDLToAppend = $("#Payment_To");
+                }
+                
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+
+            });
+
+            $('#Payment_Head').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                var SelectedPayTO = $('#Payment_To').val();
+
+                //divlblPHeadRem
+                //21 for MEDICAL EXP.   divMedBills     btn-MedBills
+                //5 for PETROL  divPetrolKM     btn-PetrolKM
+                if (SelectedPayTO.substring(0, 1) == "0" || SelectedPayTO.substring(0, 1) == "P") {
+                    
+                }
+                else {
+                    if ($(this).val() == "5") {
+                        $("#divPetrolKM").removeClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden");
+
+                        $("#divMedBills").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divlblPHeadRem").removeClass("AppHidden").addClass("AppHidden");
+                        $("#Payment_Head_Remarks").prop("readonly", false);
+                    }
+                    else if ($(this).val() == "21") {
+                        $("#divMedBills").removeClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden");
+
+                        $("#divPetrolKM").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divlblPHeadRem").removeClass("AppHidden").addClass("AppHidden");
+                        $("#Payment_Head_Remarks").prop("readonly", false);
+
+                    }
+                    else {
+                        $("#divlblPHeadRem").removeClass("AppHidden");
+
+                        $("#divPetrolKM").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divMedBills").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#Payment_Head_Remarks").prop("readonly", true);
+                    }
+                }
+            });
+
+            $('#Payment_To').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                var SelectedPayTO = $(this).val();
+                var SelectedPayHead = $('#Payment_Head').val();
+
+                if (SelectedPayTO.substring(0, 1) == "0" || SelectedPayTO.substring(0, 1) == "P") {
+                    
+                }
+                else {
+                    if (SelectedPayHead == "5") {
+                        $("#divPetrolKM").removeClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden");
+
+                        $("#divMedBills").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divlblPHeadRem").removeClass("AppHidden").addClass("AppHidden");
+                        $("#Payment_Head_Remarks").prop("readonly", false);
+                    }
+                    else if (SelectedPayHead == "21") {
+                        $("#divMedBills").removeClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden");
+
+                        $("#divPetrolKM").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divlblPHeadRem").removeClass("AppHidden").addClass("AppHidden");
+                        $("#Payment_Head_Remarks").prop("readonly", false);
+
+                    }
+                    else {
+                        $("#divlblPHeadRem").removeClass("AppHidden");
+
+                        $("#divPetrolKM").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-PetrolKM").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#divMedBills").removeClass("AppHidden").addClass("AppHidden");
+                        $("#btn-MedBills").removeClass("AppHidden").addClass("AppHidden");
+
+                        $("#Payment_Head_Remarks").prop("readonly", true);
+                    }
+                }
+            });
+        });
+    </script>
+}

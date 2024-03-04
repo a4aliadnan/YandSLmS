@@ -1,0 +1,267 @@
+﻿@model YandS.UI.Models.Employees
+
+@{
+    ViewBag.Title = "Y & S Associates - Employee Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Employee Information</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Master</li>
+                        <li class="breadcrumb-item">Employee</li>
+                        <li class="breadcrumb-item active"><a href="#">Employee Detail</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+       
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Employee Detail Information</h3>
+                    <div class="text-right">
+                        <h4>Gratuity Amount : @ViewBag.GratuityAmount upto @DateTime.Today.ToString("dd/MM/yyyy")</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                     
+
+                        <div class="row">
+                            <div class="col-2">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <img id="imgStaff" src="~/Uploads/StaffImages/@ViewBag.ImageName">
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-5">
+                                <table class="table">
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.EmployeeNumber)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.EmployeeNumber)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.FullName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.FullName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Email)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.Email)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.DOB)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.DOB)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.DOA)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.DOA)
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+                            </div>
+                            <div class="col-4">
+
+                                <table class="table">
+
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Gender)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.GenderName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.LeaveAllowed)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.LeaveAllowed)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Nationality)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.NationalityName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Department)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.DepartmentName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Designation)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.DesignationName)
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+                            <div class="col-6">
+                                <table class="table">
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.LocationCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.LocationName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.CAddress)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.CAddress)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.BasicSalary)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.BasicSalary)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.DOR)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.DOR)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            Cretaed By
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.CreatedByName)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.CreatedOn)
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(model => model.CreatedOn)
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table">
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.ContactNumber)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.ContactNumber)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.PAddress)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.PAddress)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.Allowance)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.Allowance)
+                                        </td>
+                                    </tr>
+                                    <tr style="height:45px;">
+                                        <td style="width:30%">
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:30%">
+                                            Modified By
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.UpdatedByName)
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width:30%">
+                                            @Html.DisplayNameFor(model => model.UpdatedOn)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.UpdatedOn)
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    @Html.ActionLink("Edit", "Edit", "Employees", new { id = Model.EmployeeId }, new { @class = "btn btn-info" }) | 
+                    <a class="btn btn-primary" href="@Url.Action("Index", "Employees")"><i class="fas fa-home"></i> Back to Main</a>
+                </div>
+
+            </div>
+    </section>
+    <!-- /.content -->
+</div>

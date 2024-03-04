@@ -1,0 +1,147 @@
+﻿<script type="text/javascript">
+    var SessionDiffPanelDataTable;
+    $(document).ready(function () {
+        $('.clsFollowup').removeClass("active");
+        if (typeof SessionDiffPanelDataTable != 'undefined')
+            SessionDiffPanelDataTable.destroy();
+
+        SessionDiffPanelDataTable = $('#SessionDiffPanelHtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": -1,
+            //dom: 'Blfrtip',
+            dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'Session Roll - DIFFERENT PANELS',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "DIFFERENTPANELS";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFN', name: 'OfficeFN', autoWidth: true },
+                { data: 'SupremeJudgementsDate', name: 'SupremeJudgementsDate', autoWidth: true },
+                { data: 'SessionLevelName', name: 'SessionLevelName', autoWidth: true },
+                { data: 'SessionRollClientName', name: 'SessionRollClientName', autoWidth: true },
+                { data: 'SessionRollDefendentName', name: 'SessionRollDefendentName', autoWidth: true },
+                { data: 'DifferentPanelNotes', name: 'DifferentPanelNotes' },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if ($("#txtUserRole").val() == "VoucherApproval")
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="Cancel Sessions Roll" id="D_' + row.SessionRollId + '" href="#"><i class="fas fa-trash"></i></a>';
+                            else {
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [[1, "asc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': [-1] },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap width-200'>" + data + "</div>";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap width-200'>" + data + "</div>";
+                    },
+                    targets: 4
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap width-200'>" + data + "</div>";
+                    },
+                    targets: 5
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                if (data.CaseDismisses == "Y") {
+                    rowColor = "IsSessionCaseDismissed";
+                }
+
+                $(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable SessionDiffPanel Initiated !!");
+
+                $("#SessionDiffPanelHtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            SessionDiffPanelDataTable.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            SessionDiffPanelDataTable.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+    $('.table tbody').on('click', '.btnLink', function () {
+        var _Mode = this.id.split('_')[0];
+        var _id = parseInt(this.id.split('_')[1]);
+
+        var data = SessionDiffPanelDataTable.row($(this).parents('tr')).data();
+
+        console.log(data);
+        console.log(_id);
+        console.log(data.CaseId);
+        console.log(data.SessionRollId);
+        
+        processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId, data);
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SessionDiffPanelActive">
+    <div class="col-sm-12 text-center"><h3>DIFFERENT PANELS   متابعة موعد الجلسة الأول للهيئات المغايرة</h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="SessionDiffPanelHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th class="all VMiddle text-center">F.N</th>
+                <th class="VMiddle">SUPREME<br />JD DATE</th>
+                <th class="VMiddle">CURRENT<br />CASE LEVEL</th>
+                <th class="VMiddle">CLIENT الموكل</th>
+                <th class="VMiddle">DEF الخصم</th>
+                <th class="VMiddle">DIFFERENT<br />PANELS NOTES<br />ملاحظات الهيئة المغاايرة</th>
+                <th class="all"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

@@ -1,0 +1,205 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+@Html.HiddenFor(model => model.ActionDate)
+@Html.HiddenFor(model => model.ActionLevel)
+
+<script type="text/javascript">
+    function ProcessCaseLevelChange() {
+        CurrentCaseLevel = parseInt($('#CaseLevelCode').val());
+
+        $("#DIV_CaseLevel_Detail").removeClass("AppHidden").addClass("AppHidden");
+
+        switch (CurrentCaseLevel) {
+            case 0:
+                $("#TBR_CaseLevel_Detail").empty();
+                return false;
+                break;
+            case 3:
+                _PartialViewName = "TBR-REGISTERED_PRI";
+                break;
+            case 4:
+                _PartialViewName = "TBR-REGISTERED_APL";
+                break;
+            case 5:
+                _PartialViewName = "TBR-REGISTERED_SUP";
+                break;
+        }
+
+        PartialContainer = $("#TBR_CaseLevel_Detail");
+        _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $("#hidCaseRegistrationId").val(), CaseLevel: $("#CaseLevelCode").val() };
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+    }
+
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#ActionDate").datepicker({ format: "dd/mm/yyyy" });
+
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        ProcessCaseLevelChange();
+
+        $('#CaseLevelCode').on("change", function () {
+            ProcessCaseLevelChange();
+        });
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+    });
+</script>
+@if (int.Parse(ViewBag.Courtid) >= 1 && int.Parse(ViewBag.Courtid) <= 3)
+{
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CaseLevelCode)
+                @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "8" })
+            </div>
+        </div>
+    </div>
+    <div id="DIV_CaseLevel_Detail" class="card card-info card-outline AppHidden">
+        <div class="card-body">
+            <div id="TBR_CaseLevel_Detail">
+
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @Html.HiddenFor(model => model.CaseLevelCode, new { @Value = "6" })
+
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="DisputeLevel">ENFORCEMENT DISPUTE</label>
+                @Html.EditorFor(model => model.DisputeLevelName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="DisputeType">DISPUTE منازعة تنفيذ</label>
+                @Html.EditorFor(model => model.DisputeTypeName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        @if (ViewBag.DisputeTypeId == "1") //OBJ
+        {
+            if (ViewBag.DisputeLevelId == "1") //PRI
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PrimaryObjectionNo)
+                        @Html.EditorFor(model => model.PrimaryObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PrimaryObjectionCourt)
+                        @Html.DropDownList("PrimaryObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+            else if (ViewBag.DisputeLevelId == "2") //APEAL
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ApealObjectionNo)
+                        @Html.EditorFor(model => model.ApealObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ApealObjectionCourt)
+                        @Html.DropDownList("ApealObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+            else if (ViewBag.DisputeLevelId == "3") //SUP
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SupremeObjectionNo)
+                        @Html.EditorFor(model => model.SupremeObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SupremeObjectionCourt)
+                        @Html.DropDownList("SupremeObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewBag.DisputeTypeId == "2") //PLAINT تظلم
+        {
+            if (ViewBag.DisputeLevelId == "1") //PRI
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PrimaryPlaintNo)
+                        @Html.EditorFor(model => model.PrimaryPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PrimaryPlaintCourt)
+                        @Html.DropDownList("PrimaryPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+            else if (ViewBag.DisputeLevelId == "2") //APEAL
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ApealPlaintNo)
+                        @Html.EditorFor(model => model.ApealPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ApealPlaintCourt)
+                        @Html.DropDownList("ApealPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+            else if (ViewBag.DisputeLevelId == "3") //SUP
+            {
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SupremePlaintNo)
+                        @Html.EditorFor(model => model.SupremePlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SupremePlaintCourt)
+                        @Html.DropDownList("SupremePlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    if (ViewBag.DisputeLevelId == "3") //SUP
+    {
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>SUPREME STAGE مرحلة العليا</label>
+                    @Html.DropDownList("CourtDepartment", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    }
+}

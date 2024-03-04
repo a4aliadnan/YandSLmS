@@ -1,0 +1,160 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+@{
+    ViewBag.OFB_ClientName = Model.ClientName;
+    ViewBag.OFB_Defendant = Model.Defendant;
+    ViewBag.OFB_OfficeFileNo = Model.OfficeFileNo;
+    ViewBag.OFB_SessionRollClientName = Model.SessionRollClientName;
+    ViewBag.OFB_SessionRollDefendentName = Model.SessionRollDefendentName;
+
+}
+<style>
+    .PVCreate {
+        background-color: #e8e8e8 !important;
+        color: black !important;
+    }
+
+        .PVCreate:hover {
+            background-color: #ffd243 !important;
+            color: black !important;
+            font-weight: bold;
+        }
+
+    .PVCreateActive {
+        background-color: #ffd243 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("Modify Enforcement Partail View Document Page");
+        console.log("HFCaseId");
+        console.log($("#HFCaseId").val());
+
+        var _parameters;
+        var GetSessionRollURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+        var _PartialViewName = "ENFInfoStage";
+
+        if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
+            $("#btn_MoneyTransfer").addClass("MoneyTransferActive");
+        }
+        else {
+            $("#btn_ENFInfoStage").addClass("ENFInfoStageActive");
+        }
+        var PartialContainer = $("#ENF_Modify_Detail");
+
+        _parameters = { ClassificationId: _PartialViewName, Mode: $("#HFCaseId").val(), DefendentTransfer: $("#hidDefendentTransferId").val() };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+        $('.EnfDetailButton').click(function () {
+            $("#hidCurrentTableName").val("");
+
+            $(".EnfDetailButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+            var CallAjax = true;
+
+            if (this.id == "btnPVCreate") {
+                var _PartialViewName = "_PayVoucherCreate";
+                var PartialContainer = $("#PVCreateForm");
+                _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+
+                $('#modal-PVForm').modal('show');
+                $("#modalPVFormoverlay").removeClass("overlay");
+                $("#modalPVFormoverlay").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else {
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                $(this).addClass(btnClickedActiveClass);
+                CallAjax = false;
+                $(".cls_EnfMainAll").removeClass("AppHidden").addClass("AppHidden");
+                $(".cls_" + $(this).attr("id").split('_')[1]).removeClass("AppHidden");
+                $("#SavePV_Data").val($(this).attr("id").split('_')[1]);
+            }
+
+            if (CallAjax)
+                GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+            $('textarea').autoResize();
+        });
+
+        $("#modal-PVForm").on("hidden.bs.modal", function () {
+            $("#PVCreateForm").empty();
+        });
+
+        $('.modal').on('hidden.bs.modal', function (event) {
+            $(this).removeClass('fv-modal-stack');
+            $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+        });
+
+        $('.modal').on('shown.bs.modal', function (event) {
+            $("#MstDesc").val("");
+            // keep track of the number of open modals
+            if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+                $('body').data('fv_open_modals', 0);
+            }
+
+            // if the z-index of this modal has been set, ignore.
+            if ($(this).hasClass('fv-modal-stack')) {
+                return;
+            }
+
+            $(this).addClass('fv-modal-stack');
+            $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+            $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+            $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+            $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+
+        });
+
+    });
+
+</script>
+@Html.Partial("_OfficeFileInfoBanner")
+<div style="padding-top:10px;" class="col-sm-12">
+    <div class="row">
+        <div class="col">
+            <button type="button" id="btn_ENFDetail" style="font-size: 1rem !important;" class="btn btn-block ENFDetail @ViewBag.ENFDetailActive btn-lg EnfDetailButton">DETAILS<br />بيانات عامة</button>
+        </div>
+        <div class="col">
+            <button type="button" id="btn_ENFInfoStage" style="font-size: 1rem !important;" class="btn btn-block ENFInfoStage @ViewBag.ENFInfoStageActive btn-lg EnfDetailButton">ENFC STAGE<br />مراحل التنفيذ</button>
+        </div>
+        <div class="col">
+            <button type="button" id="btn_MoneyTransfer" style="font-size: 1rem !important;" class="btn btn-block MoneyTransfer @ViewBag.MoneyTransferActive btn-lg EnfDetailButton">COURT TRANSFER<br />تحويل أموال من المحكمة</button>
+        </div>
+        <div class="col">
+            <button type="button" id="btn_PVCreate" style="font-size: 1rem !important;" class="btn btn-block PVCreate @ViewBag.PVCreateActive btn-lg EnfDetailButton">EXPENSES<br />طلب مصاريف</button>
+        </div>
+        <div class="col">
+            <button type="button" id="btn_ENFAddressDetail" style="font-size: 1rem !important;" class="btn btn-block ENFAddressDetail @ViewBag.ENFAddressDetailActive btn-lg EnfDetailButton">ADDRESS<br />العناوين</button>
+        </div>
+    </div>
+</div>
+<div style="padding-top:10px;" id="ENF_Modify_Detail"></div>
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div id="div_PrintRequirementForm" style="position: absolute; left: -1000px; top: -1000px"></div>

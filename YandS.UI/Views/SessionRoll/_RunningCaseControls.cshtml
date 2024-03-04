@@ -1,0 +1,18 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div class="col RunningCase">
+    <div class="form-group">
+        <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+        @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+    </div>
+</div>

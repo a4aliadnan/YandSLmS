@@ -1,0 +1,658 @@
+﻿@model YandS.UI.Models.SessionsRollVM
+<style type="text/css">
+    .color_one {
+        color: #960000;
+    }
+
+    .color_two {
+        color: #5a78ac;
+    }
+
+    .auto-style1 {
+        height: 24.95pt;
+        width: 14pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style2 {
+        width: 14pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style3 {
+        height: 35.1pt;
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #8e0000;
+    }
+
+    .auto-style4 {
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #8e0000;
+    }
+
+    .auto-style5 {
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #8e0000;
+    }
+
+    .auto-style30 {
+        height: 35.1pt;
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #003300;
+    }
+
+    .auto-style40 {
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #003300;
+    }
+
+    .auto-style50 {
+        color: white;
+        font-size: 15.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #003300;
+    }
+
+    .auto-style6 {
+        height: 43.9pt;
+        width: 112pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #D9D9D9;
+    }
+
+    .auto-style7 {
+        width: 280pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style8 {
+        width: 98pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #D9D9D9;
+    }
+
+    .auto-style9 {
+        height: 21.95pt;
+        width: 280pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style10 {
+        height: 24.95pt;
+        width: 112pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #D9D9D9;
+    }
+
+    .auto-style11 {
+        width: 140pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style12 {
+        width: 112pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style13 {
+        width: 168pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style14 {
+        height: 30.0pt;
+        width: 112pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #D9D9D9;
+    }
+
+    .auto-style15 {
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style16 {
+        width: 84pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style17 {
+        height: 24.95pt;
+        width: 112pt;
+        color: white;
+        font-size: 14.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #C00000;
+    }
+
+    .auto-style18 {
+        width: 280pt;
+        color: red;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style19 {
+        width: 98pt;
+        color: white;
+        font-size: 14.0pt;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: normal;
+        border: .5pt solid windowtext;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+        background: #C00000;
+    }
+
+    .auto-style20 {
+        height: 24.95pt;
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+
+    .auto-style21 {
+        color: black;
+        font-size: 14.0pt;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        border-style: none;
+        border-color: inherit;
+        border-width: medium;
+        padding-left: 1px;
+        padding-right: 1px;
+        padding-top: 1px;
+    }
+</style>
+@Html.HiddenFor(model => model.CourtDecision)
+@Html.HiddenFor(model => model.ClaimSummary)
+<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;width:490pt" width="665">
+    <colgroup>
+        <col span="35" style="mso-width-source:userset;mso-width-alt:694;width:14pt" width="19" />
+    </colgroup>
+    <tr height="33" style="height:24.95pt">
+        <td class="auto-style1" height="33" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"><button id="button1" onclick="CopyToClipboard('ContentDIV')">COPY</button></td>
+        <td class="auto-style2" width="19"></td>
+        <td class="auto-style2" width="19"></td>
+    </tr>
+</table>
+<div id="ContentDIV">
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;width:490pt" width="665">
+        <colgroup>
+            <col span="35" style="mso-width-source:userset;mso-width-alt:694;width:14pt" width="19" />
+        </colgroup>
+        <tr height="33" style="height:24.95pt">
+            <td class="auto-style1" height="33" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+            <td class="auto-style2" width="19"></td>
+        </tr>
+        @if (Model.AgainstCode == "3")
+        {
+            <tr height="46" style="mso-height-source:userset;height:35.1pt">
+                <td class="auto-style30" colspan="14" height="46">FILE UPDATE</td>
+                <td class="auto-style40" colspan="9">@Model.OfficeFileNo&nbsp;-&nbsp;@Model.UserId</td>
+                <td class="auto-style50" colspan="12" dir="RTL">تحديث الملف</td>
+            </tr>
+        }
+        else
+        {
+            <tr height="46" style="mso-height-source:userset;height:35.1pt">
+                <td class="auto-style3" colspan="14" height="46">FILE UPDATE</td>
+                <td class="auto-style4" colspan="9">@Model.OfficeFileNo&nbsp;-&nbsp;@Model.UserId</td>
+                <td class="auto-style5" colspan="12" dir="RTL">تحديث الملف</td>
+            </tr>
+        }
+        <tr height="29" style="mso-height-source:userset;height:21.95pt">
+            <td class="auto-style6" colspan="8" height="58" rowspan="2" width="152">@Html.DisplayFor(model => model.DEFENDANT_PLAINTIFF)</td>
+            <td class="auto-style7" colspan="20" width="380">@Html.DisplayFor(model => model.Defendant)</td>
+            <td class="auto-style8" colspan="7" dir="RTL" rowspan="2" width="133">@Html.DisplayFor(model => model.DEFENDANT_PLAINTIFF_AR)</td>
+        </tr>
+        <tr height="29" style="mso-height-source:userset;height:21.95pt">
+            <td class="auto-style9" colspan="20" height="29" width="380">@Html.DisplayFor(model => model.SessionRollDefendentName)</td>
+        </tr>
+        @if (!string.IsNullOrEmpty(Model.ACCOUNTDETAILSTEXT))
+        {
+            <tr height="33" style="mso-height-source:userset;height:24.95pt">
+                <td class="auto-style10" colspan="8" height="33" width="152">@Html.DisplayFor(model => model.ACCOUNTDETAILS)</td>
+                <td class="auto-style7" colspan="20" width="380">@Html.DisplayFor(model => model.ACCOUNTDETAILSTEXT)</td>
+                <td class="auto-style8" colspan="7" dir="RTL" width="133">@Html.DisplayFor(model => model.ACCOUNTDETAILS_AR)</td>
+            </tr>
+        }
+        @if (Model.ClaimAmount > 0 && Model.AgainstCode != "3")
+        {
+            <tr height="33" style="mso-height-source:userset;height:24.95pt">
+                <td class="auto-style10" colspan="8" height="33" width="152">CLAIM AMOUNT</td>
+                <td class="auto-style7" colspan="20" width="380">@Html.DisplayFor(model => model.ClaimAmount)</td>
+                <td class="auto-style8" colspan="7" dir="RTL" width="133">مبلغ المطالبة</td>
+            </tr>
+        }
+        @if (Model.AgainstCode != "3")
+        {
+            <tr height="33" style="mso-height-source:userset;height:24.95pt">
+                <td class="auto-style10" colspan="8" height="33" width="152">REGISTRATION DATE</td>
+                <td class="auto-style7" colspan="20" width="380">@Html.DisplayFor(model => model.RegistrationDate)</td>
+                <td class="auto-style8" colspan="7" dir="RTL" width="133">تاريخ التسجيل</td>
+            </tr>
+        }
+        <tr height="40" style="mso-height-source:userset;height:30.0pt">
+            <td class="auto-style14" colspan="8" height="40" width="152">CASE LEVEL</td>
+            <td class="auto-style15" colspan="6">@Html.DisplayFor(model => model.CurrentCaseLevel)</td>
+            <td class="auto-style15" colspan="8">@Html.DisplayFor(model => model.CountLocationName)</td>
+            <td class="auto-style16" colspan="6" width="114">@Html.DisplayFor(model => model.CourtRefNo)</td>
+            <td class="auto-style8" colspan="7" dir="RTL" width="133">درجة التقاضي</td>
+        </tr>
+        <tr height="33" style="mso-height-source:userset;height:24.95pt">
+            <td class="auto-style10" colspan="8" height="33" width="152">HEARING DATE</td>
+            <td class="auto-style7" colspan="20" width="380"><div class="color_one">@Html.DisplayFor(model => model.CurrentHearingDate)</div></td>
+            <td class="auto-style8" colspan="7" dir="RTL" width="133">تاريخ الجلسة</td>
+        </tr>
+        <tr height="33" style="mso-height-source:userset;height:24.95pt">
+            <td class="auto-style10" colspan="8" height="33" width="152">COURT DECISION</td>
+            <td class="auto-style7" colspan="20" width="380"><div dir="auto" id="txtCourtDecision" class="color_two"></div></td>
+            <td class="auto-style8" colspan="7" dir="RTL" width="133">قرار المحكمة</td>
+        </tr>
+        @if (Model.NextHearingDate.HasValue)
+        {
+            <tr height="33" style="mso-height-source:userset;height:24.95pt">
+                <td class="auto-style10" colspan="8" height="33" width="152">NEXT HEARING DATE</td>
+                <td class="auto-style7" colspan="20" width="380">@Html.DisplayFor(model => model.NextHearingDate)</td>
+                <td class="auto-style8" colspan="7" dir="RTL" width="133">تاريخ الجلسة القادمة</td>
+            </tr>
+        }
+        
+        @if (!string.IsNullOrEmpty(Model.Requirements))
+        {
+            <tr height="33" style="mso-height-source:userset;height:24.95pt">
+                <td class="auto-style10" colspan="8" height="33" width="152">REQUIREMENT</td>
+                <td class="auto-style7" colspan="20" width="380"><div class="color_one">@Html.DisplayFor(model => model.Requirements)</div></td>
+                <td class="auto-style8" colspan="7" dir="RTL" width="133">المطلوب</td>
+            </tr>
+        }
+        <tr height="33" style="mso-height-source:userset;height:24.95pt">
+            <td class="auto-style20" height="33"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+            <td class="auto-style21"></td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript" src="~/Scripts/RequirementForm_V2.js"></script>

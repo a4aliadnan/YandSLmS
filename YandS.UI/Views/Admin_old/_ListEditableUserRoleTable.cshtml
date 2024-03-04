@@ -1,0 +1,20 @@
+﻿<input name='UserId' id='UserId' type="hidden" value="@ViewBag.UserId" />
+<div class="box box-solid">
+    <div class="box-header with-border">
+        <h3 class="box-title">Add Role To User</h3>
+
+        <div class="box-tools">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body no-padding">
+        <label>
+            Role:
+        </label>
+        @Html.DropDownList("RoleId", null, string.Empty, new { style = "width:250px" })
+        <input class="btn btn-default" type="button" id="AddRole" value="Add Role" />
+    </div>
+    <!-- /.box-body -->
+</div>

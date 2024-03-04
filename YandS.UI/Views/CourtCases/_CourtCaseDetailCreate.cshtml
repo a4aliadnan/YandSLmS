@@ -1,0 +1,147 @@
+﻿<script type="text/javascript">
+
+    $(document).ready(function () {
+        console.log("_CourtCaseDetailCreate Partial Page Loaded");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        console.log("#CaseId");
+        console.log($("#CaseId").val());
+
+        console.log("#Courtid");
+        console.log($("#Courtid").val());
+
+        console.log("P_CaseId");
+        console.log(P_CaseId);
+        console.log("P_Courtid");
+        console.log(P_Courtid);
+
+
+        P_Detail = parseInt($("#DetailId").val());
+        
+        if (P_Detail == 0) {
+            console.log("No Court Detail found! :: _CourtCaseDetailCreate Partial Page");
+        }
+
+        _parameters = { DetailId: P_Detail };
+
+        /*After Loading Court Detail need to Load the appropriate List Followup Container*/
+        //URL       = GetListFollowupURL
+        //Parameter = _parameters = { DetailId: P_Detail };
+        //Container = ListFollowupContainer
+
+        GetTab(ListFollowupContainer, GetListFollowupURL, _parameters);
+
+        /*
+        After Loading Court Detail need to Load Create New Hearing Container
+        URL         = CreateFollowupURL
+        Parameter   = _parameters = { DetailId: P_Detail };
+        Container   = CreateFollowupContainer
+        */
+
+        GetTab(CreateFollowupContainer, CreateFollowupURL, _parameters);
+
+        var form = CourtDetailContainer.closest("form");
+        form.removeData('validator');
+        form.removeData('unobtrusiveValidation');
+        $.validator.unobtrusive.parse(form);
+
+        $('#AddCourtDetail').click(function () {
+            console.log("AddCourtDetail");
+            var form = $("#frmCourcaseDetail");
+            console.log(form);
+
+            $.ajax({
+                url: CreateCourtDetailURL,
+                method: "POST",  // post
+                data: form.serialize(),
+                success: function (partialResult) {
+                    LoadPartialView(partialResult, CourtDetailContainer);
+                }
+            });
+        });
+    });
+</script>
+@model YandS.UI.Models.CourtCasesDetail
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCourcaseDetail" }))
+{
+    <div class="card card-warning">
+        <div class="card-header">
+            <h3 class="card-title">@ViewBag.CourtName</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <div class="form-horizontal">
+                @Html.HiddenFor(model => model.CaseId)
+                @Html.HiddenFor(model => model.DetailId)
+                @Html.HiddenFor(model => model.Courtid)
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CourtRefNo)
+                            @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RegistrationDate)
+                            @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CourtDepartment)
+                            @Html.DropDownList("CourtDepartment", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.JudgementReceivingDate)
+                            @Html.EditorFor(model => model.JudgementReceivingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CourtLocationid)
+                            @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseLevelCode)
+                            @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.JudgementDate)
+                            @Html.EditorFor(model => model.JudgementDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.JudgementDetails)
+                            @Html.TextAreaFor(model => model.JudgementDetails, 3, 200, new { @class = "form-control" })
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <input class="btn btn-warning" type="button" id="AddCourtDetail" value="Add Court Detail" />
+
+        </div>
+    </div>
+
+}
+
+
+
+

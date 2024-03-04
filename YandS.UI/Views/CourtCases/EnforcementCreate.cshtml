@@ -1,0 +1,856 @@
+﻿@model YandS.UI.Models.CourtCasesEnforcement
+@{
+    ViewBag.Title = "Y & S Associates - Create Enforcement";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>ENFORCEMENT CREATE</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">COURT CASE</li>
+                        <li class="breadcrumb-item active"><a href="#">NEW ENFORCEMENT</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.CaseId, new { @Value = ViewBag.CaseId })
+            @Html.HiddenFor(model => model.Courtid, new { @Value = "4" })
+            @Html.HiddenFor(model => model.ArrestOrderStatusId, new { @Value = "0" })
+            @Html.HiddenFor(model => model.ObjectionDetail)
+            @Html.HiddenFor(model => model.ObjectionType)
+            @Html.HiddenFor(model => model.PrimaryObjectionCourtLocationid, new { @Value = "0" })
+            @Html.HiddenFor(model => model.ApealObjectionCourtLocationid, new { @Value = "0" })
+            @Html.HiddenFor(model => model.PlaintDetail)
+            @Html.HiddenFor(model => model.PlaintType)
+            @Html.HiddenFor(model => model.PrimaryPlaintCourtLocationid, new { @Value = "0" })
+            @Html.HiddenFor(model => model.ApealPlaintCourtLocationid, new { @Value = "0" })
+            @Html.HiddenFor(model => model.EnforcementInfoInvoice)
+            @Html.HiddenFor(model => model.ArrestOrderIssued, new { @Value = false })
+            @Html.HiddenFor(model => model.SessionRollId)
+            @Html.HiddenFor(model => model.SessionRemarks)
+            @Html.HiddenFor(model => model.CaseLevelCode, new { @Value = "6" })
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <div class="text-center">
+                        <h4>@ViewBag.OfficeFileNo<span class="YandSTitleSpacing">-</span>@ViewBag.ClientName<span class="YandSTitleSpacing">-</span>@ViewBag.Defendant</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="card card-info card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit"> </i> ENFORCEMENT EXECUTION
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" id="btnEnfReset" class="btn btn-danger"><i class="fas fa-edit"></i> CLEAR</button>
+                            </div>
+                        </div>
+                        <div id="divExecution" class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>CASE LEVEL</label>
+                                        <span class="form-control" disabled="disabled">@ViewBag.CaseLevelName</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label>CASE AGAINST</label>
+                                        <span class="form-control" disabled="disabled">@ViewBag.AgainstName</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EnforcementBy)
+                                        @Html.DropDownList("EnforcementBy", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EnforcementNo)
+                                        @Html.EditorFor(model => model.EnforcementNo, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.EnforcementNo, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CLAIM AMOUNT</label>
+                                        <span class="form-control" disabled="disabled">@ViewBag.ClaimAmount</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CourtLocationid)
+                                        @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            @Html.LabelFor(model => model.EnforcementlevelId)
+                                            <div class="input-group mb-3">
+                                                @Html.DropDownList("EnforcementlevelId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-info AddNewMaster" id="265">
+                                                        ADD
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.RegistrationDate)
+                                        @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div-suspension" class="card card-danger AppHidden">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit"> </i> SUSPENSION
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.SuspensionPeriod)
+                                                    @Html.EditorFor(model => model.SuspensionPeriod, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label for="SuspensionEndDate">Suspension End Date</label>
+                                                    <input type="text" class="form-control" id="SuspensionEndDate" readonly="readonly">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label for="DaysRemaining">Days Remaining</label>
+                                                    <input type="text" class="form-control" id="DaysRemaining" readonly="readonly">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            @Html.LabelFor(model => model.SuspensionCauseId)
+                                            <div class="input-group mb-3">
+                                                @Html.DropDownList("SuspensionCauseId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-info AddNewMaster" id="272">
+                                                        ADD
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-info card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit"> </i> ARREST DETAIL
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" id="btnArrestReset" class="btn btn-danger"><i class="fas fa-edit"></i> CLEAR</button>
+                            </div>
+
+                        </div>
+                        <div id="divArrest" class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ArrestOrderNo)
+                                        @Html.EditorFor(model => model.ArrestOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            @Html.LabelFor(model => model.PoliceStationid)
+                                            <div class="input-group mb-3">
+                                                @Html.DropDownList("PoliceStationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                                        ADD
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ArrestOrderIssueDate)
+                                        @Html.EditorFor(model => model.ArrestOrderIssueDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        @Html.ValidationMessageFor(model => model.ArrestOrderIssueDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ArrestName)
+                                        @Html.EditorFor(model => model.ArrestName, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ArrestIDNo)
+                                        @Html.EditorFor(model => model.ArrestIDNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-info card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit"> </i> OBJECTION
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PrimaryObjectionNo)
+                                        @Html.EditorFor(model => model.PrimaryObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PrimaryObjectionCourt)
+                                        @Html.DropDownList("PrimaryObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ApealObjectionNo)
+                                        @Html.EditorFor(model => model.ApealObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ApealObjectionCourt)
+                                        @Html.DropDownList("ApealObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.SupremeObjectionNo)
+                                        @Html.EditorFor(model => model.SupremeObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.SupremeObjectionCourt)
+                                        @Html.DropDownList("SupremeObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-info card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit"> </i> PLAINT
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PrimaryPlaintNo)
+                                        @Html.EditorFor(model => model.PrimaryPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PrimaryPlaintCourt)
+                                        @Html.DropDownList("PrimaryPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ApealPlaintNo)
+                                        @Html.EditorFor(model => model.ApealPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ApealPlaintCourt)
+                                        @Html.DropDownList("ApealPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.SupremePlaintNo)
+                                        @Html.EditorFor(model => model.SupremePlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.SupremePlaintCourt)
+                                        @Html.DropDownList("SupremePlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-top:10px !important;padding-bottom:10px !important;background-color: #ebf0f9 !important; color: black !important;" class="col-lg-12 text-center">
+                    <div class="row">
+                        <div class="col">
+                            <button style="font-size:1.25rem !important; background-color: #ebf0f9 !important;" type="button" id="btn_SessionFollow" class="btn btn-block btn-lg btn-Detail">FOLLOW UP المتابعة</button>
+                        </div>
+                        <div class="col">
+                            <button style="font-size:1.25rem !important; background-color: #ebf0f9 !important;" type="button" id="btn_SessionUpdate" class="btn btn-block btn-lg btn-Detail">UPDATE التحديث</button>
+                        </div>
+                        <div class="col">
+                            <button style="font-size:1.25rem !important; background-color: #ebf0f9 !important;" type="button" id="btn_DefendentTRansfer" class="btn btn-block btn-lg btn-Detail">DEFENDANT TRANSFER</button>
+                        </div>
+                        <div class="col">
+                            <button style="font-size:1.25rem !important; background-color: #ebf0f9 !important;" type="button" id="btnPVCreate" class="btn btn-block btn-lg btn-Detail">EXPENSES  طلب تحويل مبالغ</button>
+                        </div>
+                        <div class="col">
+                            <button style="font-size:1.25rem !important; background-color: #ebf0f9 !important;" type="button" id="btn_SessionClose" class="btn btn-block btn-lg btn-Detail">CLOSURE</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_SessionFollow" class="AppHidden div_SessionRoll">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <h3>FOLLOW UP المتابعة </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <label for="SessionClientId">CLIENT الموكل</label>
+                                        <div class="input-group mb-3">
+                                            @Html.DropDownList("SessionClientId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-info AddNewMaster" id="913">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="SessionRollDefendentName">DEFENDANT الخصم</label>
+                                    @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group clearfix">
+                                    <div class="icheck-primary d-inline">
+                                        @Html.CheckBoxFor(model => model.ShowFollowup)
+                                        <label for="ShowFollowup">FOLLOW UPلمتابعةالإجراء</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group clearfix">
+                                    <div class="icheck-primary d-inline">
+                                        @Html.CheckBoxFor(model => model.ShowSuspend)
+                                        <label for="ShowSuspend">SUSPENDED لكتابة ردنا</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="LastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                                    @Html.EditorFor(model => model.LastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="form-group AppHidden clsFollowup">
+                                    <label for="WorkRequired">FOLLOW UP WORK REQUIRED المطلوب</label>
+                                    @Html.EditorFor(model => model.WorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="form-group AppHidden clsFollowup">
+                                    <label for="SessionNotes">FOLLOW UP SESSION NOTES</label>
+                                    @Html.EditorFor(model => model.SessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="form-group AppHidden clsSuspended">
+                                    <label for="SuspendedWorkRequired">SUSPENDED WORK REQUIRED المطلوب</label>
+                                    @Html.EditorFor(model => model.SuspendedWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="form-group AppHidden clsSuspended">
+                                    <label for="SuspendedSessionNotes">SUSPENDED SESSION NOTES</label>
+                                    @Html.EditorFor(model => model.SuspendedSessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+                        <div class="card-footer text-right">
+                            <a title="PRINT FORM" id="PrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintWorkForm">PRINT</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_SessionUpdate" class="div_SessionRoll">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #ebf0f9 !important; color: black !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                                    @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                                    <div class="form-group">
+                                        @Html.TextAreaFor(model => model.CourtDecision, 5, 200, new { @class = "form-control", @dir = "auto" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                                    <div class="form-group">
+                                        @Html.TextAreaFor(model => model.Requirements, 5, 200, new { @class = "form-control", @dir = "auto" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="card-footer text-right col-sm-11">
+                                <a title="PRINT FORM" id="RequirementPrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintRequirementForm/?id=@Model.CaseId&formName=_PrintRequirementForm">REPORT</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_SessionClose" class="AppHidden div_SessionRoll">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>CLOSURE</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="ClosureDate">CLOSURE DATE</label>
+                                    @Html.EditorFor(model => model.ClosureDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label for="NextCaseLevel">NEXT CASE LEVEL</label>
+                                    <div class="form-group">
+                                        @Html.DropDownList("NextCaseLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="NextCaseLevelCode">NEXT CASE LEVEL CODE</label>
+                                    <div class="form-group">
+                                        @Html.EditorFor(model => model.NextCaseLevelCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+                        <div class="card-footer text-right">
+                            <button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="window.open('@Url.Action("ClosureFormView", "CourtCases", new { CaseId = ViewBag.CaseId, Courtid = "6",ClosureDate = Model.ClosureDate })');return false;"><i class="fas fa-file-invoice-dollar"></i> PRINT CLOSURE FORM</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_DefendentTRansfer" class="AppHidden div_SessionRoll"></div>
+                <input type="hidden" id="hid_SessionRollId" value="@ViewBag.hid_SessionRollId" />
+                <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+                <input type="hidden" id="hid_CaseId" value="@ViewBag.hid_CaseId" />
+
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+                <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("Index","CourtCases")';return false;" id=@ViewBag.CaseId><i class="fas fa-home"></i> BACK TO LIST</button>
+                <button id=@ViewBag.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = ViewBag.CaseId, Courtid = "1" })';return false;"><i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+                <button id=@ViewBag.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = ViewBag.CaseId, Courtid = "2" })';return false;"><i class="fas fa-globe-europe"></i> TO APPEAL</button>
+                <button id=@ViewBag.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = ViewBag.CaseId, Courtid = "3" })';return false;"><i class="fas fa-globe-europe"></i> TO SUPREME</button>
+                <button id=@ViewBag.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageEnforcementDetail", "CourtCases", new { CaseId = ViewBag.CaseId })';return false;"><i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+                <button id=@ViewBag.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = ViewBag.CaseId })';return false;"><i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+                @*<button id=@ViewBag.CaseId title="Form Closure" class="btn btn-secondary" onclick="location.href='@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = "6",ClosureDate = Model.ClosureDate })';return false;"><i class="fas fa-file-invoice-dollar"></i> FORM CLOSURE</button>*@
+            </div>
+        }
+    </section>
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <!-- /.content -->
+    <input type="hidden" id="hidYandSNotesUpdate" value="@ViewBag.YandSNotesUpdate" />
+    <div class="modal fade" id="modal-PVForm">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div id="modalPVFormoverlay" class="overlay">
+                    <i class="fas fa-2x fa-sync fa-spin"></i>
+                </div>
+                <div class="modal-header">
+                    <h4 class="modal-title"><span>ADD PAYMENT VOUCHER</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="PVCreateForm"></div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <input type="hidden" value="@ViewBag.OfficeFileNo" id="PV_OFFICE_FILE_NO" />
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var GetSessionRollURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+        var DDLToAppend;
+        var _parameters = {};
+        var GetTab = function (divToLoad, p_url, p_parameters) {
+            divToLoad.empty();
+            divToLoad.append("Loading...");
+            console.log(divToLoad.attr("id"));
+
+            $.ajax({
+                url: p_url,
+                type: "GET",
+                data: p_parameters,
+                success: function (data, textStatus, jqXHR) {
+                    divToLoad.html(data);
+                    if (divToLoad.attr("id") == "EditPopupViewContainer") {
+                        $('#EditPopupModal').modal('show');
+                    }
+                    else {
+                        $('html, body').animate({
+                            scrollTop: divToLoad.offset().top
+                        }, 1000);
+                    }
+                }
+            });
+        };
+        function ProcessAddClient() {
+            if ($("#MstDesc").val() != "") {
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: CreateMasterTableDetailURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            var newOption = new Option(Result.name, Result.id, true, true);
+                            DDLToAppend.append(newOption).trigger('change');
+                            $('#modal-AddMasterValue').modal('hide');
+
+                        }
+                        else {
+                            $('#modal-AddMasterValue').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+            }
+        }
+
+        function onPreSubmit(item) {
+            console.log(item);
+            console.log($('input[name=r1]:checked').val());
+
+            $("#EnforcementInfoInvoice").val($('input[name=r1]:checked').val());
+            $("#SessionRollId").val(parseInt($("#hid_SessionRollId").val()));
+        }
+        $(document).ready(function () {
+            console.log("Enforcement Create");
+            bsCustomFileInput.init();
+            $("#YandSNotesUpdate").html($("#hidYandSNotesUpdate").val());
+
+            $('#EnforcementlevelId').on("change", function () {
+                console.log("EnforcementlevelId Change Activated");
+                console.log(this.id);
+                console.log($(this).val());
+
+
+                if ($(this).val() == "4") {
+                    $("#div-suspension").removeClass("AppHidden");
+                }
+                else {
+                    $("#div-suspension").removeClass("AppHidden").addClass("AppHidden");
+                    $("#SuspensionCauseId").select2("val", "0");
+                    $("#div-suspension input").each(function () {
+                        this.value = "";
+                    });
+                }
+            });
+
+            $('#SuspensionPeriod').on("blur", function () {
+                CalculateSuspendPeriod();
+            });
+
+            $('#btnArrestReset').on("click", function () {
+                $("#divArrest input").each(function () {
+                    this.value = "";
+                });
+                $("#PoliceStationid").val("").trigger('change');
+            });
+
+            $('#btnEnfReset').on("click", function () {
+                $("#divExecution input").each(function () {
+                    this.value = "";
+                });
+
+                $("#EnforcementlevelId").val("0").trigger('change');
+                $("#EnforcementBy").val("0").trigger('change');
+                $("#CourtLocationid").val("").trigger('change');
+
+            });
+
+            function CalculateSuspendPeriod() {
+                moment.addRealMonth = function addRealMonth(d, NoOfMonths) {
+                    var fm = moment(d).add(NoOfMonths, 'M');
+                    var fmEnd = moment(fm).endOf('month');
+                    return d.date() != fm.date() && fm.isSame(fmEnd.format('YYYY-MM-DD')) ? fm.add(1, 'd') : fm;
+                }
+
+                var nextMonth = moment.addRealMonth(moment(), parseInt($("#SuspensionPeriod").val()));
+
+                $("#SuspensionEndDate").val(nextMonth.format("DD/MM/YYYY"));
+
+                $("#DaysRemaining").val(Math.round(moment.duration(nextMonth.diff(moment())).asDays()));
+
+                console.log(nextMonth);
+                console.log(nextMonth.format("DD/MM/YYYY"));
+                console.log(moment.duration(moment().diff(nextMonth)).asDays());
+            }
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "265") {
+                    ModalTitle = "Add Enforcement Level";
+                    DDLToAppend = $("#EnforcementlevelId");
+                }
+                else if (this.id == "272") {
+                    ModalTitle = "Add Suspension Cause";
+                    DDLToAppend = $("#SuspensionCauseId");
+                }
+                else if (this.id == "4") {
+                    ModalTitle = "Add Police Station";
+                    DDLToAppend = $("#PoliceStationid");
+                }
+
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+
+            });
+
+            $('.btn-Detail').on("click", function () {
+                $(".div_SessionRoll").removeClass("AppHidden").addClass("AppHidden");
+                console.log(this.id);
+                if (this.id == "btnPVCreate")   {
+                    var _PartialViewName = "_PayVoucherCreate";
+                    var PartialContainer = $("#PVCreateForm");
+                    _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+                    GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                    $('#modal-PVForm').modal('show');
+                    $("#modalPVFormoverlay").removeClass("overlay");
+                    $("#modalPVFormoverlay").removeClass("AppHidden").addClass("AppHidden");
+                }
+                else if (this.id == "btn_DefendentTRansfer") {
+                    var _PartialViewName = "_DefendentTRansfer";
+                    var PartialContainer = $("#div_DefendentTRansfer");
+                    _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+                    GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                    $("#div_DefendentTRansfer").removeClass("AppHidden");
+                }
+                else if (this.id == "btn_SessionUpdate")   {
+                    $("#div_SessionUpdate").removeClass("AppHidden");
+                }
+                else {
+                    if (parseInt($("#hid_SessionRollId").val()) === 0) {
+                        Swal.fire({
+                            type: "info",
+                            title: 'INFORMATION...',
+                            html: 'PLEASE CREATE RECORD IN SESSION ROLL TO UPDATE FROM HERE'
+                        });
+                        return false;
+                    }
+                    else 
+                        $("#div_" + $(this).attr("id").split('_')[1]).removeClass("AppHidden");
+                }
+            });
+
+            $("#modal-PVForm").on("hidden.bs.modal", function () {
+                $("#PVCreateForm").empty();
+            });
+
+            $('.modal').on('hidden.bs.modal', function (event) {
+                $(this).removeClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+            });
+
+            $('.modal').on('shown.bs.modal', function (event) {
+                $("#MstDesc").val("");
+                // keep track of the number of open modals
+                if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+                    $('body').data('fv_open_modals', 0);
+                }
+
+                // if the z-index of this modal has been set, ignore.
+                if ($(this).hasClass('fv-modal-stack')) {
+                    return;
+                }
+
+                $(this).addClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+                $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+
+            });  
+
+            $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+
+
+            if ($("#ShowFollowup").is(":checked")) {
+                $(".clsFollowup").removeClass("AppHidden");
+            }
+
+            if ($("#ShowSuspend").is(":checked")) {
+                $(".clsSuspended").removeClass("AppHidden");
+            }
+
+            $('#ShowFollowup').change(function () {
+                $(".clsFollowup").removeClass("AppHidden").addClass("AppHidden");
+                if ($(this).is(":checked")) {
+                    $(".clsFollowup").removeClass("AppHidden");
+                }
+            });
+
+            $('#ShowSuspend').change(function () {
+                $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+                if ($(this).is(":checked")) {
+                    $(".clsSuspended").removeClass("AppHidden");
+                }
+            });
+
+            function ClearUnCheckInput(clsName) {
+                $('.' + clsName).each(function () {
+                    $(this).val('');
+                });
+            }
+        });
+    </script>
+}

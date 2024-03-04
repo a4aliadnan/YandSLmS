@@ -1,0 +1,132 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+@{
+    YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+    var FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+    var CaseLevelName = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && m.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+    string FeeNameDetail = string.Empty;
+    string DetailNumber = string.Empty;
+    string FeesDescription = string.Empty;
+    char[] charsToTrim1 = { '-' };
+    if (Model.FeeTypeCascadeDetail != null)
+    {
+        if (Model.FeeTypeCascadeDetail != "0")
+        {
+            FeeNameDetail = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && m.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+        }
+    }
+
+    if (Model.FeeTypeDetail != null)
+    {
+        DetailNumber = " - " + Model.FeeTypeDetail;
+    }
+
+    if (string.IsNullOrEmpty(FeeNameDetail))
+    {
+        FeesDescription = string.Format("{0} - {1}{2}", CaseLevelName, FeeName, DetailNumber);
+
+    }
+    else
+    {
+        FeesDescription = string.Format("{0} - {1} - {2}{3}", CaseLevelName, FeeName, FeeNameDetail, DetailNumber);
+
+    }
+
+    if (FeesDescription.ToUpper().Contains("PLEASE SELECT"))
+    {
+        FeesDescription = FeesDescription.Replace("PLEASE SELECT - ", "").TrimStart(charsToTrim1).TrimEnd(charsToTrim1).Trim();
+    }
+
+    var FeeAmount = Model.FeeAmount.ToString("0.###");
+
+    if (Model.VATPct > 0)
+    {
+
+        decimal FeeAmVAT = (decimal)(Model.FeeAmount * (Model.VATPct / 100));
+        //decimal FeeAmVATTrunc = Math.Truncate(1000 * FeeAmVAT) / 1000;
+        //decimal FeeAmVAT = (decimal)(Model.FeeAmount * (Model.VATPct / 100));
+
+        //string s = FeeAmVAT.ToString();
+        //string FeeAmountFormatted = string.Format(@"{0}.{1}", int.Parse(s.Split('.')[0]) > 0 ? s.Split('.')[0] : "0", s.Split('.')[1].Substring(0, 3));
+        //int vIntprefix = int.Parse(s.Split('.')[0]) > 0 ? int.Parse(s.Split('.')[0]) : 0;
+        //int vIntsuffix = int.Parse(s.Split('.')[1].Substring(0, 3)) > 0 ? int.Parse(s.Split('.')[1].Substring(0, 3)) : 0;
+        //int fIntprefix = int.Parse(Model.FeeAmount.ToString().Split('.')[0]) > 0 ? int.Parse(Model.FeeAmount.ToString().Split('.')[0]) : 0;
+        //int fIntsuffix = int.Parse(Model.FeeAmount.ToString().Split('.')[1].Substring(0, 3)) > 0 ? int.Parse(Model.FeeAmount.ToString().Split('.')[1].Substring(0, 3)) : 0;
+        //int tIntprefix = fIntprefix + vIntprefix;
+        //int tIntsuffix = fIntsuffix + vIntsuffix;
+        //string TTLFeeAmountFormatted = string.Format(@"{0}.{1}", tIntprefix, tIntsuffix);
+        //ViewBag.FeeAmountVAT = FeeAmountFormatted;
+
+        ViewBag.FeeAmountVAT = FeeAmVAT.ToString("0.###");
+        //ViewBag.TotalFeeAmount = TTLFeeAmountFormatted;
+
+
+        //decimal decFeeAmountFormatted = decimal.Parse(FeeAmountFormatted);
+
+        //decimal TTLlFeeAmount = (decFeeAmountFormatted + Model.FeeAmount);
+        decimal TTLlFeeAmount = (FeeAmVAT + Model.FeeAmount);
+        ViewBag.TotalFeeAmount = TTLlFeeAmount.ToString("0.###");
+        ViewBag.VATPct = Model.VATPct?.ToString("0.###") + "%";
+
+    }
+    else
+    {
+        ViewBag.FeeAmountVAT = "0";
+        ViewBag.TotalFeeAmount = FeeAmount;
+        ViewBag.VATPct = "0%";
+
+    }
+
+
+
+}
+<tr style="mso-yfti-irow:14;">
+    <td style="border-left:solid windowtext 1.5pt;
+  border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-alt:solid windowtext 1.5pt;
+  mso-border-right-alt:solid windowtext .25pt;padding:0in 5.4pt 0in 5.4pt;
+  border-top-style: none; border-top-color: inherit; border-top-width: medium;" class="auto-style10">
+        <p class="MsoNormal">
+            <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;
+  color:black">@FeesDescription</span>
+</p>
+</td>
+<td style="border-bottom:
+  solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;mso-border-top-alt:
+  solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;mso-border-top-alt:
+  1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:1.5pt;mso-border-right-alt:
+  .25pt;mso-border-color-alt:windowtext;mso-border-style-alt:solid;padding:
+  0in 5.4pt 0in 5.4pt; border-left-style: none; border-left-color: inherit; border-left-width: medium; border-top-style: none; border-top-color: inherit; border-top-width: medium;" width="96" class="auto-style6">
+    <p align="center" class="MsoNormal">
+        <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;
+  mso-bidi-theme-font:minor-latin;color:black">@FeeAmount</span>
+</p>
+</td>
+<td style="border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;
+  mso-border-top-alt:1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:
+  1.5pt;mso-border-right-alt:.25pt;mso-border-color-alt:windowtext;mso-border-style-alt:
+  solid;padding:0in 5.4pt 0in 5.4pt; border-left-style: none; border-left-color: inherit; border-left-width: medium; border-top-style: none; border-top-color: inherit; border-top-width: medium;" width="57" class="auto-style7">
+    <p align="center" class="MsoNormal">
+        <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;
+  mso-bidi-theme-font:minor-latin;color:black">@ViewBag.VATPct</span>
+</p>
+</td>
+<td style="border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.0pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;
+  mso-border-top-alt:1.5pt;mso-border-left-alt:.25pt;mso-border-bottom-alt:
+  1.5pt;mso-border-right-alt:.25pt;mso-border-color-alt:windowtext;mso-border-style-alt:
+  solid;padding:0in 5.4pt 0in 5.4pt; border-left-style: none; border-left-color: inherit; border-left-width: medium; border-top-style: none; border-top-color: inherit; border-top-width: medium;" width="79" class="auto-style8">
+    <p align="center" class="MsoNormal">
+        <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;
+  mso-bidi-theme-font:minor-latin;color:black">@ViewBag.FeeAmountVAT</span>
+</p>
+</td>
+<td style="border-bottom:solid windowtext 1.5pt;border-right:solid windowtext 1.5pt;
+  mso-border-top-alt:solid windowtext 1.5pt;mso-border-left-alt:solid windowtext .25pt;
+  padding:0in 5.4pt 0in 5.4pt; border-left-style: none; border-left-color: inherit; border-left-width: medium; border-top-style: none; border-top-color: inherit; border-top-width: medium;" width="136" class="auto-style9">
+    <p align="center" class="MsoNormal">
+        <span style="font-size:12.0pt;mso-bidi-font-family:Calibri;
+  mso-bidi-theme-font:minor-latin;color:black">@ViewBag.TotalFeeAmount</span>
+</p>
+</td>
+</tr>

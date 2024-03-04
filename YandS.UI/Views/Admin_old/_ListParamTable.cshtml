@@ -1,0 +1,110 @@
+﻿@model YandS.UI.Models.REPORT
+
+<script type="text/javascript">
+    function ValidateParam(_id) {
+        if ($('#param-div').is(":visible")) {
+            //Check all parameters have been entered otherwise display validation error message...
+            if (ValidateUserFormField('paramname') == false || ValidateUserFormField('paramtype') == false || ValidateUserFormField('displaylabel') == false)
+                return false;
+
+            var _parameters = { reportId: _id, paramName: $('#paramname').val(), paramType: $('#paramtype').val(), paramLabel: $('#displaylabel').val(), paramRequired: $('#paramrequired').is(':checked') };
+            $.ajax({
+                url: "/Admin/AddReportParameterReturnPartialView",
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#ParamsTable').html(data);
+                    $('#param-div').slideToggle();
+
+                    $('#paramname').val('');
+
+                }
+            });
+        }
+        else {
+            $('#param-div').slideToggle();
+        }
+        return true;
+    };
+
+    function ValidateUserFormField(_fieldname) {
+        _fieldRef = "";
+        try {
+            if ($('#' + _fieldname).length) {
+                _fieldRef = $('#' + _fieldname).val();
+
+                if (_fieldRef == "" || _fieldRef == undefined) {
+                    alert(_fieldname + ' must be entered');
+                    return false;
+                }
+            }
+        }
+        catch (err) {
+            return false;
+        }
+        return true;
+    };
+</script>
+
+<div>
+    <fieldset>
+        <legend><h3>Report Filter Parameters Associated with this Report</h3></legend>
+        <div id="ParamsTable">
+            @Html.Partial("_ListParamsTable4Report", Model)
+        </div>
+
+        <div id="param-div" style="display:none; width: 800px">
+            <center><img src="~/Content/Images/plus.png" /><br /></center>
+            <table style="width: 100%">
+
+                <thead>
+                <th style="width:30%">
+                    Parameter Name
+                </th>
+                <th>
+                    Parameter Type
+                </th>
+                <th style="width:30%">
+                    Display Label
+
+                </th>
+                <th style="width: 50px">
+                    Required
+                </th>
+                <th style="width: 50px"></th>
+                </thead>
+                <tr>
+                    <td>
+                        <input type="text" id="paramname" />
+                    </td>
+                    <td>
+                        <select id="paramtype">
+                            <option value="String">String</option>
+                            <option value="DateTime">DateTime</option>
+                            <option value="Int">Int</option>
+                            <option value="Decimal">Decimal</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="displaylabel" />
+                    </td>
+                    <td>
+                        <input type="checkbox" id="paramrequired" />
+                    </td>
+                    <td>
+                        <center>
+                            <a href="javascript:void(0);" onclick="$('#param-div').slideToggle();">
+                                <img src="@Url.Content("~/Content/images/delete.png")" />
+                            </a>
+                        </center>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <input type="button" id="AddParameter" value="Add Parameter" onclick="ValidateParam(@Model.Report_Id);" />
+
+    </fieldset>
+</div>
+
+

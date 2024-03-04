@@ -1,0 +1,15 @@
+﻿.Corporate {
+    background-color: #57257d !important;
+    color: white !important;
+}
+
+    .Corporate:hover {
+        background-color: #002060 !important;
+        color: white !important;
+    }
+
+.CorporateActive {
+    background-color: #002060 !important;
+    color: white !important;
+    font-weight: bold;
+}

@@ -1,0 +1,160 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $(".cls_InqAll").removeClass("AppHidden").addClass("AppHidden");
+        $(".cls_INQGeneral").removeClass("AppHidden");
+        $("#btn_INQGeneral").addClass("INQGeneralActive");
+
+        $('.EnfInqDetailButton').click(function () {
+            var btnActiveClass = "";
+            $(".EnfInqDetailButton").each(function () {
+                btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            $(".cls_InqAll").removeClass("AppHidden").addClass("AppHidden");
+            $(".cls_" + $(this).attr("id").split('_')[1]).removeClass("AppHidden");
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+            $(this).addClass(btnClickedActiveClass);
+            
+        });
+    });
+</script>
+ <div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <button type="button" id="btn_INQGeneral" style="font-size: 1rem !important;" class="btn btn-block INQGeneral @ViewBag.INQGeneralActive btn-lg EnfInqDetailButton">GENERAL بيانات عامة</button>
+            </div>
+            <div class="col">
+                <button type="button" id="btn_INQMoh" style="font-size: 1rem !important;" class="btn btn-block INQMoh @ViewBag.INQMohActive btn-lg EnfInqDetailButton">MOH RESULT رد الإسكان</button>
+            </div>
+            <div class="col">
+                <button type="button" id="btn_INQRop" style="font-size: 1rem !important;" class="btn btn-block INQRop @ViewBag.INQRopActive btn-lg EnfInqDetailButton">ROP RESULT رد المرور</button>
+            </div>
+            <div class="col">
+                <button type="button" id="btn_INQBank" style="font-size: 1rem !important;" class="btn btn-block INQBank @ViewBag.INQBankActive btn-lg EnfInqDetailButton">BANK'S RESULT رد البنوك</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card cls_INQGeneral cls_InqAll">
+    <div class="card-header PayVoucherRejectedActive">
+        <div class="text-center">
+            <span class="h3">GENERAL بيانات عامة</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubmissionDt)
+                    @Html.EditorFor(model => model.SubmissionDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApprovalDt)
+                    @Html.EditorFor(model => model.ApprovalDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InquiryDt)
+                    @Html.EditorFor(model => model.InquiryDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card cls_INQMoh cls_InqAll">
+    <div class="card-header PayVoucherRejectedActive">
+        <div class="text-center">
+            <span class="h3">MOH RESULT رد الإسكان</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MOHResultDt)
+                    @Html.EditorFor(model => model.MOHResultDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MOHResult)
+                    @Html.DropDownList("MOHResult", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-6">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card cls_INQRop cls_InqAll">
+    <div class="card-header PayVoucherRejectedActive">
+        <div class="text-center">
+            <span class="h3">ROP RESULT رد المرور</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ROPResultDt)
+                    @Html.EditorFor(model => model.ROPResultDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ROPResult)
+                    @Html.DropDownList("ROPResult", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card cls_INQBank cls_InqAll">
+    <div class="card-header PayVoucherRejectedActive">
+        <div class="text-center">
+            <span class="h3">BANK'S RESULT رد البنوك</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankResultDt)
+                    @Html.EditorFor(model => model.BankResultDt, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankResult)
+                    @Html.DropDownList("BankResult", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+        </div>
+    </div>
+</div>

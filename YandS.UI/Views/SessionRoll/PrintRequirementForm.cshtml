@@ -1,0 +1,18 @@
+﻿@model YandS.UI.Models.SessionsRollVM
+@{
+    ViewBag.Title = "Y & S Associates - Print Form";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Y & S Associates - Print Form</title>
+</head>
+<body>
+    @{
+        string PartialViewName = Convert.ToString(Model.FormName);
+        @Html.Partial(PartialViewName, Model);
+     }
+</body>
+</html>

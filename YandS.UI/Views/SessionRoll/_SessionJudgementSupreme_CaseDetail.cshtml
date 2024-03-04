@@ -1,0 +1,122 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $(".clsDecimal").regexMask(IsDecimal);
+
+        $('#SupremeFinalJDAmount').bind('input propertychange', function () {
+            if (!$.trim($("#FinalJDAmount").val())) {
+                $("#FinalJDAmount").val($('#SupremeFinalJDAmount').val());
+            }
+        });
+
+        $('#SupremeFinalJudgedInterests').bind('input propertychange', function () {
+            if (!$.trim($("#FinalJudgedInterests").val())) {
+                $("#FinalJudgedInterests").val($('#SupremeFinalJudgedInterests').val());
+            }
+        });
+
+        
+
+        $('textarea').autoResize();
+
+        if ($('#AgainstCode').val() == "3") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+        if ($('#hidJudFilter').val() == "Y") {
+            $('.clsAgainstClient').removeClass("AppHidden").addClass("AppHidden");
+        }
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div id="DIV_SUPREME" class="card-body">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="SupremeJudgementsDate">SUPREME JUDGMENT DATE تاريخ الحكم</label>
+                @Html.EditorFor(model => model.SupremeJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="SupremeJudgements">SUPREME SENTENCE منطوق الحكم العليا</label>
+                @Html.TextAreaFor(model => model.SupremeJudgements, 1, 200, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group clsAgainstClient">
+                <label for="SupremeFinalJDAmount">SUP. JUG. AMOUNT مبلغ الحكم العليا</label>
+                @Html.EditorFor(model => model.SupremeFinalJDAmount, new { htmlAttributes = new { @class = "form-control clsDecimal" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group clsAgainstClient">
+                <label for="SupremeFinalJudgedInterests">SUP. JUG. INTEREST نسبة الحكم العليا</label>
+                @Html.EditorFor(model => model.SupremeFinalJudgedInterests, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="SupremeJudgements">SUPREME CLAIM SUMMARY طلباتنا في العليا</label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SupremeJDReceiveDate">SUP.JUG.RECEIVE تاريخ استلام الحكم العليا</label>
+                @Html.EditorFor(model => model.SupremeJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+    </div>
+
+    <div class="row clsAgainstClient AppHidden">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SupremeFinalJDAmount">FINAL JD AMOUNT</label>
+                @Html.EditorFor(model => model.FinalJDAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SupremeFinalJudgedInterests">FINAL JUDGED INTEREST</label>
+                @Html.EditorFor(model => model.FinalJudgedInterests, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+    </div>
+</div>

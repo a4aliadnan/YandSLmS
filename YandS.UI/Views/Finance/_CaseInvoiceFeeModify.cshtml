@@ -1,0 +1,205 @@
+﻿<script type="text/javascript">
+    var LoadFeeDetailURL = '@Url.Action("LoadFeeTypeDetail", "CommonTask", new { area = string.Empty })';
+    $(document).ready(function () {
+        //var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,4})?$/);
+        //$(".dlsDigits").regexMask(IsDigitmask);
+
+        $(".deleteRow").on("click", function () {
+            console.log("Partial View  - deleteRow");
+
+            $(this).parents(".caseinvoicefeeRow:first").remove();
+            CollectionCount = CollectionCount - 1;
+            return false;
+        });
+
+        $(".clsFeeTypeId").on("change", function () {
+            console.log("FeeTypeId Change");
+            //console.log(this.value);
+            if (this.value == "0") {
+                var $select = $(this).closest('.caseinvoicefeeRow').find(".clsFeeTypeCascadeDetail");
+                $select.find('option').remove();
+            }
+            else {
+                var $select = $(this).closest('.caseinvoicefeeRow').find(".clsFeeTypeCascadeDetail");
+                console.log("FeeTypeId :: " + $($select).val());
+                console.log($($select).attr("id"));
+
+                //return false;
+                LoadFeeTypeDetail(this.value, $($select).attr("id"));
+            }
+        });
+
+        function LoadFeeTypeDetail(p_Id, selectId) {
+            console.log(p_Id);
+
+            _parameters = { Id: p_Id };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: LoadFeeDetailURL,
+                success: function (Result) {
+                    console.log(Result);
+                    console.log(Result.length);
+
+                    if (Result.length > 0) {
+                        var $select = $("#" + selectId);
+
+                        $select.find('option').remove();
+                        //var newOption = new Option("PLEASE SELECT", "0", true, true);
+                        //$select.append(newOption).trigger('change');
+
+                        for (var i = 0; i < Result.length; i++) {
+                            key = Result[i].Mst_Value;
+                            value = Result[i].Mst_Desc;
+
+                            $select.append('<option value=' + key + '>' + value + '</option>');
+                            //var newOption = new Option(value, key, true, true);
+                            //$select.append(newOption).trigger('change');
+
+                            //console.log("key :: " + key);
+                            //console.log("value :: " + value);
+                        }
+                        $select.val("");
+                    }
+                    else {
+                        var $select = $("#" + selectId);
+                        $select.find('option').remove();
+                    }
+                },
+                error: function (response) {
+                    console.log("error");
+
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log("failure");
+                    console.log(response.responseText);
+                }
+            });
+        }
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $(".clsFeeAmount").on("blur", function () {
+            var FeeAmount = $(this).closest('.caseinvoicefeeRow').find(".clsFeeAmount").val();
+            var VATPct = $(this).closest('.caseinvoicefeeRow').find(".clsVATPct").val();
+            var txtVATAmount = $(this).closest('.caseinvoicefeeRow').find(".clsVATAmount");
+            var txtTotalAmount = $(this).closest('.caseinvoicefeeRow').find(".clsTotalAmount");
+
+            CalculateVATAmount(FeeAmount, VATPct, txtVATAmount, txtTotalAmount);
+        });
+
+        $(".clsVATPct").on("blur", function () {
+            var FeeAmount = $(this).closest('.caseinvoicefeeRow').find(".clsFeeAmount").val();
+            var VATPct = $(this).closest('.caseinvoicefeeRow').find(".clsVATPct").val();
+            var txtVATAmount = $(this).closest('.caseinvoicefeeRow').find(".clsVATAmount");
+            var txtTotalAmount = $(this).closest('.caseinvoicefeeRow').find(".clsTotalAmount");
+
+            CalculateVATAmount(FeeAmount, VATPct, txtVATAmount, txtTotalAmount);
+        });
+
+
+        function CalculateVATAmount(P_Amount, P_VATPct, P_txtVATAmount, P_txtTotalAmount) {
+            var VATAmountCalculated;
+
+            if (P_Amount != "" && P_VATPct != "") {
+
+                VATAmountCalculated = parseFloat(P_Amount) * (parseFloat(P_VATPct) / 100);
+
+                $(P_txtVATAmount).val(round2Fixed(VATAmountCalculated));
+                $(P_txtTotalAmount).val(round2Fixed(parseFloat(P_Amount) + parseFloat(VATAmountCalculated)));
+
+            }
+
+            if (P_Amount == "" && P_VATPct != "") {
+
+                $(P_txtVATAmount).val("0");
+                $(P_txtTotalAmount).val("0");
+
+            }
+
+            if (P_Amount != "" && P_VATPct == "") {
+                $(P_txtVATAmount).val("0");
+                $(P_txtTotalAmount).val(round2Fixed(parseFloat(P_Amount)));
+            }
+        }
+
+    });
+
+</script>
+@model YandS.UI.Models.CaseInvoiceFee
+@using (Html.BeginCollectionItem("FeeId"))
+{
+<div class="caseinvoicefeeRow">
+    @Html.HiddenFor(model => model.FeeId, new { @class = "clsFeeId" })
+    @Html.HiddenFor(model => model.InvoiceId)
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.DropDownList("InvClassification", null, htmlAttributes: new { @class = "form-control select2bs4 clsInvClassification" })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.DropDownList("CaseLevel", null, htmlAttributes: new { @class = "form-control select2bs4 clsCaseLevel" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.DropDownList("FeeTypeId", null, htmlAttributes: new { @class = "form-control select2bs4 clsFeeTypeId" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.DropDownList("FeeTypeCascadeDetail", null, htmlAttributes: new { @class = "form-control select2bs4 clsFeeTypeCascadeDetail" })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.FeeTypeDetail, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="col-sm-12">
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.FeeAmount, new { htmlAttributes = new { @class = "form-control clsFeeAmount dlsDigits" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.VATPct, new { htmlAttributes = new { @class = "form-control clsVATPct dlsDigits" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.VATAmount, new { htmlAttributes = new { @class = "form-control clsVATAmount", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control clsTotalAmount", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <a href="#" id="deleteRow" class="btn btn-danger deleteRow"><i class="fas fa-trash"></i> </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

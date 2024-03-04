@@ -1,0 +1,904 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var DDLToAppend;
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+            var _MstDesc = $("#MstDesc").val();
+            var _MstParentId = parseInt($("#MstParentId").val());
+
+            _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: CreateMasterTableDetailURL,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+    var _formName = "_PrintWorkForm";
+    function submitForm() {
+        var $form = $("#frm_CourtDetail");
+        $form.validate();
+
+        if ($form.valid()) {
+            $.ajax({
+                url: GetCourtDetailURL,
+                method: "POST",  // post
+                data: $form.serialize(),
+                success: function (partialResult) {
+                    //LoadPartialView(partialResult, CourtDetailContainer);
+                    //P_Detail = parseInt($("#hid_DetailId").val());
+
+                    location.reload();
+
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            $.each($form.validate().errorList, function (key, value) {
+                $errorSpan = $("span[data-valmsg-for='" + value.element.id + "']");
+                $errorSpan.html("<span style='color:red'>" + value.message + "</span>");
+                $errorSpan.show();
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+
+        var GetSessionRollURL = '@Url.Action("GetTab", "SessionRoll", new { area = string.Empty })';
+
+        P_CaseId = parseInt($("#hid_CaseId").val());
+        P_Courtid = $("#hid_Courtid").val();
+        P_Detail = parseInt($("#hid_DetailId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+
+        console.log(P_CaseId);
+        console.log(P_SessionRollId);
+
+        console.log("_CourtPView Partial Page Loaded");
+
+        $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "4") {
+                ModalTitle = "Add Location";
+                DDLToAppend = $("#CourtLocationid");
+            }
+            else if (this.id == "913") {
+                ModalTitle = "ADD CLIENT";
+                DDLToAppend = $("#SessionClientId");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#PrintFormButton').click(function () {
+            var strURL = "/SessionRoll/PrintForm/?id=" + $("#SessionRollId").val() + "&formName=" + _formName;
+            window.open(strURL, '_blank');
+        });
+
+        P_Detail = parseInt($("#hid_DetailId").val());
+
+        if (P_Detail == 0) {
+            console.log("No Court DetailId found! :: _CourtPView Partial Page");
+        }
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+
+        var form = $("#frm_CourtDetail");
+        //console.log(form);
+        //console.log(CourtDetailContainer);
+        form.removeData('validator');
+        form.removeData('unobtrusiveValidation');
+        $.validator.unobtrusive.parse(form);
+
+
+        $('#btnEnfReset').on("click", function () {
+            $("#DivClearable input").each(function () {
+                this.value = "";
+            });
+
+            //$("#EnforcementlevelId").select2("val", "0");
+            //$("#Courtid").select2("val", "0");
+            $("#CourtLocationid").val("").trigger('change');
+            $("#ApealByWho").val("0").trigger('change');
+
+        });
+        $('#Add_CourtDetail').on('click', function () {
+            console.log("Add_CourtDetail");
+            console.log("Courtid :: " + $("#Courtid").val());
+            ValidationMessage = "";
+            NotValid = false;
+
+            var $form = $("#frm_CourtDetail");
+            //console.log($form);
+
+            if ($("#Courtid").val() == "1") {
+                $("#ApealByWho").rules("remove", "required");
+                console.log($("#CourtLocationid").val());
+                console.log(parseInt($("#CourtLocationid").val()));
+
+                if (parseInt($("#CourtLocationid").val()) <= 0 || $("#CourtLocationid").val() == "" ) {
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Court Location',
+                    //    html: "Please Select Court Location"
+                    //});
+
+                    $errorSpan = $("span[data-valmsg-for='CourtLocationid']");
+                    $errorSpan.html("<span style='color:red'>Please Select Court Location</span>");
+                    $errorSpan.show();
+
+                    return false;
+                }
+            }
+
+            if ($("#Courtid").val() == "2") {
+                if (parseInt($("#CourtLocationid").val()) <= 0 || $("#CourtLocationid").val() == "" ) {
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Court Location',
+                    //    html: "Please Select Court Location"
+                    //});
+
+                    $errorSpan = $("span[data-valmsg-for='CourtLocationid']");
+                    $errorSpan.html("<span style='color:red'>Please Select Court Location</span>");
+                    $errorSpan.show();
+
+                    return false;
+
+                }
+
+                if (parseInt($("#ApealByWho").val()) <= 0 || $("#ApealByWho").val() == "" ) {
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Appeal By',
+                    //    html: "Please Select Appeal by Who"
+                    //});
+
+                    $errorSpan = $("span[data-valmsg-for='ApealByWho']");
+                    $errorSpan.html("<span style='color:red'>Please Select Appeal by Who</span>");
+                    $errorSpan.show();
+
+                    return false;
+
+                }
+            }
+
+            if ($("#Courtid").val() == "3") {
+                if (parseInt($("#CourtLocationid").val()) <= 0 || $("#CourtLocationid").val() == "") {
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Court Location',
+                    //    html: "Please Select Court Location"
+                    //});
+
+                    $errorSpan = $("span[data-valmsg-for='CourtLocationid']");
+                    $errorSpan.html("<span style='color:red'>Please Select Court Location</span>");
+                    $errorSpan.show();
+
+                    return false;
+                }
+
+
+                if (parseInt($("#ApealByWho").val()) <= 0 || $("#ApealByWho").val() == "") {
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Supreme By',
+                    //    html: "Please Select Supreme by Who"
+                    //});
+
+                    $errorSpan = $("span[data-valmsg-for='ApealByWho']");
+                    $errorSpan.html("<span style='color:red'>Please Select Supreme by Who</span>");
+                    $errorSpan.show();
+
+                    return false;
+                }
+            }
+
+
+            if ($('#TransportationFee').val() == "1") {
+                if ($("#TransportationSource").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT TRANSPORTATION SOURCE" : ValidationMessage + "<br />" + "PLEASE SELECT TRANSPORTATION SOURCE";
+                    NotValid = true;
+                }
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            console.log($("#hidCourtDecisionChange").val());
+            console.log($("#CurrentHearingDate").val());
+            console.log($("#hidCurrentHearingDate").val());
+            ShowPreSubmit();
+            
+        });
+
+        if ($("#Courtid").val() == "1") {
+            if ($('input[name="RealEstateYesNo"]:checked').val() == "Y") {
+                $(".clsRealEstate").removeClass("AppHidden");
+            }
+        }
+
+        $('input[type=radio][name=RealEstateYesNo]').change(function () {
+            console.log("rdoRealEstate Change");
+            console.log(this.value);
+
+            $(".clsRealEstate").removeClass("AppHidden").addClass("AppHidden");
+            if (this.value == "Y")
+                $(".clsRealEstate").removeClass("AppHidden");
+        });
+
+        $('.btn-Detail').on("click", function () {
+            $(".div_SessionRoll").removeClass("AppHidden").addClass("AppHidden");
+            console.log(this.id);
+            if (this.id == "btnPVCreate") {
+                var _PartialViewName = "_PayVoucherCreate";
+                var PartialContainer = $("#PVCreateForm");
+                _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+                GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                $('#modal-PVForm').modal('show');
+                $("#modalPVFormoverlay").removeClass("overlay");
+                $("#modalPVFormoverlay").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else if (this.id == "btn_DefendentTRansfer") {
+                var _PartialViewName = "_DefendentTRansfer";
+                var PartialContainer = $("#div_DefendentTRansfer");
+                _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+                GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                $("#div_DefendentTRansfer").removeClass("AppHidden");
+            }
+            else {
+                $("#div_" + $(this).attr("id").split('_')[1]).removeClass("AppHidden");
+                $('textarea').autoResize();
+            }
+        });
+
+        $("#modal-PVForm").on("hidden.bs.modal", function () {
+            $("#PVCreateForm").empty();
+        });
+
+        $('.modal').on('hidden.bs.modal', function (event) {
+            $(this).removeClass('fv-modal-stack');
+            $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+        });
+
+        $('.modal').on('shown.bs.modal', function (event) {
+            $("#MstDesc").val("");
+            // keep track of the number of open modals
+            if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+                $('body').data('fv_open_modals', 0);
+            }
+
+            // if the z-index of this modal has been set, ignore.
+            if ($(this).hasClass('fv-modal-stack')) {
+                return;
+            }
+
+            $(this).addClass('fv-modal-stack');
+            $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+            $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+            $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+            $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+
+        });
+
+        $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($("#ShowFollowup").is(":checked")) {
+            $(".clsFollowup").removeClass("AppHidden");
+        }
+
+        if ($("#ShowSuspend").is(":checked")) {
+            _formName = "_SuspendedPrintWorkForm";
+            $(".clsSuspended").removeClass("AppHidden");
+        }
+
+        $('#ShowFollowup').change(function () {
+            $(".clsFollowup").removeClass("AppHidden").addClass("AppHidden");
+            if ($(this).is(":checked")) {
+                $(".clsFollowup").removeClass("AppHidden");
+            }
+        });
+
+        $('#ShowSuspend').change(function () {
+            $(".clsSuspended").removeClass("AppHidden").addClass("AppHidden");
+            if ($(this).is(":checked")) {
+                $(".clsSuspended").removeClass("AppHidden");
+            }
+        });
+
+        function ClearUnCheckInput(clsName) {
+            $('.' + clsName).each(function () {
+                $(this).val('');
+            });
+        }
+
+        $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+        $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_TRSOURCE").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            console.log($("#Requirements").val());
+            console.log($("#FirstEmailDate").val());
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            console.log($("#hidRequirement").val());
+            console.log($("#hidFirstEmailDate").val());
+
+            bkClientReply = $('#ClientReply').val();
+            bkRequirements = $('#Requirements').val();
+            bkFirstEmailDate = $('#FirstEmailDate').val();
+
+            $('textarea').autoResize();
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+        }
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                $('textarea').autoResize();
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+        });
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+      
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+    });
+</script>
+<style>
+    .save{
+        color:#00b050;
+        color:#c00000
+    }
+</style>
+@model YandS.UI.Models.CourtCasesDetailVM
+@{
+    ViewBag.OFB_ClientName = Model.ClientName;
+    ViewBag.OFB_Defendant = Model.Defendant;
+    ViewBag.OFB_OfficeFileNo = Model.OfficeFileNo;
+    ViewBag.OFB_SessionRollClientName = Model.SessionRollClientName;
+    ViewBag.OFB_SessionRollDefendentName = Model.SessionRollDefendentName;
+
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frm_CourtDetail" }))
+{
+<div class="card @ViewBag.CourtClass">
+    @*<div class="card-header CaseInformationBar">
+            <div class="text-center">
+                <h4>@ViewBag.OfficeFileNo<span class="YandSTitleSpacing">-</span>@ViewBag.ClientName<span class="YandSTitleSpacing">-</span>@ViewBag.Defendant</h4>
+            </div>
+        </div>*@
+    @Html.Partial("_OfficeFileInfoBanner")
+    <div class="card-header">
+        <div class="text-center">
+            <h4 class="card-title">@ViewBag.CaseLevelCode</h4>
+        </div>
+
+        <div class="card-tools">
+            <button type="button" id="btnEnfReset" class="btn btn-danger"><i class="fas fa-edit"></i> Clear</button>
+        </div>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <div class="form-horizontal">
+            @Html.HiddenFor(model => model.CaseId)
+            @Html.HiddenFor(model => model.DetailId, new { @Value = ViewBag.hid_DetailId })
+            @Html.HiddenFor(model => model.Courtid)
+            @Html.HiddenFor(model => model.CaseLevelCode)
+            @Html.HiddenFor(model => model.SessionRollId, new { @Value = ViewBag.hid_SessionRollId })
+            @Html.HiddenFor(model => model.TransportationFee)
+            @Html.HiddenFor(model => model.UpdatedOn)
+
+            @if (Model.Courtid == "1")
+            {
+                @Html.HiddenFor(model => model.ApealByWho, new { @Value = "0" })
+                <div id="DivClearable" class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseLevelCode)
+                            <span class="form-control" disabled="disabled">@ViewBag.CaseLevelCode</span>
+                        </div>
+                        <div class="form-group">
+                            <label>@ViewBag.CourtRefNo</label>
+                            @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.CourtRefNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RegistrationDate)
+                            @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="row">
+                                @Html.LabelFor(model => model.CourtLocationid)
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.CourtLocationid, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Claim Amount</label>
+                            <span class="form-control" disabled="disabled">@ViewBag.ClaimAmount</span>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DepartmentType)
+                            @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="padding-top:10px;padding-left:5px;" class="col-sm-8">
+                        <div class="form-group">
+                            <label>CLAIM SUMMARY</label>
+                        </div>
+                    </div>
+                    <div style="padding-top:10px;" class="col-sm-2">
+                        <div class="form-group text-right">
+                            <label>REAL ESTATE DETAIL</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div style="color: black !important;padding-top:10px;" class="text-left">
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.RealEstateYesNo, "Y", new { id = "radioRealEstate1" })
+                                <label for="radioRealEstate1">YES</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.RealEstateYesNo, "N", new { id = "radioRealEstate2" })
+                                <label for="radioRealEstate2">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.ClaimSummary, 3, 200, new { @class = "form-control", @placeholder = "Please Enter Claim Summary   " })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group clsRealEstate @ViewBag.clsRealEstate">
+                            @Html.TextAreaFor(model => model.RealEstateDetail, 3, 200, new { @class = "form-control", @placeholder = "Please Enter Real Estate Detail   " })
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div id="DivClearable" class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseLevelCode)
+                            <span class="form-control" disabled="disabled">@ViewBag.CaseLevelCode</span>
+                        </div>
+                        <div class="form-group">
+                            <label>@ViewBag.CourtRefNo</label>
+                            @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.CourtRefNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        @if (Model.Courtid == "2")
+                        {
+                            <div class="form-group">
+                                <label>
+                                    APPEAL BY
+                                </label>
+                                @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                @Html.ValidationMessageFor(model => model.ApealByWho, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label>
+                                    SUPREME BY
+                                </label>
+                                @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                @Html.ValidationMessageFor(model => model.ApealByWho, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="col-sm-12">
+                            <div class="row">
+                                @Html.LabelFor(model => model.CourtLocationid)
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.CourtLocationid, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RegistrationDate)
+                            @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DepartmentType)
+                            @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                        @if (Model.Courtid == "3")
+                        {
+                            <div class="form-group">
+                                <label>SUPREME STAGE مرحلة العليا</label>
+                                @Html.DropDownList("CourtDepartment", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(model => model.CourtDepartment)
+                        }
+                    </div>
+                </div>
+
+            }
+        </div>
+        <div style="padding-top:10px !important;padding-bottom:10px !important; color: black !important;" class="col-lg-12 text-center">
+            <div class="row">
+                <div class="col">
+                    <button style="font-size:1.25rem !important; " type="button" id="btn_SessionFollow" class="btn btn-block btn-lg btn-Detail">FOLLOW UP المتابعة</button>
+                </div>
+                <div class="col">
+                    <button style="font-size:1.25rem !important; " type="button" id="btn_SessionUpdate" class="btn btn-block btn-lg btn-Detail">UPDATE التحديث</button>
+                </div>
+                <div class="col">
+                    <button style="font-size:1.25rem !important; " type="button" id="btn_DefendentTRansfer" class="btn btn-block btn-lg btn-Detail">DEFENDANT TRANSFER</button>
+                </div>
+                <div class="col">
+                    <button style="font-size:1.25rem !important; " type="button" id="btnPVCreate" class="btn btn-block btn-lg btn-Detail">EXPENSES  طلب تحويل مبالغ</button>
+                </div>
+                <div class="col">
+                    <button style="font-size:1.25rem !important; " type="button" id="btn_SessionClose" class="btn btn-block btn-lg btn-Detail">CLOSURE</button>
+                </div>
+            </div>
+        </div>
+        <div id="div_SessionFollow" class="AppHidden div_SessionRoll">
+            <div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <h3>FOLLOW UP المتابعة </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="SessionClientId">CLIENT الموكل</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("SessionClientId", null, htmlAttributes: new { @class = "form-control select2bs4 followReq" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="913">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.SessionClientId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="SessionRollDefendentName">DEFENDANT الخصم</label>
+                            @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control followReq" } })
+                            @Html.ValidationMessageFor(model => model.SessionRollDefendentName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                @Html.CheckBoxFor(model => model.ShowFollowup)
+                                <label for="ShowFollowup">FOLLOW UPلمتابعةالإجراء</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                @Html.CheckBoxFor(model => model.ShowSuspend)
+                                <label for="ShowSuspend">SUSPENDED لكتابة ردنا</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="LastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                            @Html.EditorFor(model => model.LastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group AppHidden clsFollowup">
+                            <label for="WorkRequired">FOLLOW UP WORK REQUIRED المطلوب</label>
+                            @Html.EditorFor(model => model.WorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group AppHidden clsFollowup">
+                            <label for="SessionNotes">FOLLOW UP SESSION NOTES</label>
+                            @Html.EditorFor(model => model.SessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group AppHidden clsSuspended">
+                            <label for="SuspendedWorkRequired">SUSPENDED WORK REQUIRED المطلوب</label>
+                            @Html.EditorFor(model => model.SuspendedWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group AppHidden clsSuspended">
+                            <label for="SuspendedSessionNotes">SUSPENDED SESSION NOTES</label>
+                            @Html.EditorFor(model => model.SuspendedSessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+                <div class="card-footer text-right">
+                    <a title="PRINT FORM" id="PrintFormButton" class="btn btn-success" href="#">PRINT</a>
+                </div>
+            </div>
+        </div>
+        <div id="div_SessionUpdate" class="AppHidden div_SessionRoll">
+            <div class="col-sm-12">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #336c85 !important; color: white !important; border-color:yellow !important; border:3px solid;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                                @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+                                @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientReply)
+                                @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" id="txtRequirement">
+                                <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group" id="txtFirstEmailDate">
+                                @Html.LabelFor(model => model.FirstEmailDate)
+                                @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <div id="DIV_TRSOURCE" class="form-group">
+                                @Html.LabelFor(model => model.TransportationSource)
+                                @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div_SessionClose" class="AppHidden div_SessionRoll">
+            <div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+                <div class="row">
+                    <div class="col-sm-12 text-center"><h3>CLOSURE</h3></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="ClosureDate">CLOSURE DATE</label>
+                            @Html.EditorFor(model => model.ClosureDate, new { htmlAttributes = new { @class = "form-control datepicker closureReq" } })
+                            @Html.ValidationMessageFor(model => model.ClosureDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="NextCaseLevel">NEXT CASE LEVEL</label>
+                            <div class="form-group">
+                                @Html.DropDownList("NextCaseLevel", null, htmlAttributes: new { @class = "form-control select2bs4 closureReq" })
+                                @Html.ValidationMessageFor(model => model.NextCaseLevel, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="NextCaseLevelCode">NEXT CASE LEVEL CODE</label>
+                            <div class="form-group">
+                                @Html.EditorFor(model => model.NextCaseLevelCode, new { htmlAttributes = new { @class = "form-control closureReq" } })
+                                @Html.ValidationMessageFor(model => model.NextCaseLevelCode, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+                <div class="card-footer text-right">
+                    <button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="window.open('@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = "6",ClosureDate = Model.ClosureDate })');return false;"><i class="fas fa-file-invoice-dollar"></i> PRINT CLOSURE FORM</button>
+                </div>
+            </div>
+        </div>
+        <div id="div_DefendentTRansfer" class="AppHidden div_SessionRoll"></div>
+        <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="Add_CourtDetail" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("Index","CourtCases")';return false;" id=@Model.CaseId><i class="fas fa-home"></i> BACK TO LIST</button>
+        <button id=@Model.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "1" })';return false;"><i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+        <button id=@Model.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "2" })';return false;"><i class="fas fa-globe-europe"></i> TO APPEAL</button>
+        <button id=@Model.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "3" })';return false;"><i class="fas fa-globe-europe"></i> TO SUPREME</button>
+        <button id=@Model.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("Index", "CourtCases", new { CaseId = Model.CaseId })';return false;"><i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+        <button id=@Model.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = Model.CaseId })';return false;"><i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+        <button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="window.open('@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = Model.CaseLevelCode,ClosureDate = Model.ClosureDate })');return false;"><i class="fas fa-file-invoice-dollar"></i> PRINT CLOSURE FORM</button>
+
+    </div>
+
+</div>
+}

@@ -1,0 +1,114 @@
+﻿@model YandS.UI.Models.CaseInvoice
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>CaseInvoice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CourtCases.OfficeFileNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourtCases.OfficeFileNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Created.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Modified.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Modified.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvoiceDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InvoiceDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvoiceNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InvoiceNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CourtType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourtType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvoiceStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InvoiceStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransferType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransferType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransferNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransferNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransferDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransferDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedOn)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.InvoiceId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
