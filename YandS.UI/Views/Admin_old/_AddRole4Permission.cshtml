@@ -1,0 +1,47 @@
+﻿@model YandS.UI.Models.PERMISSION
+@Html.HiddenFor(model => model.PermissionId)
+<div class="box box-solid">
+    <div class="box-header with-border">
+        <h3 class="box-title">Add Permission To Role</h3>
+
+        <div class="box-tools">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body no-padding">
+        <label>
+            Role:
+        </label>
+        @Html.DropDownList("RoleId", null, string.Empty, new { style = "width:350px" })
+        <input class="btn btn-default" type="button" id="AddPermission" value="Add Permission" />
+    </div>
+    <!-- /.box-body -->
+</div>
+@section pagespecific {
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#AddPermission').click(function () {
+            var _roleId = $('#RoleId').val();
+            var _permissionId = $('#PermissionId').val();
+
+
+            if (_permissionId == '') {
+                return false;
+            }
+
+            var _parameters = { permissionId: _permissionId, roleId: _roleId };
+            $.ajax({
+                url: "/Admin/AddRole2PermissionReturnPartialView",
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#RolesTable').html(data);
+                    $('#RoleId').val("");
+                }
+            });
+        });
+    });
+</script>
+}

@@ -1,0 +1,158 @@
+﻿<script type="text/javascript">
+   var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+   var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+
+    function onPreSubmit(item) {
+        if ($("#OfficeFileNo").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+            });
+            return false;
+        }
+        if ($("#SessionClientId").val() == "0") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE SELECT CLIENT NAME'
+            });
+            return false;
+        }
+        if ($("#SessionRollDefendentName").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER VALID DEFENDANT NAME'
+            });
+            return false;
+        }
+    }
+
+    $(document).ready(function () {
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "913") {
+                ModalTitle = "ADD CLIENT";
+                DDLToAppend = $("#SessionClientId");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            if ($("#OfficeFileNo").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+                });
+                return false;
+            }
+            if ($("#SessionClientId").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT CLIENT NAME'
+                });
+                return false;
+            }
+            if ($("#SessionRollDefendentName").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER VALID DEFENDANT NAME'
+                });
+                return false;
+            }
+
+            var data = new FormData(jQuery('#frm_SessionRollRegForm')[0]);
+
+            $.ajax({
+                type: "POST",
+                url: SubmitFormURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.redirectTo) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Done!',
+                            html: "Data Save Successfully"
+                        });
+                        $(result.redirectTo).click();
+                    }
+                    else {
+                        $("#div_SessionRollRegister_Detail").empty();
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ERROR...',
+                            html: result.errorMessage
+                        });
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        });
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@using (Html.BeginForm("Index", "SessionRoll", FormMethod.Post, new { id = "frm_SessionRollRegForm", onsubmit = "return onPreSubmit(this);" }))
+{
+    @Html.HiddenFor(model => model.SessionRollId)
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.HiddenFor(model => model.SessionLevel)
+    @Html.HiddenFor(model => model.CountLocationId)
+    @Html.HiddenFor(model => model.CaseType)
+    @Html.HiddenFor(model => model.LawyerId)
+    @Html.HiddenFor(model => model.FollowerId)
+
+    @Html.AntiForgeryToken()
+    <div style="padding-bottom:0px;padding-top:10px;" class="row SessionRollRegisterBar">
+        <div class="col-sm-12 text-center"><h3>REGISTRATION</h3></div>
+    </div>
+    <div style="padding-bottom:0px;padding-top:10px;" class="row bg-maroon">
+        <div class="col-sm-12 text-center"><h3 style="float:none !important"><span id="spanOfficeFileNo">@Html.DisplayFor(model => model.OfficeFileNo)</span><span class="YandSTitleSpacing">-</span><span id="spanClientName">@Html.DisplayFor(model => model.ClientName)</span><span class="YandSTitleSpacing">-</span><span id="spanDefendant">@Html.DisplayFor(model => model.Defendant)</span></h3></div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <label for="SessionClientId">CLIENT الموكل</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("SessionClientId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info AddNewMaster" id="913">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="SessionRollDefendentName">DEFENDANT الخصم</label>
+                    @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button id="btnSubmitForm" type="button" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+}

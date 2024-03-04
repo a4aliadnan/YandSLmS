@@ -1,0 +1,350 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "TAX_VAT-QuarterltVAT";
+    function LoadResultTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 25,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'TAX',
+                    text: 'Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100, 99999], [5, 10, 25, 50, 100, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = dataForTable;
+                    d.DateFrom = $("#ContactDateFrom").val();
+                    d.DateTo = $("#ContactDateTo").val();
+                }
+            },
+            "columns": [
+                { data: 'LAW_VAT_1_TO_3', name: 'LAW_VAT_1_TO_3', autoWidth: true },
+            ],
+            "order": [],
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                var info = table.page.info();
+                //$('#TOTAL_VAT').text(TOTAL_VAT);
+
+                var d = table.row(0).data();
+                console.log(d);
+                $('#LAW_VAT_1_TO_3').text(d.LAW_VAT_1_TO_3);
+                $('#LAW_VAT_4_TO_6').text(d.LAW_VAT_4_TO_6);
+                $('#LAW_VAT_7_TO_9').text(d.LAW_VAT_7_TO_9);
+                $('#LAW_VAT_10_TO_12').text(d.LAW_VAT_10_TO_12);
+                $('#LAW_VAT_1_TO_12').text(d.LAW_VAT_1_TO_12);
+                $('#EXP_VAT_1_TO_3').text(d.EXP_VAT_1_TO_3);
+                $('#EXP_VAT_4_TO_6').text(d.EXP_VAT_4_TO_6);
+                $('#EXP_VAT_7_TO_9').text(d.EXP_VAT_7_TO_9);
+                $('#EXP_VAT_10_TO_12').text(d.EXP_VAT_10_TO_12);
+                $('#EXP_VAT_1_TO_12').text(d.EXP_VAT_1_TO_12);
+                $('#REM_VAT_1_TO_3').text(d.REM_VAT_1_TO_3);
+                $('#REM_VAT_4_TO_6').text(d.REM_VAT_4_TO_6);
+                $('#REM_VAT_7_TO_9').text(d.REM_VAT_7_TO_9);
+                $('#REM_VAT_10_TO_12').text(d.REM_VAT_10_TO_12);
+                $('#REM_VAT_1_TO_12').text(d.REM_VAT_1_TO_12);
+
+
+                $("#dtTableRow").removeClass("AppHidden").addClass("AppHidden");
+
+
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $("#ContactDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            console.log(selected.date);
+            if (selected.date !== undefined) {
+                var minDate = new Date(selected.date.valueOf());
+                $('#ContactDateTo').datepicker('setStartDate', minDate);
+            }
+            else {
+                $('#ContactDateTo').datepicker('setDate', null);
+            }
+        });
+
+        $("#ContactDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            if (selected.date !== undefined) {
+                var maxDate = new Date(selected.date.valueOf());
+                $('#ContactDateFrom').datepicker('setEndDate', maxDate);
+            }
+            else {
+                $('#ContactDateFrom').datepicker('setDate', null);
+            }
+        });
+
+        $('#btnPrintResult').on("click", function () {
+            LoadResultTable();
+        });
+
+        LoadResultTable();
+
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+
+<div style="padding-bottom:0px;padding-top:10px;" class="row SuspendedActive">
+    <div class="col-sm-3 text-left"><h3><span id="MCTTTL"disabled></span></h3></div>
+    <div class="col-sm-6 text-center"><h3>QUARTERLT</h3></div>
+    <div class="col-sm-3 text-right"><h3><span id="SLLTTL"disabled></span></h3></div>
+</div>
+<div class="card-body AppHidden">
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="ContactDateFrom">FROM</label>
+                @Html.EditorFor(model => model.ContactDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="ContactPrintDateTo">TO</label>
+                @Html.EditorFor(model => model.ContactDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+
+        <div class="col-sm-1" style="padding-top:30px;">
+            <button id="btnPrintResult" type="button" class="btn btn-success"><i class="fas fa-file"></i> SHOW</button>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group" style="padding-top:10px;">
+                <label for="Amount"></label>
+                <h3><span class="form-control" id="TOTAL_VAT"disabled></span></h3>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-body">
+    <div id="dtTableRow" class="row">
+        <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+
+            <table id="HtmlTable" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th class="all VMiddle text-center">INVOICE DATE</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="padding-bottom:0px;padding-top:10px;" class="row">
+        <div class="col-sm-3">
+            <div class="card">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>FROM 1 TO 3</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3><span class="form-control" id="LAW_VAT_1_TO_3"disabled></span></h3>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3><span class="form-control" id="EXP_VAT_1_TO_3"disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-sm-12">
+                        <h3><span class="form-control" id="REM_VAT_1_TO_3"disabled></span></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>FROM 4 TO 6</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3><span class="form-control" id="LAW_VAT_4_TO_6"disabled></span></h3>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3><span class="form-control" id="EXP_VAT_4_TO_6"disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-sm-12">
+                        <h3><span class="form-control" id="REM_VAT_4_TO_6"disabled></span></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>FROM 7 TO 9</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3><span class="form-control" id="LAW_VAT_7_TO_9"disabled></span></h3>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3><span class="form-control" id="EXP_VAT_7_TO_9"disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-sm-12">
+                        <h3><span class="form-control" id="REM_VAT_7_TO_9"disabled></span></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>FROM 10 TO 12</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3><span class="form-control" id="LAW_VAT_10_TO_12"disabled></span></h3>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3><span class="form-control" id="EXP_VAT_10_TO_12"disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-sm-12">
+                        <h3><span class="form-control" id="REM_VAT_10_TO_12"disabled></span></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div style="padding-bottom:0px;padding-top:10px;" class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>FROM 1 JAN TO 31 DEC</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3><span class="form-control" id="LAW_VAT_1_TO_12"disabled></span></h3>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3><span class="form-control" id="EXP_VAT_1_TO_12"disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-sm-12">
+                        <h3><span class="form-control" id="REM_VAT_1_TO_12"disabled></span></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+
+</div>

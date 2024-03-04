@@ -1,0 +1,548 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.Voucher_No)
+<script type="text/javascript">
+    function CalcTotal() {
+        var p_Amt = $("#Amount").val() == "" ? 0 : parseFloat($("#Amount").val());
+        var p_VarAmt = $("#VatAmount").val() == "" ? 0 : parseFloat($("#VatAmount").val());
+
+        var p_TtlAmt = p_Amt + p_VarAmt;
+
+        $("#TotalAmount").val(p_TtlAmt);
+
+    }
+
+    function dateChanged(ev) {
+        $(this).datepicker('hide');
+        console.log($("#Cheque_Date").val());
+
+        if ($("#Cheque_Date").val() !== "") {
+            $("#DIV_IsShowWithLawyer").removeClass("AppHidden");
+            $("#IsShowWithLawyer").val("Y");
+            $('textarea').autoResize();
+
+        }
+        else {
+            $("#DIV_IsShowWithLawyer").removeClass("AppHidden").addClass("AppHidden");
+            $("#IsShowWithLawyer").val("N");
+        }
+    }
+    function ProcessAddClient() {
+        var url = "";
+        var _MstDesc = ""
+        var _MstParentId = 0;
+        var _Remarks = "";
+
+        var _PayToBankName = "";
+        var _PayToAccountNumber = "";
+        var _PayToEmail = "";
+        var _PayToContactNo = "";
+        var _PayMst_Value = "";
+
+        var PAYTOs = ["1900", "1901", "1902", "1903", "1905"];
+        if (PAYTOs.indexOf($("#MstParentId").val()) >= 0) {
+            if ($("#PayToMstDesc").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter PAY TO BENEFICIARY'
+                });
+
+                return false;
+            }
+
+            if ($("#PayToEmail").val() == "") {
+
+            }
+            else {
+                if (!validateEmail($("#PayToEmail").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Email Address'
+                    });
+
+                    return false;
+                }
+            }
+
+            if ($("#PayToContactNo").val() == "") {
+
+            }
+            else {
+                if (!validateContactNo($("#PayToContactNo").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Contact No'
+                    });
+
+                    return false;
+                }
+            }
+
+            url = AddNewPayToDetailURL;
+
+            _MstParentId = parseInt($("#MstParentId").val());
+            _MstDesc = $("#PayToMstDesc").val();
+
+            var _PayToBankName = $("#PayToBankName").val();
+            var _PayToAccountNumber = $("#PayToAccountNumber").val();
+            var _PayToEmail = $("#PayToEmail").val();
+            var _PayToContactNo = $("#PayToContactNo").val();
+            var _PayToMessageLang = $("#PayToMessageLang").val();
+
+            if ($(".clsDisableInModify").hasClass("disableDIV")) {
+                _PayMst_Value = $("#PayToMstValue").val();
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang, PayMst_Value: _PayMst_Value };
+            }
+            else
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang };
+        }
+        else {
+            if ($("#MstDesc").val() != "") {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+                return false;
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: url,
+            success: function (Result) {
+
+                if (Result.Message == "Success") {
+                    if (Result.NoNeedAppend == "Y") {
+                        DDLToAppend.val(Result.id).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                    else {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                }
+                else {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ErrorMessage
+                    });
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        console.log("_CaseRegPayVoucher Partial Page Loaded");
+        var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+        $("#Amount").regexMask(IsDigitmask);
+        $("#VatAmount").regexMask(IsDigitmask);
+        CalcTotal();
+        $('.txtCalc').on("blur", function () { CalcTotal(); });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        bsCustomFileInput.init();
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            //console.log($(this).text());
+            var ModalTitle = "";
+            var p_mst_Value = "0";
+            $(".clsMstDesc").removeClass("AppHidden").addClass("AppHidden");
+
+            if (this.id == "7") {
+                if ($("#Payment_Head").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY FOR سبب الصرف'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#Payment_Head').select2('data')
+
+                ModalTitle = "ADD PAY FOR DETAIL FOR " + data[0].text;
+                $("#MstParentId").val($("#Payment_Head").val());
+                DDLToAppend = $("#PaymentHeadDetail");
+
+                $("#ModalDiv_7").removeClass("AppHidden");
+
+            }
+            else if (this.id == "1898") {
+                if ($("#Payment_To").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY TO الدفع إلى'
+                    });
+
+                    return false;
+                }
+
+                if ($("#Payment_To").val() == "1901") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'EMPLOYEE CANNOT BE ADDED FROM HERE'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#Payment_To').select2('data')
+                ModalTitle = "ADD BENEFICIARY FOR " + data[0].text;
+                $("#MstParentId").val($("#Payment_To").val());
+                DDLToAppend = $("#PaymentToBenificry");
+
+                $("#ModalDiv_214").removeClass("AppHidden");
+
+            }
+            else if (this.id == "214") {
+                $("#MstParentId").val(this.id);
+                ModalTitle = "ADD PAY TO";
+                DDLToAppend = $("#Payment_To");
+                $("#ModalDiv_214").removeClass("AppHidden");
+            }
+            ClearPayToFields(p_mst_Value)
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#Payment_To').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#Payment_To").val() == "0") {
+                InitDropDownList($('#PaymentToBenificry'));
+
+                return false;
+            }
+
+            LoadDependentDDLByParentId($('#Payment_To').val(), $('#PaymentToBenificry'));
+        });
+
+        $('#PaymentToBenificry').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#PaymentToBenificry").val() == "0")
+                return false;
+
+            SetPayToDetails(parseInt($("#Payment_To").val()), $("#PaymentToBenificry").val());
+        });
+
+        if ($("#Cheque_Date").val() == "") { }
+        else {
+            $("#IsShowWithLawyer").val("Y");
+            NotValid = ValidateWithLawyer();
+        }
+
+        $("#Cheque_Date").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).change(dateChanged);
+
+        var AllowedUsers = ["1", "2"];
+        $(".AddNewMaster").prop("disabled", false);
+        $(".EditMaster").prop("disabled", false);
+        $(".TransMaster").prop("disabled", false);
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+            $(".EditMaster").prop("disabled", true);
+            $(".TransMaster").prop("disabled", true);
+        }
+
+        SetPayToDetails(parseInt($("#Payment_To").val()), $("#PaymentToBenificry").val());
+
+    });
+</script>
+<div class="card">
+    <div class="card-header TBRNewCaseActive text-center"><h3>ADD PAYMENT VOUCHER</h3></div>
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="CourtType">CASE LEVEL</label>
+                    @Html.DropDownList("CourtType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-4">
+                @*<div class="form-group" style="padding-top:10px;">
+                    <label for="VoucherType"></label>
+                    <input type="text" id="VoucherType" value="REFUNDABLE" class="form-control" disabled />
+                </div>*@
+            </div>
+            <div class="col-4">
+                @*<div class="form-group" style="padding-top:10px;">
+                    <label for="Payment_Mode"></label>
+                    <input type="text" id="Payment_Mode" value="BANK TRANSFER" class="form-control" disabled />
+                </div>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="Payment_Head">PAY FOR سبب الصرف</label>
+                    @Html.DropDownList("Payment_Head", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <label for="PaymentHeadDetail">DETAILS التفاصيل</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("PaymentHeadDetail", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button title="ADD PAY TO DETAIL" type="button" class="btn btn-info AddNewMaster" id="7">
+                                    ADD
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="Payment_To">PAY TO الدفع إلى</label>
+                    @Html.DropDownList("Payment_To", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <label for="Payment_Head">BENEFICIARY المستفيد</label>
+                        <div class="input-group mb-3">
+                            @Html.DropDownList("PaymentToBenificry", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            <div class="input-group-append">
+                                <button title="ADD PAY TO BENEFICIARY" type="button" class="btn btn-info AddNewMaster" id="1898">
+                                    ADD
+                                </button>
+                            </div>
+                            <div class="input-group-append">
+                                <button title="MODIFY PAY TO BENEFICIARY" type="button" onclick="EditMasterList('MODIFY PAY TO BENEFICIARY','PaymentToBenificry','1898',document.getElementById('PaymentToBenificry').value)" class="btn btn-warning EditMaster">
+                                    Edit
+                                </button>
+                            </div>
+                            <div class="input-group-append">
+                                <button title="TRANSFER FROM MPLOYEE to INDIVISUAL" type="button" onclick="TransferEmployeeToIndivisual(document.getElementById('PaymentToBenificry').value)" class="btn btn-danger TransMaster">
+                                    Transfer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group clsPayToDetail AppHidden">
+                    @Html.LabelFor(model => model.PayToBankNameDisp)
+                    @Html.EditorFor(model => model.PayToBankNameDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group clsPayToDetail AppHidden">
+                    @Html.LabelFor(model => model.PayToAccountNumberDisp)
+                    @Html.EditorFor(model => model.PayToAccountNumberDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+            <div class="col">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.Amount)
+                        <div class="input-group mb-3">
+                            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                            <div class="input-group-append">
+                                @Html.EditorFor(model => model.VatAmount, new { htmlAttributes = new { @class = "form-control txtCalc", @placeholder = "Vat الضريبة" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount)
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VatAmount)
+                @Html.EditorFor(model => model.VatAmount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+            </div>
+        </div>*@
+            <div class="col">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TotalAmount)
+                    @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="Remarks">REMARKS ملاحظات</label>
+                    @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control", @dir = "auto" } })
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="UploadedFile">SUPPORTING DOCUMENT المستندات الداعمة للطلب</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="uploadPVSupDocs" name="uploadPVSupDocs">
+                            <label class="custom-file-label" for="uploadPVSupDocs">CHOOSE DOCUMENT</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (@ViewBag.VoucherDoc == "#")
+            {
+            }
+            else
+            {
+                <div class="col" style="padding-top:30px;">
+                    <div class="form-group">
+                        <a target="_blank" class="btn btn-info" title="VIEW PV SUPPORTING DOCUMENT" href="~/Uploads/PVDocuments/@ViewBag.VoucherDoc">VIEW SUPPORTING DOCUMENT</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-header bg-gray text-center"><h3>TRANSACTION DETAILS</h3></div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-4">
+                <div id="divDebit_Account" class="form-group">
+                    <label for="Debit_Account">WITHDRAWAL BANK</label>
+                    @Html.DropDownList("Debit_Account", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="Cheque_Number">CHQ/TRANSFER NUMBER</label>
+                    @Html.EditorFor(model => model.Cheque_Number, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="Debit_Account">DATE OF WITHDRAWAL</label>
+                    @Html.EditorFor(model => model.Cheque_Date, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="uploadPVBTDocs">BANK TRANSFER DOCUMENT</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="uploadPVBTDocs" name="uploadPVBTDocs">
+                            <label class="custom-file-label" for="uploadPVBTDocs">CHOOSE BANK TRANSFER DOCUMENT</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4" style="padding-top:30px;">
+                @if (@ViewBag.PVTransferDoc == "#")
+                {
+                }
+                else
+                {
+                    <div class="form-group">
+                        <a target="_blank" id="btnPVTransferDoc" class="btn btn-warning" title="VIEW BANK TRANSFER DOCUMENT" href="~/Uploads/PVTransfers/@ViewBag.PVTransferDoc">VIEW BANK TRANSFER DOCUMENT</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <div id="ModalDiv_7" class="row AppHidden clsMstDesc">
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div id="ModalDiv_214" class="row AppHidden clsMstDesc">
+                    @Html.HiddenFor(model => model.PayToMstValue)
+                    <div class="col-12 clsDisableInModify">
+                        <div class="form-group">
+                            <label for="PayToMstDesc">BENEFICIARY المستفيد</label>
+                            @Html.EditorFor(model => model.PayToMstDesc, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToBankName">BANK البنك</label>
+                            @Html.DropDownList("PayToBankName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToAccountNumber">ACC الحساب</label>
+                            @Html.EditorFor(model => model.PayToAccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToContactNo">Contact Number</label>
+                            @Html.EditorFor(model => model.PayToContactNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToEmail">Email</label>
+                            @Html.EditorFor(model => model.PayToEmail, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToBankName">Language اللغة</label>
+                            @Html.DropDownList("PayToMessageLang", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

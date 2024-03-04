@@ -1,0 +1,57 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+@Html.HiddenFor(model => model.ActionDate)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#ActionDate").datepicker({ format: "dd/mm/yyyy" });
+
+        $("#ActionDate").datepicker("setDate", new Date());
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+    });
+</script>
+@Html.HiddenFor(model => model.CourtDepartment)
+@Html.HiddenFor(model => model.StopEnfRequest)
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label>
+                APPEAL BY
+            </label>
+            @Html.DropDownList("ApealByWho", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label>COURT</label>
+            @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label>APPEAL NO</label>
+            @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            @Html.LabelFor(model => model.RegistrationDate)
+            @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+</div>

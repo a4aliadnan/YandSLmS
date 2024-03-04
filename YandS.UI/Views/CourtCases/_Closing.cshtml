@@ -1,0 +1,389 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var ValidateUserURL = '@Url.Action("ValidateUserPassword", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    var GetClientClassificationURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CreateClientMasterURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var LoadClientByClassificationURL = '@Url.Action("LoadClientByClassification", "CommonTask", new { area = string.Empty })';
+    var CheckDuplicateDetailURL = '@Url.Action("CheckDuplicateDetail", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("TobeReg", "CourtCases", new { area = string.Empty })';
+    var SubmitClosureFormURL = '@Url.Action("FileClosure", "CommonTask", new { area = string.Empty })';
+    var GetCaseDetailURL = '@Url.Action("GetExistingOfficeInTBR", "CommonTask", new { area = string.Empty })';
+    var _parameters = {};
+    var CurrentCaseLevel = 0;
+    var ClientClassification = 0;
+    var ClientClassificationCode = "";
+    var CaseTypeCode = "";
+    var closingNoteTable;
+    var tableClosure;
+    var table;
+
+    function submitClosureForm() {
+        var data = new FormData(jQuery('#frm_FileClose')[0]);
+
+        $.ajax({
+            type: "POST",
+            url: SubmitClosureFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                console.log(result);
+                console.log(result.Category);
+
+                if (result.Category == "Error") {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.Message
+                    });
+                }
+                else {
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Done!',
+                        html: "Data Save Successfully"
+                    });
+
+                    //$("#btn_General").trigger('click');
+
+
+                    if (typeof tableClosure != 'undefined')
+                        tableClosure.ajax.reload();
+
+                    if (typeof table != 'undefined')
+                        table.ajax.reload();
+
+                    switch (result.Category) {
+                        case "ClosurePartial":
+
+                            $("#ClosurePartialFormButton").get(0).click();
+                            break;
+                        case "ClosureFinal":
+                            $("#FinalClosureFormButton").get(0).click();
+                            break;
+                        case "btnClosureArchiveSave":
+                            break;
+                        case "btnFinalClosureSave":
+                            LoadResultTable();
+                            break;
+                        case "btnFinalClosurApprovaleSave":
+                            $("#FinalClosureFormButton").get(0).click();
+                            LoadResultTable();
+                            $("#divClosureFinal").addClass("disableDIV");
+                            break;
+                        default:
+                            break;
+                    }
+
+                    //switch (result.Category) {
+                    //    case "btnClosurePartialSave":
+                    //        LoadResultTable();
+                    //        break;
+                    //    case "btnClosureAccountsDepSave":
+                    //    case "btnClosureAccountsFinSave":
+                    //        table.ajax.reload();
+                    //        break;
+                    //    case "btnClosureArchiveSave":
+                    //        break;
+                    //    case "btnFinalClosureSave":
+                    //        LoadResultTable();
+                    //        break;
+                    //    case "btnFinalClosurApprovaleSave":
+                    //        $("#FinalClosureFormButton").get(0).click();
+                    //        LoadResultTable();
+                    //        $("#divClosureFinal").addClass("disableDIV");
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function ValidateUser(p_PassWord, clsValidated) {
+        var $Password = p_PassWord;
+        if ($Password != "") {
+            $("." + clsValidated).removeClass("AppHidden").addClass("AppHidden");
+            var form = $('#__AjaxAntiForgeryForm');
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+            $.ajax({
+                url: ValidateUserURL,
+                type: 'POST',
+                cache: false,
+                data: {
+                    __RequestVerificationToken: token,
+                    Password: $Password
+                },
+                statusCode: {
+                    401: function (response) {
+                        alert(response);
+                    }
+                },
+                success: function (result) {
+                    if (result.Category == "OK") {
+                        $("." + clsValidated).removeClass("AppHidden");
+                        $('textarea').autoResize();
+                    }
+                    else {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: result.Message
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Swal.fire("Error Validating!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                }
+            });
+
+        }
+        else {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: "Please Enter Password!!!!"
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        console.log("Closure Partail View Document Ready Page");
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateBasic();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            if (ClientClassification == 1) {
+
+                NotValid = ValidateBank();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (ClientClassification == 2) {
+
+                NotValid = ValidateFinance();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (ClientClassification == 3) {
+
+                NotValid = ValidateRealEstate();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            if (CurrentCaseLevel == 3) {
+
+                NotValid = ValidatePrimary();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 4) {
+                NotValid = ValidateAppeal();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 5) {
+                NotValid = ValidateSupreme();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 6) {
+                NotValid = ValidateEnforcement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            console.log($("#hidCourtDecisionChange").val());
+            console.log($("#CurrentHearingDate").val());
+            console.log($("#hidCurrentHearingDate").val());
+            ShowPreSubmit();
+        });
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        $(".AddNewMaster").prop("disabled", false);
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+        
+
+        if ($('#FileClosureDetail_FileClosureCategory').val() != "0") {
+            var PartialContainer = $("#Partial_Final_View");
+            _parameters = { ClassificationId: $('#FileClosureDetail_FileClosureCategory').val(), Mode: $('#CaseId').val() };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+        }
+
+        $('#FileClosureDetail_FileClosureCategory').on("change", function () {
+            var PartialContainer = $("#Partial_Final_View");
+            if ($(this).val() != "0") {
+                _parameters = { ClassificationId: $(this).val(), Mode: $('#CaseId').val() };
+                GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+            }
+            else {
+                PartialContainer.empty();
+            }
+        });
+
+        var _PartialViewName = "";
+
+        if ($("#hid_IsPartialTableLoad").val() == "Y")
+            _PartialViewName = "ClosurePartialTable";
+
+        if ($("#hid_IsFinalTableLoad").val() == "Y")
+            _PartialViewName = "ClosureFinalTable";
+
+        if (_PartialViewName != "") {
+            var PartialContainer = $("#Partial_Final_Table");
+            _parameters = { ClassificationId: _PartialViewName, Mode: "C" };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        }
+
+        $("#OFB_ClientName").text($("#hid_OFB_ClientName").val());
+        $("#OFB_Defendant").text($("#hid_OFB_Defendant").val());
+        $("#OFB_OfficeFileNo").text($("#hid_OFB_OfficeFileNo").val());
+        $("#OFB_SessionRollClientName").text($("#hid_OFB_SessionRollClientName").val());
+        $("#OFB_SessionRollDefendentName").text($("#hid_OFB_SessionRollDefendentName").val());
+
+
+    });
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+@using (Html.BeginForm("FileClosure", "CommonTask", FormMethod.Post, new { id = "frm_FileClose", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.FileClosureDetail.btnSave)
+    @Html.HiddenFor(model => model.FileClosureDetail.CaseId)
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.Partial("_CreateClosureInfoBanner")
+
+    <div id="divClosing" class="card card-success">
+        <div class="card-header divClosingActive  FinalClosureBanner">
+            <div class="text-center">
+                <span class="h3">FILE CLOSURE غلق الملف</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <input type="hidden" id="hid_IsPartialTableLoad" value="@ViewBag.IsPartialTableLoad" />
+            <input type="hidden" id="hid_IsFinalTableLoad" value="@ViewBag.IsFinalTableLoad" />
+
+            <input type="hidden" id="hid_OFB_ClientName" value="@ViewBag.OFB_ClientName" />
+            <input type="hidden" id="hid_OFB_Defendant" value="@ViewBag.OFB_Defendant" />
+            <input type="hidden" id="hid_OFB_OfficeFileNo" value="@ViewBag.OFB_OfficeFileNo" />
+            <input type="hidden" id="hid_OFB_SessionRollClientName" value="@ViewBag.OFB_SessionRollClientName" />
+            <input type="hidden" id="hid_OFB_SessionRollDefendentName" value="@ViewBag.OFB_SessionRollDefendentName" />
+
+            <div class="row @ViewBag.IsClosureCategory">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>CLOSURE TYPE  نوع الغلق</label>
+                        @Html.DropDownList("FileClosureCategory", null, htmlAttributes: new { id = "FileClosureDetail_FileClosureCategory", Name = "FileClosureDetail.FileClosureCategory", @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Partial_Final_View">
+
+        </div>
+        <div id="Partial_Final_Table">
+
+        </div>
+        <div id="ClosureNotes_Table">
+            @Html.Partial("ClosureNotes")
+        </div>
+
+    </div>
+}
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

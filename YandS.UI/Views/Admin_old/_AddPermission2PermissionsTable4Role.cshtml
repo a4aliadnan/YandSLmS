@@ -1,0 +1,62 @@
+﻿@model YandS.UI.Models.ApplicationRole
+@Html.Hidden("Role_Id", Model.Id)
+<div class="box box-solid">
+    <div class="box-header with-border">
+        <h3 class="box-title">Add Permission To Role</h3>
+
+        <div class="box-tools">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body no-padding">
+        <label>
+            Permission:
+        </label>
+        @Html.DropDownList("PermissionId", null, string.Empty, new { style = "width:350px" })
+        <input class="btn btn-default" type="button" id="AddPermission" value="Add Permission" />
+        <input class="btn btn-default" type="button" id="AddAllPermissions" value="Add All Permissions" />
+    </div>
+    <!-- /.box-body -->
+</div>
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#AddPermission').click(function () {
+                var _permissionId = $('#PermissionId').val();
+                var _roleId = $('#Role_Id').val();
+
+
+                if (_permissionId == '') {
+                    return false;
+                }
+
+                var _parameters = { permissionId: _permissionId, id: _roleId };
+                $.ajax({
+                    url: "/Admin/AddPermission2RoleReturnPartialView",
+                    type: "GET",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#PermissionsTable').html(data);
+                        $('#PermissionId').val("");
+                    }
+                });
+            });
+
+            $('#AddAllPermissions').click(function () {
+                var _roleId = $('#Role_Id').val();
+                var _parameters = { id: _roleId };
+                $.ajax({
+                    url: "/Admin/AddAllPermissions2RoleReturnPartialView",
+                    type: "GET",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#PermissionsTable').html(data);
+                        $('#PermissionId').val("");
+                    }
+                });
+            });
+        });
+    </script>
+}

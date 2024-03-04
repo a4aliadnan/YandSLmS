@@ -1,0 +1,283 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        console.log("Modify Enforcement --> INFO STAGE ==> Partail View ENF_UPDATE_SESSION");
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+        $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_TRSOURCE").removeClass("AppHidden").addClass("AppHidden");
+        $(".clsLawerFollow").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            console.log($("#Requirements").val());
+            console.log($("#FirstEmailDate").val());
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            console.log($("#hidRequirement").val());
+            console.log($("#hidFirstEmailDate").val());
+
+
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+
+            $('textarea').autoResize();
+        }
+
+        if ($('#CourtFollow').val() == "1") {
+            $(".clsLawerFollow").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+            $('textarea').autoResize();
+        });
+
+        $('#CourtFollow').on("change", function () {
+            $(".clsLawerFollow").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#CourtFollow').val() == "1") {
+                $(".clsLawerFollow").removeClass("AppHidden");
+                $('textarea').autoResize();
+            }
+        });
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+
+        $('textarea').autoResize();
+        console.log($('#SessionRollId').val());
+    });
+</script>
+@Html.HiddenFor(model => model.TransportationFee)
+@Html.HiddenFor(model => model.UpdatePV_Type)
+@Html.HiddenFor(model => model.SessionRollId)
+<div class="card-body">
+    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #336c85 !important; color: white !important; border-color:yellow !important; border:3px solid;">
+        <div class="row">
+            <div class="col-sm-12 text-center"><span style="font-size:x-large; padding-left:10px; float:left">@ViewBag.UpdateBoxUser</span><h3>UPDATE التحديث</h3></div>
+        </div>
+    </div>
+    <div style="padding-top:10px" class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CurrentCaseLevel">CURRENT CASE LEVEL المرحلة</label>
+                @Html.EditorFor(model => model.CurrentCaseLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CourtRefNo">CASE NO. رقم القضية</label>
+                @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="CountLocationName">COURT المحكمة</label>
+                @Html.EditorFor(model => model.CountLocationName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+    </div>
+    <div style="padding-top:10px" class="row">
+        <div class="col-sm-4">
+            <div class="col-sm-12 clsJudIssued">
+                <div class="row">
+                    <label for="CaseType">CASE TYPE القاعة</label>
+                    <div class="input-group mb-3">
+                        @Html.DropDownList("CaseType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-info AddNewMaster" id="859">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="col-sm-12 clsJudIssued">
+                <div class="row">
+                    <label for="Session_LawyerId">DESIGNATED LAWYER المحامي المكلف</label>
+                    <div class="input-group mb-3">
+                        @Html.DropDownList("Session_LawyerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-info AddNewMaster" id="1408">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+    <div class="card-header PayVoucherRejectedActive">
+        <div class="text-center">
+            <span class="h3">SESSION DETAILS تفاصيل الجلسة</span>
+        </div>
+    </div>
+    <div id="DIV_NOTES_BANNER" class="card-header GeneralActive AppHidden">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h3><span id="spnNotesBanner"></span></h3>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                    @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+                    @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="SessionRemarks">LAWYER SCHEDULE توجيهات إلى المحامي</label>
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.SessionRemarks, 1, 200, new { @class = "form-control", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClientReply)
+                    @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4 updateBoxUpdated" })
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group" id="txtRequirement">
+                    <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control updateBoxUpdated", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group" id="txtFirstEmailDate">
+                    @Html.LabelFor(model => model.FirstEmailDate)
+                    @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker updateBoxUpdated" } })
+                </div>
+            </div>
+            <div id="DIV_TRSOURCE" class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransportationSource)
+                    @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4 updateBoxUpdated" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CourtFollow)
+                    @Html.DropDownList("CourtFollow", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group clsLawerFollow">
+                    <label for="LawyerId">LAWYER المحامي</label>
+                    @Html.DropDownList("CourtFollow_LawyerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group clsLawerFollow">
+                    <label for="CourtFollowRequirement">LAWYER 'S REQUIREMENT المطلوب من المحامي</label>
+                    @Html.TextAreaFor(model => model.CourtFollowRequirement, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "PLEASE ENTER LAWYER 'S REQUIREMENT" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group clsLawerFollow">
+                    @Html.LabelFor(model => model.CommissioningDate)
+                    @Html.EditorFor(model => model.CommissioningDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @Html.Partial("_SessionFooterBanner", Model)
+</div>
+

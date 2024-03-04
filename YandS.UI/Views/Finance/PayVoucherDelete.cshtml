@@ -1,0 +1,70 @@
+﻿@model YandS.UI.Models.PayVoucher
+@{
+    ViewBag.Title = "Y & S Associates - Cancel Payment Voucher";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Voucher</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Cancel Voucher</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Payment Voucher Cancellation</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <div class="card-body">
+                <p class="text-danger">Are you sure you want to Cancel this Voucher?</p>
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Voucher_No)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Voucher_No)
+                    </dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Voucher_Date)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Voucher_Date)
+                    </dd>
+                </dl>
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-save"></i> Cancel Voucher</button> |
+                        <a class="btn btn-primary" href="@Url.Action("PayVoucherIndex", "Finance")"><i class="fas fa-home"></i> Back to Main</a>
+
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        }
+    </section>
+    <!-- /.content -->
+</div>

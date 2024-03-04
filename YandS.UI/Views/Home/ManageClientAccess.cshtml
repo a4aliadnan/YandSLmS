@@ -1,0 +1,287 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    var GetIndexDataURL = '@Url.Action("AjaxIndexData", "Home", new { area = string.Empty })';
+    var GetPartialViewURL = '@Url.Action("GetTab", "Home", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("ManageClientAccess", "Home", new { area = string.Empty })';
+    var NotValid;
+    var ValidationMessage;
+    var _parameters = "";
+    var _PartialViewName;
+    var PartialContainer;
+    var TransMode = "";
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function LoadPartialView(data, container) {
+        container.html(data);
+
+        if (container.attr("id") == "modal-UPSERT-ViewContainer") {
+            $('#modal-UPSERT').modal('show');
+            $("#modal-UPSERT-Formoverlay").removeClass("overlay");
+            $("#modal-UPSERT-Formoverlay").removeClass("AppHidden").addClass("AppHidden");
+
+        }
+        else {
+            $('html, body').animate({
+                scrollTop: container.offset().top
+            }, 200);
+        }
+        
+    }
+    function processbtnLinkClick(_Mode, data, tableName) {
+        var _Id = data.ClientId;
+        if (_Mode == "D") {
+            TransMode = "D";
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    var form = $('#__AjaxAntiForgeryForm');
+                    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                    $.ajax({
+                        url: "/Home/Delete",
+                        type: 'POST',
+                        cache: false,
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: _Id
+                        },
+                        statusCode: {
+                            401: function (response) {
+                                alert(response);
+                            }
+                        },
+                        success: function (result) {
+                            if (result.redirectTo) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                                table.ajax.reload();
+                            }
+                            else {
+                                //console.log(result);
+                                var errorHtml = $('<div />').append(result).find('.content').html();
+                                //console.log(errorHtml);
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error deleting!',
+                                    html: errorHtml,
+                                    width: '50%'
+                                    //grow: 'row'
+                                });
+                                //Swal.fire("Error deleting!", errorHtml, "error");
+
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire("Error deleting!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            TransMode = "E";
+            console.log(data);
+            var P_USERNAME = data.UserName;
+            console.log(P_USERNAME);
+
+            _PartialViewName = "_ManageClients";
+            PartialContainer = $("#modal-UPSERT-ViewContainer");
+
+            _parameters = { PartialViewName: _PartialViewName, UserName: P_USERNAME };
+
+            GetTab(PartialContainer, GetPartialViewURL, _parameters);
+        }
+    }
+    function ValidateBasic() {
+        console.log("ValidateBasic()");
+
+        if ($("#ClientCode").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CLIENT" : ValidationMessage + "<br />" + "PLEASE SELECT CLIENT";
+            NotValid = true;
+        }
+
+
+        if ($("#DisplayName").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER USER NAME" : ValidationMessage + "<br />" + "PLEASE ENTER USER NAME";
+            NotValid = true;
+        }
+
+        return NotValid;
+
+    }
+    function ProcessUpSert() {
+        ValidationMessage = "";
+        NotValid = false;
+
+        NotValid = ValidateBasic();
+
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+        var data = new FormData(jQuery('#frm_ManageClientAccess')[0]);
+        //console.log(data);
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function () {
+                $('modal-UPSERT').block({
+                    message: '<i class="fas fa-2x fa-sync-alt fa-spin"></i>'
+                });
+            },
+            success: function (result) {
+                if (result.errorMessage) {
+                    console.log("result.errorMessage");
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.errorMessage
+                    });
+
+                    return false;
+                }
+
+                if (result.redirectTo) {
+                    var RedirectURL = "/CaseRegistration/IndexMain/" + result.id;
+                    window.location = RedirectURL;
+                }
+                else {
+                    console.log("else");
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Done!',
+                        html: "Data Save Successfully"
+                    });
+                    table.ajax.reload();
+
+                    $('modal-UPSERT').unblock();
+                    $("#modal-UPSERT-Formoverlay").removeClass("overlay");
+                    $("#modal-UPSERT-Formoverlay").removeClass("AppHidden");
+                    $('#modal-UPSERT-ViewContainer').empty();
+                    $('#modal-UPSERT').modal('hide');
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function CreateClientAccess() {
+        TransMode = "C";
+        _PartialViewName = "_ManageClients";
+        PartialContainer = $("#modal-UPSERT-ViewContainer");
+        _parameters = { PartialViewName: _PartialViewName };
+        GetTab(PartialContainer, GetPartialViewURL, _parameters);
+    }
+
+</script>
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-3 text-center">
+                    <h1>MANAGE CLIENT ACCESS</h1>
+                </div>
+                <div class="col-sm-5 text-center">
+
+                </div>
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item active"><a href="#">MANAGE CLIENT ACCESS MAIN</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="card card-danger card-outline">
+            <div class="card-header">
+                <h3 class="card-title">LIST OF CLIENTS</h3>
+                <div class="card-tools">
+                    <button id="btnCreateAccess" onclick="CreateClientAccess()" title="CREATE NEW ACCESS" class="btn btn-success">  ADD CLIENT ACCESS</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="PartialViewContainer"></div>
+            </div>
+        </div>
+    </section>
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</div>
+<div class="modal fade" id="modal-UPSERT">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-gradient-light">
+            <div id="modal-UPSERT-Formoverlay" class="overlay">
+                <i class="fas fa-2x fa-sync fa-spin"></i>
+            </div>
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="modal-UPSERT-Title">MANAGE CLIENT ACCESS</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frm_ManageClientAccess" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div id="modal-UPSERT-ViewContainer"></div>
+                }
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessUpSert()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Manage Client Access Page Loaded!!!!");
+            _PartialViewName = "_ClientAccessTable";
+            PartialContainer = $("#PartialViewContainer");
+            _parameters = { PartialViewName: _PartialViewName };
+            GetTab(PartialContainer, GetPartialViewURL, _parameters);
+
+        });
+    </script>
+}

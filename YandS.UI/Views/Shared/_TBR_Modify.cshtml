@@ -1,0 +1,400 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+    @{ 
+        var strFormPrintLastDate = Model.FormPrintLastDate?.ToString("dd/MM/yyyy");
+     }
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("Modify To be Register Partail View Document Page");
+        console.log($("#hidCaseRegistrationId").val());
+        console.log($("#HFCaseId").val());
+        console.log($("#redirectTo").val());
+        var JudgementTables = ["TBR-AppSubmission", "TBR-AplDispute", "TBR-SupSubmission", "TBR-SupDispute"];
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        LoadFileStatusPV($('#FileStatus').val());
+
+        $('#FileStatus').on("change", function () {
+            $('#hidFileStatusChanged').val("Y");
+            LoadFileStatusPV($('#FileStatus').val());
+        });
+
+        $('#btnClear').on("click", function () {
+            $("#Remarks").val("");
+        });
+
+        $('#btnSubmitFormTBR').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateTBRMain();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            if ($("#FileStatus").val() == OfficeFileStatus.Transfer) {
+                NotValid = ValidateTransferred();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.LegalNotice) {
+                NotValid = ValidateLegalNotice();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.WritingSubmission) {
+                NotValid = ValidateWritingSubmission();
+            }
+            else if ($("#FileStatus").val() == "4") {
+                NotValid = ValidateOnHold();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.Scanned) {
+                NotValid = ValidateScanned();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.OnlineReg) {
+                NotValid = ValidateOnlineSubmission();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.CourtMsg) {
+                NotValid = ValidateCourtNotes();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.ForPayment) {
+                NotValid = ValidatePayment();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.Registered) {
+                NotValid = ValidateRegistered();
+            }
+            else if ($("#FileStatus").val() == OfficeFileStatus.WithLawyer) {
+                NotValid = ValidateWithLawyer();
+            }
+
+            var JDFavorableFileStatus = [
+                OfficeFileStatus.CorrectingJudg,
+                OfficeFileStatus.PeriodOfAppeal,
+                OfficeFileStatus.RedStamp,
+                OfficeFileStatus.EnfcApproval,
+                OfficeFileStatus.MissingDocuments,
+                OfficeFileStatus.FileReview,
+                OfficeFileStatus.Refundable3_4
+            ];
+
+            if (JDFavorableFileStatus.indexOf($("#FileStatus").val()) >= 0 && JudgementTables.indexOf($("#hidCurrentTableName").val()) >= 0 && !$(".clsForDisputeShow").hasClass("AppHidden")) {
+                NotValid = ValidateJDFavorable();
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+            ShowPreSubmit();
+            
+        });
+
+        if ($("#hidTBRRemarks").val() == "N")
+            $("#DIV_REMARKS").removeClass("AppHidden").addClass("AppHidden");
+        else {
+            $("#DIV_REMARKS").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+
+
+        $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+        $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_TRSOURCE").removeClass("AppHidden").addClass("AppHidden");
+        $('textarea').autoResize();
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+            $('textarea').autoResize();
+
+        }
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+
+        ShowInvesmentBanner();
+
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+                $('textarea').autoResize();
+
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+        });
+
+        $('#DepartmentType').on("change", function () {
+            ShowInvesmentBanner();
+        });
+        console.log($('#IsFavorable').val())
+
+        if (JudgementTables.indexOf($("#hidCurrentTableName").val()) >= 0) {
+
+            if ($('#IsFavorable').val() == "" || $('#IsFavorable').val() == "0") {
+                console.log("No Judgement Detail Found!")
+            }
+            else {
+                $(".clsForDisputeShow").removeClass("AppHidden");
+
+                $("#CurrentTableName").val($("#hidCurrentTableName").val());
+            }
+            /*
+            //In Case Custom Label by Case Level
+            //==================================
+            var PriJudgementLabel = "PRIMARY JUDGMENT DATE تاريخ الحكم الابتدائي";
+            var PriJDReceiveLabel = "PRI.JUG.RECEIVE تاريخ استلام الحكم الابتدائي";
+
+            var AplJudgementLabel = "APPEAL JUDGMENT DATE تاريخ الحكم الاستئناف";
+            var AplJDReceiveLabel = "APP.JUG.RECEIVE تاريخ استلام الحكم الاستئناف";
+            
+            var SupJudgementLabel = "SUPREME JUDGMENT DATE تاريخ الحكم";
+
+            var DispJDReceiveLabel = "DISPUTE JUG.RECEIVE تاريخ استلام حكم المنازعة";
+
+            
+             if ($("#JDCaseLevelCode").val() == "3") {
+             }
+            */
+        }
+
+        $('#IsFavorable').on("change", function () {
+            LoadOfficeFileStatus($('#IsFavorable').val(), $('#FileStatus'));
+
+
+            if ($('#IsFileStatusRegistered').val() == "Y") {
+                $("#DIV_TBR_UPDATED").empty();
+                _parameters = { ClassificationId: "_TBR_UPDATED", Mode: $("#HFCaseId").val(), DefendentTransfer: "", CaseRegistrationId: $("#hidCaseRegistrationId").val() };
+                GetTab($("#DIV_TBR_UPDATED"), GetClientClassificationURL, _parameters);
+            }
+        });
+    });
+
+</script>
+@using (Html.BeginForm("IndexMain", "CaseRegistration", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm_CaseRegister" }))
+{
+     
+    
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.HiddenFor(model => model.CaseRegistrationId, new { @Value = ViewBag.CaseRegistrationId })
+    @Html.HiddenFor(model => model.ActionLevel)
+    @Html.HiddenFor(model => model.JudgementDate)
+    @Html.HiddenFor(model => model.OnHoldDone)
+    @Html.HiddenFor(model => model.OfficeFileNo)
+    @Html.HiddenFor(model => model.SessionRollId)
+    @Html.HiddenFor(model => model.TransportationFee)
+    @Html.HiddenFor(model => model.JDCaseLevelCode)
+    @Html.HiddenFor(model => model.CurrentTableName)
+    @Html.HiddenFor(model => model.JDSessionId)
+
+    @Html.AntiForgeryToken()
+    if (int.Parse(Model.ActionLevel) == 1 && int.Parse(Model.EnforcementDispute) == 0)
+    {
+        ViewBag.BannerDate = Model.ReceptionDate;
+    }
+    else if ((int.Parse(Model.ActionLevel) == 2 || int.Parse(Model.ActionLevel) == 3) && int.Parse(Model.EnforcementDispute) == 0)
+    {
+        ViewBag.BannerDate = Model.JudgementDate?.ToString("dd/MM/yyyy");
+    }
+    <div class="card">
+        <div class="card-body">
+            <div class="card-header CaseInformationBar">
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10 text-center">
+                        @if (int.Parse(Model.EnforcementDispute) == 0)
+                        {
+                            <div class="row">
+                                <h3>@Html.DisplayFor(model => model.OfficeFileNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ClientName)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.Defendant)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.AccountContractNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ClientFileNo)<span class="YandSTitleSpacing2">-</span>@ViewBag.BannerDate</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <h3>@Html.DisplayFor(model => model.OfficeFileNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ClientName)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.Defendant)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.AccountContractNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ClientFileNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ENFCourtRefNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ENFCourtLocationName)</h3>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-1"><span style="float:right"><a title="PRINT FORM" id="PrintFormButton" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CaseRegistration/PrintForm/@Model.CaseRegistrationId">PRINT FORM</a></span></div>
+                </div>
+            </div>
+            <div id="DIV_INVESTMENT_BANNER" class="card-header GeneralActive AppHidden">
+                <div class="row clsRegisterNotShow">
+                    <div class="col-12 text-center">
+                        <h3><span>APPEAL WITHIN </span><span class="YandSTitleSpacing">(15 يوم)</span><span>مدةالإستئناف</span></h3>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    @if (int.Parse(Model.ActionLevel) == 2)
+                    {
+                        <div class="row clsRegisterNotShow">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="DepartmentType">INVESTMENT تبسيط الإجراءات</label>
+                                    @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        if (int.Parse(Model.ActionLevel) > 1)
+                        {
+                            @Html.HiddenFor(model => model.DepartmentType)
+                        }
+
+                        if (int.Parse(Model.ActionLevel) == 4)
+                        {
+                            @Html.HiddenFor(model => model.EnforcementDispute)
+
+                            <div class="row clsRegisterNotShow">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="DisputeLevel">ENFORCEMENT DISPUTE</label>
+                                        @Html.DropDownList("DisputeLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="DisputeType">DISPUTE منازعة تنفيذ</label>
+                                        @Html.DropDownList("DisputeType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(model => model.DisputeLevel)
+                            @Html.HiddenFor(model => model.DisputeType)
+                        }
+                    }
+                    <div class="row clsRegisterNotShow">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="FormPrintWorkRequired">WORK REQUIRED العمل المطلوب</label>
+                                @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="OfficeProcedure">NOTES الملاحظات</label>
+                                @Html.TextAreaFor(model => model.OfficeProcedure, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Notes" })
+
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="FormPrintLastDate">LAST DATE الإنجاز قبل</label>
+                                @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label style="color:red" for="FileStatus">FILE STATUS حالة الملف</label>
+                                @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+
+                        </div>
+                        <div class="col-sm-3 clsForDisputeShow AppHidden">
+                            <div class="form-group">
+                                <label for="JudgementsDate">JUDGMENT DATE تاريخ الحكم</label>
+                                @Html.EditorFor(model => model.JudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-3 clsForDisputeShow AppHidden">
+                            <div class="form-group">
+                                <label for="JDReceiveDate">JUG.RECEIVE تاريخ استلام الحكم</label>
+                                @Html.EditorFor(model => model.JDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-3 clsForDisputeShow AppHidden">
+                            <div class="form-group">
+                                <label for="IsFavorable">FAVORABLE مطابقة الحكم</label>
+                                @Html.DropDownList("IsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-danger card-outline">
+                <div class="card-body">
+                    <div id="TBR_Modify_Detail">
+
+                    </div>
+                    <div class="row">
+                        <div id="DIV_REMARKS" class="col-sm-12">
+                            @Html.Partial("_TBR_REMARKS", Model)
+                        </div>
+                    </div>
+                    <div id="DIV_TBR_UPDATED">
+                        @Html.Partial("_TBR_UPDATED", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button type="button" id="btnSubmitFormTBR" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+}
+<input type="hidden" id="hidCaseRegistrationId" value="@ViewBag.CaseRegistrationId" />
+<input type="hidden" id="hidFileStatus" value="@Model.FileStatus" />
+<input type="hidden" id="hidFormPrintWorkRequired" value="@Model.FormPrintWorkRequired" />
+<input type="hidden" id="hidOfficeProcedure" value="@Model.OfficeProcedure" />
+<input type="hidden" id="hidFormPrintLastDate" value="@strFormPrintLastDate" />
+<input type="hidden" id="hidFileStatusChanged" value="N" />
+<input type="hidden" id="IsFileStatusRegistered" value="N" />

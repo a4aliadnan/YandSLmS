@@ -1,0 +1,85 @@
+﻿<script type="text/javascript">
+    function LoadTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            lengthChange: false,
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "CLOSURE_NOTES";
+                    d.ProcedureName = "GetDetailTable";
+                    d.CaseId = $('#CaseId').val();
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'UserName', name: 'UserName', autoWidth: false },
+                { data: 'ClosingNotesDate', name: 'ClosingNotesDate', autoWidth: false },
+                { data: 'ClosingNotes', name: 'ClosingNotes', autoWidth: true }
+            ],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [0]
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: [1]
+                },
+                {
+                    targets: 2, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        console.log("ClosureNotes PartialView");
+        LoadTable()
+    });
+</script>
+<div id="divClosurePartial" class="card">
+    <div class="card-header FinalClosureBanner">
+        <div class="text-center">
+            <span class="h3">CLOSURE NOTE ملاحظات على الغلق</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:35px !important;" class="all VMiddle text-center">USER المستخدم</th>
+                    <th style="width:75px !important;" class="all VMiddle text-center">NOTES DATE<br />تاريخ الملاحظة</th>
+                    <th>NOTE ملاحظات</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,2680 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - SESSIONS ROLL LIST";
+    ViewBag.Div_OfficeFileNoMain = "AppHidden";
+}
+<style>
+    div.dt-buttons {
+        width: auto !important;
+    }
+
+    .text-wrap {
+        white-space: normal;
+    }
+
+    .width-400 {
+        width: 400px;
+    }
+
+    .width-300 {
+        width: 300px;
+    }
+
+    .width-200 {
+        width: 200px;
+    }
+
+    .VMiddle {
+        vertical-align: middle !important;
+    }
+
+    #left {
+        float: left;
+        width: 250px;
+    }
+
+    #center {
+        display: inline-block;
+        margin: 0 auto;
+        width: 250px;
+    }
+
+    #right {
+        float: right;
+        width: 250px;
+    }
+
+    .SessionJudgementFollowup {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionJudgementFollowup:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionJudgementFollowupActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionJudgementCorrected {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionJudgementCorrected:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionJudgementCorrectedActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionBlueStamp {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionBlueStamp:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionBlueStampActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    .SessionEnfcApproval {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionEnfcApproval:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionEnfcApprovalActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionPeriodOfAppeal {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionPeriodOfAppeal:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionPeriodOfAppealActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionRedStamp {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionRedStamp:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionRedStampActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionMissingDocuments {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionMissingDocuments:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionMissingDocumentsActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionFileReview {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionFileReview:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionFileReviewActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .SessionRefund34 {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .SessionRefund34:hover {
+            background-color: #002060 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+    .SessionRefund34Active {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .tableColorDarkRed {
+        color: #c00000 !important;
+    }
+</style>
+<script>
+    var GetIndexDataURL = '@Url.Action("AjaxIndexData", "SessionRoll", new { DataFor = @ViewBag.DataFor })';
+    var bkClientReply = "";
+    var bkRequirements = "";
+    var bkFirstEmailDate = "";
+    var SmartFilter = false;
+    var bkCourtFollow = "";
+    var bkCourtFollow_LawyerId = "";
+    var bkCourtFollowRequirement = "";
+    var bkCommissioningDate = "";
+
+    var bkReqWorkRequired = "";
+    var bkReqSessionNotes = "";
+    var bkReqLastDate = "";
+    var bkReqFollowerId = "";
+
+    var bkSuspendedWorkRequired = "";
+    var bkSuspendedSessionNotes = "";
+    var bkSuspendedLastDate = "";
+    var bkSuspendedFollowerId = "";
+
+    var IsDecimal = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+    var DDLToAppend;
+    var ValidationMessage = "";
+    var NotValid = false;
+    var DetailViewName = "";
+    var SelectedSessionLevel;
+    var _PartialViewName;
+    var SelectedSessionLevel = 0;
+    var NewSessionCreate = "";
+    var ActiveButton = "";
+
+    var buttonToGo = "";
+    var searchFileNoToGo = "";
+    var IsFileinAfterJD = "";
+    var CaseIdToGo = 0;
+    var SessionRollIdToGo = 0;
+    function LoadPrintRequirementForm(PartialViewName) {
+        var _PartialViewName = PartialViewName;
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+        var _Mode = "C";
+
+        var PartialContainer = $("#div_PrintRequirementForm");
+        PartialContainer.empty();
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                PartialContainer.html(data);
+                //window.clipboardData.setData('text', '');
+                Swal.fire({
+                    type: 'success',
+                    title: '',
+                    width: 700,
+                    html: $("#ContentDIV").html()
+                }).then(function () {
+                    CopyToClipboard('swal2-content');
+                    console.log("Table Copied");
+                    $("#ModificationContainer").empty();
+                    table.ajax.reload(function (json) {
+                        var info = table.page.info();
+                        var MCTRecords = table.ajax.json().MuscatTotal;
+                        var SLLRecords = table.ajax.json().SalalahTotal;
+                        var recordsTotal = table.ajax.json().recordsTotal;
+
+                        if ($("#txtUserRole").val() == "VoucherApproval") {
+                            $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                            $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                            $('#TTL').text(recordsTotal);
+                        }
+                    });
+                    $('html, body').animate({
+                        scrollTop: $("#PartialViewContainer").offset().top
+                    }, 1000);
+                });
+            }
+        });
+    }
+
+    function sleep(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+    function ShowDIV() {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        if ($('#ShowFollowup').val() == "True") {
+            $("#FollowDIV").removeClass("AppHidden");
+
+            bkReqWorkRequired = $('#WorkRequired').val();
+            bkReqSessionNotes = $('#SessionNotes').val();
+            bkReqLastDate = $('#LastDate').val();
+            bkReqFollowerId = $('#FollowerId').val();
+        }
+        else {
+            if ($('#txtViewToLoad').val() == "_SessionFollow")
+                $("#FollowDIV").removeClass("AppHidden");
+
+            bkReqWorkRequired = $('#WorkRequired').val();
+            bkReqSessionNotes = $('#SessionNotes').val();
+            bkReqLastDate = $('#LastDate').val();
+            bkReqFollowerId = $('#FollowerId').val();
+        }
+
+        if ($('#ShowSuspend').val() == "True") {
+            $("#ForMemoDIV").removeClass("AppHidden");
+
+            bkSuspendedWorkRequired = $('#SuspendedWorkRequired').val();
+            bkSuspendedSessionNotes = $('#SuspendedSessionNotes').val();
+            bkSuspendedLastDate = $('#SuspendedLastDate').val();
+            bkSuspendedFollowerId = $('#SuspendedFollowerId').val();
+
+        }
+        else {
+            if ($('#txtViewToLoad').val() == "_SessionSuspended")
+                $("#FollowDIV").removeClass("AppHidden");
+
+            bkSuspendedWorkRequired = $('#SuspendedWorkRequired').val();
+            bkSuspendedSessionNotes = $('#SuspendedSessionNotes').val();
+            bkSuspendedLastDate = $('#SuspendedLastDate').val();
+            bkSuspendedFollowerId = $('#SuspendedFollowerId').val();
+
+
+        }
+
+        if ($('#CourtFollow').val() == "1") {
+            $(".clsLawerFollow").removeClass("AppHidden");
+
+            bkCourtFollow = $('#CourtFollow').val();
+            bkCourtFollow_LawyerId = $('#CourtFollow_LawyerId').val();
+            bkCourtFollowRequirement = $('#CourtFollowRequirement').val();
+            bkCommissioningDate = $('#CommissioningDate').val();
+
+        }
+
+        if ($('#DEF_DateOfContact').val() !== "") {
+            console.log($('#DEF_DateOfContact').val());
+            $(".clsDateOfContactView").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            bkClientReply = $('#ClientReply').val();
+            bkRequirements = $('#Requirements').val();
+            bkFirstEmailDate = $('#FirstEmailDate').val();
+
+            $('textarea').autoResize();
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+        }
+
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+
+        $('textarea').autoResize();
+    }
+    function ValidateUpdateDate() {
+        console.log("ValidateUpdateDate()");
+        var NotValidUpdateDate = false;
+        if ($("#hidCourtDecisionChange").val() == "Y") {
+            var Msg = "لم تقم بتحديث التاريخ" + "<br />" + "PLEASE CHANGE THE DATE";
+
+            if ($("#CurrentHearingDate").val() == "") {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+
+            if ($("#CurrentHearingDate").val() == $("#hidCurrentHearingDate").val()) {
+
+                NotValidUpdateDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+            }
+        }
+
+        return NotValidUpdateDate;
+    }
+    function ValidateNextHearingDate() {
+        console.log("ValidateNextHearingDate()");
+        var NotValidNextHearingDate = false;
+        if ($("#hidNextHearingDate").val() == "") {
+
+        }
+        else {
+            var Msg = "الرجاء التأكد من تاريخ الجلسة القادمة" + "<br />" + "PLEASE CHECK SESSION DATE";
+
+            var ValidDays = [0, 7, 14, 21, 28, 35, 42, 49, 54, 63, 70];
+            var dtLastDate = moment(moment($("#hidNextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var currDate = moment(moment($("#NextHearingDate").val(), 'DD/MM/YYYY').format("YYYY-MM-DD"));
+            var result = currDate.diff(dtLastDate, 'days');
+
+            console.log(dtLastDate);
+            console.log(currDate);
+            console.log(result);
+
+            if (ValidDays.indexOf(result) == -1) {
+                NotValidNextHearingDate = true;
+                ValidationMessage = ValidationMessage == "" ? Msg : ValidationMessage + "<br />" + Msg;
+
+            }
+        }
+
+        return NotValidNextHearingDate;
+    }
+    function submitForm() {
+
+        var data = new FormData(jQuery('#frm_SessionRollEditForm')[0]);
+        //console.log(data);
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.errorMessage) {
+                    console.log("result.errorMessage");
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.errorMessage
+                    });
+
+                    return false;
+                }
+
+                if (result.redirectTo) {
+                    var RedirectURL = "/CaseRegistration/IndexMain/" + result.id;
+                    window.location = RedirectURL;
+                }
+                else {
+                    //console.log(result);
+                    var LoadPVData = true;
+                    if ($('#IsDelete').val() == "Y")
+                        LoadPVData = false;
+
+                    ResetHiddenItems();
+                    //$("#ModificationContainer").empty();
+                    //$("#ModificationContainer").html(result);
+
+                    LoadPrintRequirementForm("SaveResult");
+                    ReloadTable();
+
+                    //if (!LoadPVData)
+                      //  $("#ModificationContainer").empty();
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function AddMasterValue(ModalTitle, CtrlToAppend, ParentId) {
+        console.log("ModalTitle ::" + ModalTitle);
+        console.log("CtrlToAppend ::" + CtrlToAppend);
+
+        DDLToAppend = $("#" + CtrlToAppend);
+        $("#MstParentId").val(ParentId);
+
+        $("#ModalTitle").text(ModalTitle);
+
+        $('#modal-AddMaster').modal('show');
+
+    }
+    function ClearDivElements(ControlNames, ControlTypes, DefaultSelectVal, DivID) {
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+            if (result.value) {
+                if (ControlNames.indexOf(",") !== -1) {
+                    var Namesarray = ControlNames.split(",");
+                    var Typesarray = ControlTypes.split(",");
+                    var DefaultSelectValarray = DefaultSelectVal.split(",");
+
+                    for (i = 0; i < Namesarray.length; i++) {
+                        if (Typesarray[i] == "select2")
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]).trigger('change');
+                        else
+                            $("#" + Namesarray[i]).val(DefaultSelectValarray[i]);
+                    }
+                }
+                else {
+                    if (ControlTypes == "select2")
+                        $("#" + ControlNames).val(DefaultSelectVal).trigger('change');
+                    else
+                        $("#" + ControlNames).val(DefaultSelectVal);
+                }
+                $("#" + DivID).removeClass("AppHidden").addClass("AppHidden");
+            }
+        });
+    }
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "POST",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+
+                divToLoad.html(data);
+
+                $.fn.autoResize = function () {
+                    let r = e => {
+                        e.style.height = '';
+                        e.style.height = e.scrollHeight + 'px'
+                    };
+                    return this.each((i, e) => {
+                        e.style.overflow = 'hidden';
+                        r(e);
+                        $(e).bind('input', e => {
+                            r(e.target);
+                        })
+                    })
+                };
+
+                if (divToLoad.attr("id") == "EditPopupViewContainer") {
+
+                    $('#EditPopupModal').modal('show');
+                }
+                else if (divToLoad.attr("id") == "div-detailView") {
+                    $('#modal-detailView').modal('show');
+                }
+                else if (divToLoad.attr("id") == "FileStatusDetail") {
+                    $('html, body').animate({
+                        scrollTop: divToLoad.offset().top
+                    }, 1000);
+                }
+                else if (divToLoad.attr("id") == "DIV_CreateNewAfterJudgement") {
+                    
+                }
+                else if (divToLoad.attr("id") == "DIV_JudgementLevelAFJD") {
+                    
+                }
+                else {
+                        $('html, body').animate({
+                            scrollTop: divToLoad.offset().top
+                        }, 1000);
+                }
+                $('textarea').autoResize();
+            }
+        });
+    };
+    function ResetHiddenItems() {
+        console.log('function ResetHiddenItems() ');
+        $("#hidNextHearingDate").val('');
+        $("#hidCourtDecisionChange").val('');
+        $("#hidCurrentHearingDate").val('');
+        $("#hidRequirement").val('');
+        $("#hidFirstEmailDate").val('');
+
+        bkClientReply = "";
+        bkRequirements = "";
+        bkFirstEmailDate = "";
+
+        bkCourtFollow = "";
+        bkCourtFollow_LawyerId = "";
+        bkCourtFollowRequirement = "";
+        bkCommissioningDate = "";
+
+        $("#selClientReplyYN").val("").trigger('change');
+        $("#selCourtFollowYN").val("").trigger('change');
+        $("#selUpdateDateYN").val("").trigger('change');
+        $("#selNextHearingDateYN").val("").trigger('change');
+
+    }
+    function ProcessAddClient() {
+        var url = "";
+        var _MstDesc = ""
+        var _MstParentId = 0;
+        var _Remarks = "";
+
+        var _PayToBankName = "";
+        var _PayToAccountNumber = "";
+        var _PayToEmail = "";
+        var _PayToContactNo = "";
+        var _PayMst_Value = "";
+
+        var PAYTOs = ["1900", "1901", "1902", "1903", "1905"];
+        if (PAYTOs.indexOf($("#MstParentId").val()) >= 0) {
+            if ($("#PayToMstDesc").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter PAY TO BENEFICIARY'
+                });
+
+                return false;
+            }
+
+            if ($("#PayToEmail").val() == "") {
+
+            }
+            else {
+                if (!validateEmail($("#PayToEmail").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Email Address'
+                    });
+
+                    return false;
+                }
+            }
+
+            if ($("#PayToContactNo").val() == "") {
+
+            }
+            else {
+                if (!validateContactNo($("#PayToContactNo").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Contact No'
+                    });
+
+                    return false;
+                }
+            }
+
+            url = AddNewPayToDetailURL;
+
+            _MstParentId = parseInt($("#MstParentId").val());
+            _MstDesc = $("#PayToMstDesc").val();
+
+            var _PayToBankName = $("#PayToBankName").val();
+            var _PayToAccountNumber = $("#PayToAccountNumber").val();
+            var _PayToEmail = $("#PayToEmail").val();
+            var _PayToContactNo = $("#PayToContactNo").val();
+            var _PayToMessageLang = $("#PayToMessageLang").val();
+
+            if ($(".clsDisableInModify").hasClass("disableDIV")) {
+                _PayMst_Value = $("#PayToMstValue").val();
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang, PayMst_Value: _PayMst_Value };
+            }
+            else
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang };
+
+        }
+        else {
+            if ($("#MstDesc").val() != "") {
+                url = CreateMasterTableDetailURL;
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                if (_MstParentId === 860)
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: "2" };
+                else
+                    _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: url,
+            success: function (Result) {
+
+                if (Result.Message == "Success") {
+                    if (Result.NoNeedAppend == "Y") {
+                        DDLToAppend.val(Result.id).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                    else {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                }
+                else {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ErrorMessage
+                    });
+                }
+            }
+        });
+    }
+
+    function ProcessEditModalPopup() {
+        if ($("#StopEnfRequest").val() == "") {
+            ValidationMessage = "PLEASE SELECT STOP ENFC REQUEST";
+
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+        var data = new FormData(jQuery('#frm_EditPopupModalTitle')[0]);
+        //console.log(data);
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.errorMessage) {
+                    console.log("result.errorMessage");
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.errorMessage
+                    });
+
+                    return false;
+                }
+
+                if (result.redirectTo) {
+                    var RedirectURL = "/CaseRegistration/IndexMain/" + result.id;
+                    window.location = RedirectURL;
+                }
+                else {
+                    console.log("else");
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Done!',
+                        html: "Data Save Successfully"
+                    });
+                    ReloadTable();
+                    //$("#AllSessionsEditForm").html(result);
+                    $('#EditPopupModal').modal('hide');
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function processbtnLinkClick(_Mode, _SessionRollId, _CaseId, data) {
+
+        if (_Mode == "D") {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this! هل تريد حذف البيانات",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    var form = $('#__AjaxAntiForgeryForm');
+                    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                    $.ajax({
+                        url: "/SessionRoll/Delete",
+                        type: 'POST',
+                        cache: false,
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: _SessionRollId
+                        },
+                        statusCode: {
+                            401: function (response) {
+                                alert(response);
+                            }
+                        },
+                        success: function (result) {
+                            if (result.redirectTo) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                                ReloadTable();
+                            }
+                            else {
+                                //console.log(result);
+                                var errorHtml = $('<div />').append(result).find('.content').html();
+                                //console.log(errorHtml);
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error deleting!',
+                                    html: errorHtml,
+                                    width: '50%'
+                                    //grow: 'row'
+                                });
+                                //Swal.fire("Error deleting!", errorHtml, "error");
+
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire("Error deleting!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                        }
+                    });
+                }
+            });
+        }
+        else {
+
+            console.log("txtViewToLoad ::: " + $("#txtViewToLoad").val());
+            console.log($("#txtViewContainer").val());
+            _PartialViewName = "";
+            var PartialContainer = $("#ModificationContainer");
+
+            var AfterJudgementTables = ["_SessionJudgementFollowup", "_SessionJudgementCorrected", "_SessionPeriodOfAppeal", "_SessionRedStamp", "_SessionEnfcApproval", "_SessionMissingDocuments", "_SessionFileReview", "_SessionRefund34"];
+
+            if (AfterJudgementTables.indexOf($("#txtViewToLoad").val()) == -1) {
+                if ($("#txtViewToLoad").val() == "_SessionPauseEnfReq") {
+                    _PartialViewName = "_SessionPauseEnfReqDIV";
+                    PartialContainer = $("#EditPopupViewContainer");
+                    ModalTitle = "STOP ENFC REQUEST. SUP";
+                    $("#EditPopupModalTitle").text(ModalTitle);
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: 0 };
+                }
+                else {
+                    _PartialViewName = "_AllSessionsEditForm";
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+                }
+            }
+            else {
+                if ($("#txtViewToLoad").val() == "_SessionJudgementFollowup") {
+                    var IsFavorable = data.IsFavorable;
+                    _PartialViewName = "_AfterJudgementReceived";
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId, CaseLevel: IsFavorable };
+                }
+                else {
+                    _PartialViewName = "_AfterJudgementFavorable";
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: 0 };
+                }
+            }
+
+            GetTab(PartialContainer, GetSessionRollURL, _parameters);
+        }
+    }
+    function getDetailTable(_DataFor) {
+        console.log(_DataFor);
+        var ModalTitle = "";
+
+        if (_DataFor == "CourtDecisionHistory")
+            ModalTitle = "CASE HISTORY";
+
+        var PartialContainer = $("#div-detailView");
+        var _PartialViewName = "_" + _DataFor;
+        $("#modal-detailView-title").text(ModalTitle);
+
+        _parameters = { Mode: "", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function GetCaseDetail(p_OfficeFileNo) {
+        console.log(p_OfficeFileNo);
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetCaseDetailURL,
+            success: function (Result) {
+                if (Result.CaseId > 0) {
+                    IsValidOfficeFileNo = true;
+                    $("#HFCaseId").val(Result.CaseId);
+                    $("#txtSessionRollId").val(Result.SessionRollId);
+
+                    if (Result.RegistrationLevel != "") {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This lawsuit has a previous record, do you want to continue? هذه الدعوى لها سجل سابق ، هل تريد المواصلة؟",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'YES'
+                        }).then((result) => {
+                            if (result.value) {
+                                /*
+                                 var _CaseId = parseInt($("#HFCaseId").val());
+                                 var _SessionRollId = parseInt($("#txtSessionRollId").val());
+                                 var _Mode = _SessionRollId == 0 ? "C" : "E";
+                                 */
+                                LoadRegisterForm(parseInt($("#HFCaseId").val()), 0, "C");
+                            }
+                        });
+                    }
+                    else {
+                        LoadRegisterForm(parseInt($("#HFCaseId").val()), 0, "C");
+                    }
+                }
+                else {
+                    IsValidOfficeFileNo = false;
+
+                    Swal.fire({
+                        type: "info",
+                        title: 'INFO',
+                        html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                    });
+                    $('#OfficeFileNo').val("");
+                    $("#div_SessionRollRegister_Detail").empty();
+                }
+
+                //$("#OfficeFileNo").removeAttr("disabled");
+                //$("#btnCaseSearch").removeAttr("disabled");
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function ReloadTable() {
+        var ActiveTab = "btn" + $("#txtViewToLoad").val();
+        //if (ActiveButton != ActiveTab ) {
+        //    $("#" + ActiveButton).trigger("click");
+        //}
+        //else {
+
+        //}
+        switch (ActiveTab) {
+            case "btn_AllSessions":
+            case "btn_SessionPauseEnfReq":
+            case "btn_SessionJudgementFollowup":
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    var MCTTTL = table.column(0).data().filter(function (value, index) {
+                        return value.substring(0, 1) == "M" ? true : false;
+                    }).count();
+
+                    var SSLTTL = table.column(0).data().filter(function (value, index) {
+                        return value.substring(0, 1) == "S" ? true : false;
+                    }).count();
+
+                    $('#TTL').text(info.recordsTotal);
+
+                    if ($("#txtUserRole").val() == "VoucherApproval") {
+                        $('#MCTTTL').text("MUSCAT : " + MCTTTL);
+                        $('#SLLTTL').text("SALALAH : " + SSLTTL);
+                    }
+                    else {
+                        if ($('#txtLocationId').val() == "M")
+                            $('#MCTTTL').text("MUSCAT : " + MCTTTL);
+                        else
+                            $('#MCTTTL').text("SALALAH : " + SSLTTL);
+                    }
+                });
+                break;
+            case "btn_SessionPrint":
+                SessionPrintDataTable.ajax.reload();
+                break;
+            case "btn_SessionFollow":
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    $('#FollowTTL').text(info.recordsTotal);
+                });
+                break;
+            case "btn_SessionSuspended":
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    $('#SessionSuspendedTTL').text(info.recordsTotal);
+                });
+                break;
+            case "btn_SessionTobeUpdated":
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    $('#TobeUpdateTTL').text(info.recordsTotal);
+                });
+                break;
+            case "btn_SessionJudgement":
+                table.ajax.reload();
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    $('#JudgementTTL').text(info.recordsTotal);
+                });
+                break;
+            case "btn_SessionDiffPanel":
+                SessionDiffPanelDataTable.ajax.reload();
+                break;
+            case "btn_SessionCompleted":
+                SessionCompletedDataTable.ajax.reload(function (json) {
+                    var info = SessionCompletedDataTable.page.info();
+                    $('#TTL').text(info.recordsTotal);
+                });
+                break;
+            case "btn_SessionOnHold":
+                table.ajax.reload(function (json) {
+                    var info = table.page.info();
+                    $('#TTL').text(info.recordsTotal);
+                });
+                break;
+        }
+
+    }
+    function LoadTable(FileStatusId) {
+
+        switch (FileStatusId) {
+            case OfficeFileStatus.PleaseSelect:
+                return false;
+                break;
+            case OfficeFileStatus.RunningCase:
+            case OfficeFileStatus.Dispute:
+            case OfficeFileStatus.MeetJudge:
+            case OfficeFileStatus.AuctionSession:
+                _PartialViewName = "_AllSessions";
+                break;
+            case OfficeFileStatus.ToKnowSessionDate:
+            case OfficeFileStatus.DifferentPanel:
+                _PartialViewName = "_SessionOnHold";
+                break;
+            case OfficeFileStatus.JudgIssued:
+                _PartialViewName = "_SessionJudgement";
+                break;
+            case "4":
+                _PartialViewName = "_AllSessions";
+                break;
+        }
+
+        $(".navButton").each(function () {
+            var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+            $(this).removeClass(btnActiveClass);
+        });
+
+        var btnClickedActiveClass = _PartialViewName.split('_')[1] + "Active";
+
+        $("#txtViewToLoad").val(_PartialViewName);
+
+        $("#btn" + _PartialViewName).addClass(btnClickedActiveClass);
+
+        var _CaseId = -1;
+        var _SessionRollId = -1;
+        var _Mode = "C";
+        var PartialContainer = $("#PartialViewContainer");
+        var _PartialViewName = $("#txtViewToLoad").val();
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+        GetTab($(PartialContainer), GetSessionRollURL, _parameters);
+    }
+    function LoadRegisterForm(_CaseId, _SessionRollId, _Mode) {
+        var _PartialViewName = "_SessionRollRegister";
+        var PartialContainer = $("#div_SessionRollRegister_Detail");
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function GetURLParameter() {
+        var sPageURL = window.location.href;
+        var indexOfLastSlash = sPageURL.lastIndexOf("/");
+
+        if (indexOfLastSlash > 0 && sPageURL.length - 1 != indexOfLastSlash)
+            return sPageURL.substring(indexOfLastSlash + 1);
+        else
+            return 0;
+    }
+    function ValidatePrimaryJudgement() {
+        if ($("#DepartmentType").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT INVESTMENT" : ValidationMessage + "<br />" + "PLEASE SELECT INVESTMENT";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#PrimaryJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "PRIMARY JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "PRIMARY JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#PrimaryJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY SENTENCE";
+            NotValid = true;
+        }
+
+        if ($('#PrimaryIsFavorable').val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PRIMARY JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT PRIMARY JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+        else {
+            if ($('#PrimaryIsFavorable').val() == "N") {
+                if ($("#ConsultantId").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ADVISOR" : ValidationMessage + "<br />" + "PLEASE SELECT ADVISOR";
+                    NotValid = true;
+                }
+
+                if ($("#FormPrintLastDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER LAST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER LAST DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var JudgementsDate = $("#PrimaryJudgementsDate").val();
+                    var LastDate = $("#FormPrintLastDate").val();
+                    var dtLastDate = moment(moment(LastDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                    var dtJudgementsDate = moment(moment(JudgementsDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD"));
+                    var result = dtLastDate.diff(dtJudgementsDate, 'days');
+
+                    console.log(result);
+                    if ($("#DepartmentType").val() == "1" && result > 15) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT 15 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 15 يوم من صدور الحكم" : ValidationMessage + "<br />" + "PLEASE SELECT 15 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 15 يوم من صدور الحكم";
+                        NotValid = true;
+
+                    }
+
+                    if ($("#DepartmentType").val() == "2" && result > 10) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT 10 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 10 أيام من صدور الحكم" : ValidationMessage + "<br />" + "PLEASE SELECT 10 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 10 أيام من صدور الحكم";
+                        NotValid = true;
+
+                    }
+                }
+
+                if ($("#FileStatus").val() == OfficeFileStatus.PleaseSelect) {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+                    NotValid = true;
+                }
+            }
+        }
+
+        console.log($('#hidJudFilter').val());
+
+        //if ($('#AgainstCode').val() == "3") {
+        //    console.log("Against Client");
+        //}
+        //else {
+        //    if ($('#hidJudFilter').val() == "Y") {
+        //        console.log("Jud Filter");
+        //    }
+        //    else {
+        //        if ($("#PrimaryFinalJDAmount").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY FINAL JD AMOUNT";
+        //            NotValid = true;
+        //        }
+
+        //        if ($("#PrimaryFinalJudgedInterests").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JUDGED INTERESTS";
+        //            NotValid = true;
+        //        }
+        //    }
+        //}
+
+        return NotValid;
+    }
+    function ValidateAppealJudgement() {
+        if ($("#DepartmentType").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT INVESTMENT" : ValidationMessage + "<br />" + "PLEASE SELECT INVESTMENT";
+            NotValid = true;
+        }
+
+        if ($("#AppealJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#AppealJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "APPEAL JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "APPEAL JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#AppealJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL SENTENCE";
+            NotValid = true;
+        }
+
+
+        if ($('#AppealIsFavorable').val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPEAL JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT APPEAL JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+        else {
+            if ($('#AppealIsFavorable').val() == "N") {
+
+
+
+                if ($("#ConsultantId").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ADVISOR" : ValidationMessage + "<br />" + "PLEASE SELECT ADVISOR";
+                    NotValid = true;
+                }
+
+                if ($("#FormPrintLastDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER LAST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER LAST DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var JudgementsDate = $("#AppealJudgementsDate").val();
+                    var LastDate = $("#FormPrintLastDate").val();
+                    var dtLastDate = moment(moment(LastDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                    var dtJudgementsDate = moment(moment(JudgementsDate, 'DD/MM/YYYY').format("YYYY-MM-DD"));
+                    var result = dtLastDate.diff(dtJudgementsDate, 'days');
+
+                    console.log(result);
+                    if (result > 20) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT 20 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 20 يوم من صدور الحكم" : ValidationMessage + "<br />" + "PLEASE SELECT 20 DAYS AFTER THE DATE OF JUDGEMENT<br />التاريخ الذي اخترته لإنجاز العمل يجب أن لا يتجاوز 20 يوم من صدور الحكم";
+                        NotValid = true;
+
+                    }
+                }
+
+                if ($("#FileStatus").val() == OfficeFileStatus.PleaseSelect) {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+                    NotValid = true;
+                }
+            }
+        }
+
+        console.log($('#hidJudFilter').val());
+
+        //if ($('#AgainstCode').val() == "3") {
+        //    console.log("Against Client");
+        //}
+        //else {
+        //    if ($('#hidJudFilter').val() == "Y") {
+        //        console.log("Jud Filter");
+        //    }
+        //    else {
+        //        if ($("#AppealFinalJDAmount").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL FINAL JD AMOUNT";
+        //            NotValid = true;
+        //        }
+
+        //        if ($("#AppealFinalJudgedInterests").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL JUDGED INTERESTS";
+        //            NotValid = true;
+        //        }
+        //    }
+        //}
+
+        return NotValid;
+    }
+    function ValidateSupremeJudgement() {
+        if ($("#SupremeJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER Supreme JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#SupremeJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUPREME JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#SupremeJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME SENTENCE";
+            NotValid = true;
+        }
+
+        console.log($('#hidJudFilter').val());
+
+        //if ($('#AgainstCode').val() == "3") {
+        //    console.log("Against Client");
+        //}
+        //else {
+        //    if ($('#hidJudFilter').val() == "Y") {
+        //        console.log("Jud Filter");
+        //    }
+        //    else {
+        //        if ($("#SupremeFinalJDAmount").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME FINAL JD AMOUNT";
+        //            NotValid = true;
+        //        }
+
+        //        if ($("#SupremeFinalJudgedInterests").val() == "") {
+        //            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME JUDGED INTERESTS";
+        //            NotValid = true;
+        //        }
+        //    }
+        //}
+
+        return NotValid;
+    }
+    function ValidateEnforcementJudgement() {
+
+        if ($("#EnforcementJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JUDGEMENTS DATE";
+            NotValid = true;
+        }
+        else {
+
+            var today = new Date();
+
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = dd + '/' + mm + '/' + yyyy;
+
+            if (process($("#EnforcementJudgementsDate").val()) > process(today)) {
+                ValidationMessage = ValidationMessage == "" ? "PRIMARY JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "PRIMARY JUDGEMENTS DATE CANNOT BE GREATER THEN CURRENT DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#EnforcementJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY SENTENCE";
+            NotValid = true;
+        }
+
+        if ($("#EnforcementIsFavorable").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+        
+
+        return NotValid;
+    }
+    function ValidatePrimary() {
+        console.log("ValidatePrimary()");
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function ValidateAppeal() {
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPEAL BY" : ValidationMessage + "<br />" + "PLEASE SELECT APPEAL BY";
+            NotValid = true;
+        }
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function ValidateSupreme() {
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUPREME NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER SUPREME NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SUPREME BY" : ValidationMessage + "<br />" + "PLEASE SELECT SUPREME BY";
+            NotValid = true;
+        }
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function ValidateEnforcement() {
+
+
+        if ($("#CourtRefNo").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT NUMBER" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT NUMBER";
+            NotValid = true;
+        }
+
+        if ($("#RegistrationDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REGISTRATION DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REGISTRATION DATE";
+            NotValid = true;
+        }
+
+        if ($("#ApealByWho").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT BY" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT BY";
+            NotValid = true;
+        }
+
+        if ($("#PASCourtLocationid").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+    function process(date) {
+        var parts = date.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+    function ShowFileStatusDetail() {
+        console.log("function ShowFileStatusDetail()");
+        console.log("_PartialViewName :: " + _PartialViewName);
+        console.log("PartialContainer :: " + PartialContainer);
+
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+        //$("#PartialViewName").val(_PartialViewName);
+        var _Mode = "C";
+
+        var PartialContainer = $("#FileStatusDetail");
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function AddbuttonPressHandler() {
+        var input = document.getElementById("OfficeFileNoMain");
+
+        // Execute a function when the user presses a key on the keyboard
+        input.addEventListener("keypress", function (event) {
+            // If the user presses the "Enter" key on the keyboard
+            if (event.key === "Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("btnCaseSearchMain").click();
+            }
+        });
+    }
+    function ValidateOfficeFileNo(p_OfficeFileNo) {
+        var NotValid = false;
+        if (p_OfficeFileNo == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FILE NUMBER'" : ValidationMessage + "<br />" + "PLEASE ENTER FILE NUMBER'";
+            NotValid = true;
+        }
+        else {
+            var loc = p_OfficeFileNo.substring(0, 1).toUpperCase();
+            if (loc == "M" || loc == "S") {
+
+            }
+            else {
+                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID FILE NUMBER'" : ValidationMessage + "<br />" + "PLEASE ENTER VALID FILE NUMBER'";
+                NotValid = true;
+
+            }
+        }
+
+        return NotValid;
+    }
+    function GetCaseDetailMain(p_OfficeFileNo, dataForTable) {
+        ValidationMessage = "";
+        NotValid = false;
+
+        NotValid = ValidateOfficeFileNo(p_OfficeFileNo);
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+        $("#HFCaseId").val("");
+        $("#txtSessionRollId").val("");
+        $("#CreateSessionInfoBanner").removeClass("AppHidden").addClass("AppHidden");
+        buttonToGo = "";
+        searchFileNoToGo = "";
+        IsFileinAfterJD = "";
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo, ReturnDetail: "Y" };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetCaseDetailURL,
+            success: function (Result) {
+                console.log(Result);
+
+                if (Result.CaseId > 0) {
+                    $("#HFCaseId").val(Result.CaseId);
+                    $("#txtSessionRollId").val(Result.SessionRollId);
+
+                    if (Result.RegistrationLevel != "") {
+                        //var data = table
+                        //    .row(function (idx, data, node) {
+                        //        return data.OfficeFN === p_OfficeFileNo ?
+                        //            true : false;
+                        //    })
+                        //    .data();
+
+                        //console.log(data);
+                        //console.log(Result.RegistrationLevel)
+
+                        CaseIdToGo = Result.CaseId;
+                        SessionRollIdToGo = Result.SessionRollId;
+
+                        if (Result.RegistrationLevel == "SameTable") {
+                            _PartialViewName = "";
+                            var PartialContainer = $("#ModificationContainer");
+                            var _Mode = "E";
+                            var _CaseId = Result.CaseId;
+                            var _SessionRollId = Result.SessionRollId;
+
+                            if ($("#txtViewToLoad").val() == "_SessionPauseEnfReq") {
+                                _PartialViewName = "_SessionPauseEnfReqDIV";
+                                PartialContainer = $("#EditPopupViewContainer");
+                                ModalTitle = "STOP ENFC REQUEST. SUP";
+                                $("#EditPopupModalTitle").text(ModalTitle);
+                                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: 0 };
+                            }
+                            else {
+                                _PartialViewName = "_AllSessionsEditForm";
+                                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+                            }
+
+                            GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                        }
+                        else {
+                            $("#OFB_ClientName").text(Result.ClientName);
+                            $("#OFB_Defendant").text(Result.Defendant);
+                            $("#OFB_OfficeFileNo").text(Result.OfficeFileNo);
+                            $("#OFB_SessionRollClientName").text(Result.SessionRollClientName);
+                            $("#OFB_SessionRollDefendentName").text(Result.SessionRollDefendentName);
+                            $("#CreateSessionInfoBanner").removeClass("AppHidden");
+                            $("#DIV_RECORD_EXISTS_BANNER").removeClass("AppHidden");
+                            buttonToGo = Result.buttonToGo;
+                            searchFileNoToGo = Result.OfficeFileNo;
+                            $("#SPAN_RECORD_EXISTS_MESSAGE").html("ADDED BEFORE الملف مُضاف");
+                            $(".clsGoToSession").removeClass("AppHidden");
+                        }
+
+                    }
+                    else {
+                        $("#OFB_ClientName").text(Result.ClientName);
+                        $("#OFB_Defendant").text(Result.Defendant);
+                        $("#OFB_OfficeFileNo").text(Result.OfficeFileNo);
+                        $("#OFB_SessionRollClientName").text(Result.SessionRollClientName);
+                        $("#OFB_SessionRollDefendentName").text(Result.SessionRollDefendentName);
+                        $("#CreateSessionInfoBanner").removeClass("AppHidden");
+                        $(".clsaddNewFile").removeClass("AppHidden");
+                    }
+                }
+                else {
+                    Swal.fire({
+                        type: "info",
+                        title: 'INFO',
+                        html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                    });
+                    $('#OfficeFileNo').val("");
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function checkIsAddToJudgement(p_OfficeFileNo, dataForTable) {
+        ValidationMessage = "";
+        NotValid = false;
+
+        NotValid = ValidateOfficeFileNo(p_OfficeFileNo);
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+        $("#HFCaseId").val("");
+        $("#txtSessionRollId").val("");
+        $("#AddNewFileInAfterJudgementBanner").removeClass("AppHidden").addClass("AppHidden");
+        buttonToGo = "";
+        searchFileNoToGo = "";
+        IsFileinAfterJD = "";
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo, ReturnDetail: "Y" };
+
+        var data = table.row(function (idx, data, node) { return data.OfficeFileNo === p_OfficeFileNo ? true : false; }).data();
+
+        if (data) {
+            console.log(data);
+            var _Mode = "E";
+            processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId, data);
+            return false;
+        }
+        else {
+            console.log("Office File :" + p_OfficeFileNo + " Not Found");
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: GetCaseDetailAfterJudgement,
+                success: function (Result) {
+                    console.log(Result);
+
+                    if (Result.CaseId > 0) {
+                        $("#HFCaseId").val(Result.CaseId);
+                        $("#txtSessionRollId").val(Result.SessionRollId);
+
+                        if (Result.RegistrationLevel != "") {
+                            CaseIdToGo = Result.CaseId;
+                            SessionRollIdToGo = Result.SessionRollId;
+
+                            var JDFavorablePVs = [
+                                "_SessionJudgementCorrected",
+                                "_SessionPeriodOfAppeal",
+                                "_SessionRedStamp",
+                                "_SessionEnfcApproval",
+                                "_SessionMissingDocuments",
+                                "_SessionFileReview",
+                                "_SessionRefund34"
+                            ];
+
+                            if (JDFavorablePVs.indexOf(Result.buttonToGo) >= 0)
+                                IsFileinAfterJD = "Y";
+
+
+                            $("#OFB_ClientName").text(Result.ClientName);
+                            $("#OFB_Defendant").text(Result.Defendant);
+                            $("#OFB_OfficeFileNo").text(Result.OfficeFileNo);
+                            $("#OFB_SessionRollClientName").text(Result.SessionRollClientName);
+                            $("#OFB_SessionRollDefendentName").text(Result.SessionRollDefendentName);
+                            $("#AddNewFileInAfterJudgementBanner").removeClass("AppHidden");
+                            $("#DIV_RECORD_EXISTS_BANNER").removeClass("AppHidden");
+                            buttonToGo = Result.buttonToGo;
+                            searchFileNoToGo = Result.OfficeFileNo;
+                            $("#SPAN_RECORD_EXISTS_MESSAGE").html("ADDED BEFORE الملف مُضاف");
+                            $(".clsGoToSession").removeClass("AppHidden");
+
+                        }
+                        else {
+                            $("#OFB_ClientName").text(Result.ClientName);
+                            $("#OFB_Defendant").text(Result.Defendant);
+                            $("#OFB_OfficeFileNo").text(Result.OfficeFileNo);
+                            $("#OFB_SessionRollClientName").text(Result.SessionRollClientName);
+                            $("#OFB_SessionRollDefendentName").text(Result.SessionRollDefendentName);
+                            $("#AddNewFileInAfterJudgementBanner").removeClass("AppHidden");
+                            $(".clsaddNewFile").removeClass("AppHidden");
+                        }
+                    }
+                    else {
+                        Swal.fire({
+                            type: "info",
+                            title: 'INFO',
+                            html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                        });
+                        $('#OfficeFileNo').val("");
+                    }
+                },
+                error: function (response) {
+                    console.log("error");
+
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log("failure");
+                    console.log(response.responseText);
+                }
+            });
+        }
+    }
+    function CreateNewSession() {
+        _PartialViewName = "_AllSessionsEditForm";
+        var _CaseId = parseInt($("#HFCaseId").val());
+        var _SessionRollId = 0;
+
+        _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+                console.log(data);
+                //console.log(data.SessionRollId);
+                //console.log(data.CaseId);
+                CancelSession();
+
+                $("#HFCaseId").val(data.CaseId);
+                $("#txtSessionRollId").val(data.SessionRollId);
+
+                _PartialViewName = "_AllSessionsEditForm";
+                PartialContainer = $("#ModificationContainer");
+                _CaseId = parseInt($("#HFCaseId").val());
+                _SessionRollId = parseInt($("#txtSessionRollId").val());
+                _parameters = { Mode: "E", PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+                GetTab(PartialContainer, GetSessionRollURL, _parameters);
+            }
+        });
+    }
+    function CancelSession() {
+        $("#OfficeFileNoMain").val("");
+        NewSessionCreate = "";
+        ResetHiddenItems();
+        $("#CreateSessionInfoBanner").removeClass("AppHidden").addClass("AppHidden");
+        $("#AddNewFileInAfterJudgementBanner").removeClass("AppHidden").addClass("AppHidden");
+    }
+    function GoToSession() {
+        $("#OfficeFileNoMain").val("");
+        ResetHiddenItems();
+        $("#CreateSessionInfoBanner").removeClass("AppHidden").addClass("AppHidden");
+        $("#AddNewFileInAfterJudgementBanner").removeClass("AppHidden").addClass("AppHidden");
+        $("#divViewFollowUpTabs").removeClass("AppHidden").addClass("AppHidden");
+        $("#divViewSessionRollTabs").removeClass("AppHidden").addClass("AppHidden");
+
+        $("#PartialViewContainer").empty();
+
+        var _Mode = "C";
+        var _PartialViewName = buttonToGo;
+        var _CaseId = CaseIdToGo;
+        var _SessionRollId = SessionRollIdToGo;
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+        $.ajax({
+            url: GetSessionRollURL,
+            type: "POST",
+            data: _parameters,
+            success: function (data, textStatus, jqXHR) {
+
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                $("#txtViewToLoad").val(buttonToGo);
+                var btnActiveClass = buttonToGo.split('_')[1] + "Active";
+                $("#btn" + buttonToGo).addClass(btnActiveClass);
+
+                $("#PartialViewContainer").html(data);
+
+                if (IsFileinAfterJD == "Y") {
+                    $("#divViewFollowUpTabs").removeClass("AppHidden");
+                }
+                else {
+                    $("#divViewSessionRollTabs").removeClass("AppHidden");
+                }
+
+                sleep(1500).then(() => {
+                    $('#HtmlTable').DataTable().search(searchFileNoToGo).draw();
+                    var data = table.row(function (idx, data, node) { return data.OfficeFileNo === searchFileNoToGo ? true : false; }).data();
+
+                    if (data) {
+                        console.log(data);
+                        var _Mode = "E";
+                        processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId, data);
+                        
+                    }
+                });
+                return false;
+
+                sleep(1000).then(() => {
+                    _PartialViewName = "";
+                    var PartialContainer = $("#ModificationContainer");
+                    var _Mode = "E";
+
+                    console.log(_CaseId);
+                    console.log(_SessionRollId);
+                    console.log(IsFileinAfterJD);
+
+                    if (IsFileinAfterJD == "Y") {
+                        $("#divViewFollowUpTabs").removeClass("AppHidden");
+                        _PartialViewName = "_AfterJudgementFavorable";
+                        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: 0 };
+                    }
+                    else {
+                        $("#divViewSessionRollTabs").removeClass("AppHidden");
+
+                        if ($("#txtViewToLoad").val() == "_SessionPauseEnfReq") {
+                            _PartialViewName = "_SessionPauseEnfReqDIV";
+                            PartialContainer = $("#EditPopupViewContainer");
+                            ModalTitle = "STOP ENFC REQUEST. SUP";
+                            $("#EditPopupModalTitle").text(ModalTitle);
+                            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: 0 };
+                        }
+                        else {
+                            _PartialViewName = "_AllSessionsEditForm";
+                            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+                        }
+                    }
+
+                    GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                });
+            }
+        });
+    }
+    function ProcessPreSubmit() {
+        var IsShowCientReply = false; //DIV_WAITING_CLIENT_REPLY
+        var IsShowCourtFollow = false; //DIV_WAITING_COURT_FOLLOW
+        var IsShowUpdateDate = false; //DIV_CHANGE_UPDATE_DATE
+        var IsShowNextHearing = false; //DIV_CHANGE_NEXT_HEARING_DATE
+        var IsShowRequirement = false;
+        var IsShowMemo = false;
+
+        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_WAITING_REQ_FOLLOW').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_WAITING_MEMO_FOLLOW').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden").addClass("AppHidden");
+        $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden").addClass("AppHidden");
+
+        IsShowUpdateDate = ValidateUpdateDate();
+        IsShowNextHearing = ValidateNextHearingDate();
+
+        if ($('#ClientReply').val() == "1") {
+            if (bkClientReply == "1") {
+                if ($('#selClientReplyYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCientReply = true;
+                        $('#DIV_WAITING_CLIENT_REPLY').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selClientReplyYN').val() == "N") {
+                        $("#ClientReply").val("").trigger('change');
+                        $("#Requirements").val("");
+                        $("#FirstEmailDate").val("");
+                    }
+                    else {
+                        $("#ClientReply").val(bkClientReply).trigger('change');
+                        $("#Requirements").val(bkRequirements);
+                        //$("#FirstEmailDate").val(bkFirstEmailDate);
+                        $("#FirstEmailDate").datepicker("setDate", bkFirstEmailDate);
+
+                    }
+                }
+            }
+        }
+
+        if ($('#CourtFollow').val() == "1") {
+            if (bkCourtFollow == "1") {
+                if ($('#selCourtFollowYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    //console.log(hours);
+
+                    if (hours > 48) {
+                        IsShowCourtFollow = true;
+                        $('#DIV_WAITING_COURT_FOLLOW').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selCourtFollowYN').val() == "N") {
+                        $("#CourtFollow").val("").trigger('change');
+                        $("#CourtFollow_LawyerId").val("0").trigger('change');
+                        $("#CourtFollowRequirement").val("");
+                        $("#CommissioningDate").val("");
+                    }
+                    else {
+                        $("#CourtFollow").val(bkCourtFollow).trigger('change');
+                        $("#CourtFollow_LawyerId").val(bkCourtFollow_LawyerId).trigger('change');
+                        $("#CourtFollowRequirement").val(bkCourtFollowRequirement);
+                        //$("#CommissioningDate").val(bkCommissioningDate);
+                        $("#CommissioningDate").datepicker("setDate", bkCommissioningDate);
+
+                    }
+                }
+            }
+        }
+
+        var ReqAlreadyExists = bkReqWorkRequired + bkReqSessionNotes + bkReqLastDate + bkReqFollowerId;
+
+        if (!$("#FollowDIV").hasClass("AppHidden")) {
+            if (ReqAlreadyExists.length > 1) {
+                if ($('#selReqFollowYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    console.log(hours);
+
+                    if (hours > 72) {
+                        IsShowRequirement = true;
+                        $('#DIV_WAITING_REQ_FOLLOW').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selReqFollowYN').val() == "N") {
+
+                        //$("#FollowerId").val("0").trigger('change');
+                        //$("#WorkRequired").val("");
+                        //$("#SessionNotes").val("");
+                        //$("#LastDate").val("");
+
+                        ClearElements('WorkRequired,SessionNotes,LastDate,FollowerId,Update_Follow,ShowFollowup', 'text,text,text,select2,text,text', ',,,0,N,False', 'FollowDIV');
+
+                    }
+                    else {
+                        //$('#WorkRequired').val(bkReqWorkRequired);
+                        //$('#SessionNotes').val(bkReqSessionNotes);
+                        //$('#LastDate').datepicker("setDate", bkReqLastDate);
+                        //$('#FollowerId').val(bkReqFollowerId).trigger('change');
+                    }
+                }
+            }
+        }
+
+        var MemoAlreadyExists = bkSuspendedWorkRequired + bkSuspendedSessionNotes + bkSuspendedLastDate + bkSuspendedFollowerId;
+
+        if (!$("#ForMemoDIV").hasClass("AppHidden")) {
+            if (MemoAlreadyExists.length > 1) {
+                if ($('#selMemoFollowYN').val() == "") {
+                    var dtLastDate = moment(moment($('#hidUpdatedOn').val(), 'DD/MM/YYYY HH:mm:ss').add(11, 'hours').format("YYYY-MM-DD HH:mm:ss"));
+                    var currDate = moment(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
+                    var duration = moment.duration(currDate.diff(dtLastDate));
+                    var hours = duration.asHours();
+                    console.log(hours);
+
+                    if (hours > 72) {
+                        IsShowMemo = true;
+                        $('#DIV_WAITING_MEMO_FOLLOW').removeClass("AppHidden");
+                    }
+                }
+                else {
+                    if ($('#selMemoFollowYN').val() == "N") {
+                        //$("#SuspendedFollowerId").val("0").trigger('change');
+                        //$("#SuspendedWorkRequired").val("");
+                        //$("#SuspendedSessionNotes").val("");
+                        //$("#SuspendedLastDate").val("");
+
+                        ClearElements('SuspendedWorkRequired,SuspendedSessionNotes,SuspendedLastDate,SuspendedFollowerId,Update_Suspend,ShowSuspend', 'text,text,text,select2,text,text', ',,,0,N,False', 'ForMemoDIV');
+
+                    }
+                    else {
+
+                        //$('#SuspendedWorkRequired').val(bkSuspendedWorkRequired);
+                        //$('#SuspendedSessionNotes').val(bkSuspendedSessionNotes);
+                        //$('#SuspendedLastDate').datepicker("setDate", bkSuspendedLastDate);
+                        //$('#SuspendedFollowerId').val(bkSuspendedFollowerId).trigger('change');
+                    }
+                }
+            }
+        }
+
+        if (IsShowUpdateDate) {
+            $('#DIV_CHANGE_UPDATE_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowNextHearing) {
+            $('#DIV_CHANGE_NEXT_HEARING_DATE').removeClass("AppHidden");
+        }
+
+        if (IsShowCientReply) {
+
+            var SelValue = $('#selClientReplyYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowCourtFollow) {
+
+            var SelValue = $('#selCourtFollowYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowUpdateDate) {
+
+            var SelValue = $('#selUpdateDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowNextHearing) {
+
+            var SelValue = $('#selNextHearingDateYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowRequirement) {
+
+            var SelValue = $('#selReqFollowYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        if (IsShowMemo) {
+
+            var SelValue = $('#selMemoFollowYN').val();
+            if (SelValue.length == 0) {
+                $('#modal-preSubmit').modal('show');
+                return false;
+            }
+        }
+
+        $('#modal-preSubmit').modal('hide');
+        submitForm();
+    }
+    function ShowPreSubmit() {
+        arrDeletePVs = ["_SessionJudgementPrimary", "_SessionJudgementAppeal", "_SessionJudgementSupremeModal", "_SessionJudgementEnforcement", "_TBRAppeal", "_TBRSupreme", "_AfterJudgementReceived"];
+
+        if (arrDeletePVs.indexOf(_PartialViewName) >= 0) {
+            arrNoFav = ["_TBRAppeal", "_TBRSupreme"];
+            var IsFavorable = "";
+            var JudgementReceivedDate = "";
+
+            if (arrNoFav.indexOf(_PartialViewName) >= 0) {
+                IsFavorable = "N";
+            }
+
+            if (_PartialViewName == "_AfterJudgementReceived") {
+                switch ($('#JudgementLevel').val()) {
+                    case "1":
+                        JudgementReceivedDate = $('#PrimaryJDReceiveDate').val();
+                        IsFavorable = $('#PrimaryIsFavorable').val();
+                        break;
+                    case "2":
+                        JudgementReceivedDate = $('#AppealJDReceiveDate').val();
+                        IsFavorable = $('#AppealIsFavorable').val();
+                        break;
+                    case "3":
+                        JudgementReceivedDate = $('#SupremeJDReceiveDate').val();
+                        IsFavorable = "N";
+                        break;
+                    case "4":
+                        IsFavorable = $('#EnforcementIsFavorable').val();
+                        JudgementReceivedDate = IsFavorable == "N" ? "YES" : "";
+                        break;
+                }
+            }
+            else {
+                switch (_PartialViewName) {
+                    case "_SessionJudgementPrimary":
+                    case "_TBRAppeal":
+                        JudgementReceivedDate = $('#PrimaryJDReceiveDate').val();
+                        IsFavorable = $('#PrimaryIsFavorable').val();
+                        break;
+                    case "_SessionJudgementAppeal":
+                    case "_TBRSupreme":
+                        JudgementReceivedDate = $('#AppealJDReceiveDate').val();
+                        IsFavorable = $('#AppealIsFavorable').val();
+                        break;
+                    case "_SessionJudgementSupremeModal":
+                        JudgementReceivedDate = $('#SupremeJDReceiveDate').val();
+                        IsFavorable = "N";
+                        break;
+                    case "_SessionJudgementEnforcement":
+                        IsFavorable = $('#EnforcementIsFavorable').val();
+                        JudgementReceivedDate = IsFavorable == "N" ? "YES" : "";
+                        break;
+                }
+            }
+
+            
+
+            console.log("IsFavorable :: " + IsFavorable);
+            console.log("JudgementReceivedDate :: " + JudgementReceivedDate);
+
+            if (JudgementReceivedDate == "")
+                $('#IsDelete').val("N");
+            else
+                $('#IsDelete').val("Y");
+        }
+        else
+            $('#IsDelete').val("N");
+
+        ProcessPreSubmit();
+    }
+    function CreateNewAfterJudgement() {
+        _PartialViewName = "_AfterJDAddNewFile";
+        var _CaseId = parseInt($("#HFCaseId").val());
+        var _SessionRollId = 0;
+        _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+        PartialContainer = $("#DIV_CreateNewAfterJudgement");
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+
+</script>
+<div id="div_PrintRequirementForm" style="position: absolute; left: -1000px; top: -1000px"></div>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                    <h1>@ViewBag.ContainerHeading</h1>
+                </div>
+                @if (User.IsInRole("VoucherApproval"))
+                {
+                    <div class="col-sm-1"></div>
+                    <div style="color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary1" value="A" name="rdoLocation">
+                                <label for="radioPrimary1"> ALL </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary2" value="M" name="rdoLocation" @ViewBag.VoucherApproval>
+                                <label for="radioPrimary2"> MUSCAT </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary3" value="S" name="rdoLocation">
+                                <label for="radioPrimary3"> SALALAH </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1"></div>
+                }
+                else
+                {
+                    <div class="col-sm-5 text-center">
+
+                    </div>
+
+                }
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Sessions Roll</li>
+                        <li class="breadcrumb-item active"><a href="#">Main List</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div id="divViewSessionRollTabs" class="col-sm-12 @ViewBag.ViewSessionRollTabs">
+                    <div style="padding-bottom:10px;" class="row">
+                        <div class="col">
+                            <button type="button" id="btn_AllSessions" style="font-size: 1.2rem !important;" class="btn btn-block AllSessions @ViewBag.AllSessionsActive btn-lg navButton">تحديث الجلسات<br />SESSION UPDATE</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionPrint" style="font-size: 1.2rem !important;" class="btn btn-block SessionPrint @ViewBag.SessionPrintActive btn-lg navButton">جدول الجلسات<br />SESSION ROLL</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionTobeUpdated" style="font-size: 1.2rem !important;" class="btn btn-block SessionTobeUpdated @ViewBag.SessionTobeUpdatedActive btn-lg navButton">جلسات لم ترسل تقاريرها<br />TO BE UPDATE</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionSuspended" style="font-size: 1.2rem !important;" class="btn btn-block SessionSuspended @ViewBag.SessionSuspendedActive btn-lg navButton">كتابة المذكرات<br />WRITING PLEADINGS</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionFollow" style="font-size: 1.2rem !important;" class="btn btn-block SessionFollow @ViewBag.SessionFollowActive btn-lg navButton">متابعة الإجراء<br />REQUIREMENT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionOnHold" style="font-size: 1.2rem !important;" class="btn btn-block SessionOnHold @ViewBag.SessionOnHoldActive btn-lg navButton">الملفات الموقوفة<br />ON HOLD</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionPauseEnfReq" style="font-size: 1.2rem !important;" class="btn btn-block SessionPauseEnfReq @ViewBag.SessionPauseEnfReqActive btn-lg navButton">وقف التنفيذ في العليا<br />PAUSE ENFC REQUEST</button>
+                        </div>
+                        @*<div class="col">
+                            <button type="button" id="btn_SessionAppointment" style="font-size: 1.2rem !important;" class="btn btn-block SessionAppointment @ViewBag.SessionAppointmentActive btn-lg navButton">المواعيد<br />APPOINTMENT</button>
+                        </div>*@
+                    </div>
+                    <div style="padding-bottom:10px;" class="row">
+
+                        <div class="col">
+                            @*<button type="button" id="btn_SessionJudgement" style="font-size: 1rem !important;" class="btn btn-block SessionJudgement @ViewBag.SessionJudgementActive btn-lg navButton">استلام أحكام غير مطابقة<br />JUDGMENT</button>*@
+                        </div>
+                        <div class="col">
+                            @*<button type="button" id="btn_SessionClientApproval" style="font-size: 1rem !important;" class="btn btn-block SessionClientApproval @ViewBag.SessionClientApprovalActive btn-lg navButton">موافقة الموكل: الاستئناف/الطعن<br />CLIENT APPROVAL</button>*@
+                        </div>
+
+                    </div>
+                </div>
+                <div id="divViewFollowUpTabs" class="col-sm-12 @ViewBag.ViewFollowUpTabs">
+                    <div style="padding-bottom:10px;" class="row">
+                        <div class="col">
+                            <button type="button" id="btn_SessionJudgementFollowup" style="font-size: 1rem !important;" class="btn btn-block SessionJudgementFollowup @ViewBag.SessionJudgementFollowupActive btn-lg navButton">استلام الأحكام<br />TO RECEIVE JUDGEMENT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionJudgementCorrected" style="font-size: 1rem !important;" class="btn btn-block SessionJudgementCorrected @ViewBag.SessionJudgementCorrectedActive btn-lg navButton">تصحيح الحكم<br />JUDGMENT CORRECTED</button>
+                        </div>
+
+                        <div class="col">
+                            <button type="button" id="btn_SessionPeriodOfAppeal" style="font-size: 1rem !important;" class="btn btn-block SessionPeriodOfAppeal @ViewBag.SessionPeriodOfAppealActive btn-lg navButton">سريان ميعاد الاستئناف<br />PERIOD OF APPEAL</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionRedStamp" style="font-size: 1rem !important;" class="btn btn-block SessionRedStamp @ViewBag.SessionRedStampActive btn-lg navButton">طلب ختم الصيغة<br />RED STAMP</button>
+                        </div>
+                        <div class="col">
+                            @*<button type="button" id="btn_SessionBlueStamp" style="font-size: 1rem !important;" class="btn btn-block SessionBlueStamp @ViewBag.SessionBlueStampActive btn-lg navButton">الختم الأزرق<br />BLUE STAMP</button>*@
+                            <button type="button" id="btn_SessionEnfcApproval" style="font-size: 1rem !important;" class="btn btn-block SessionEnfcApproval @ViewBag.SessionEnfcApprovalActive btn-lg navButton">موافقة على التنفيذ<br />ENFC APPROVALS</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionMissingDocuments" style="font-size: 1rem !important;" class="btn btn-block SessionMissingDocuments @ViewBag.SessionMissingDocumentsActive btn-lg navButton">نواقص مستندات<br />MISSING DOC.</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionFileReview" style="font-size: 1rem !important;" class="btn btn-block SessionFileReview @ViewBag.SessionFileReviewActive btn-lg navButton">دراسة الملف<br />FILE REVIEW</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btn_SessionRefund34" style="font-size: 1rem !important;" class="btn btn-block SessionRefund34 @ViewBag.SessionRefund34Active btn-lg navButton">استرداد 3/4 الرسم<br />REFUND 3/4</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="PartialViewContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                    <div style="padding-bottom:10px;padding-top:10px;" class="col-sm-12">
+                        <div id="ModificationContainer" class="clsPVContainer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal-AddMasterValue">
+            <div class="modal-dialog">
+                <div class="modal-content bg-gradient-light">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                        <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="EditPopupModal">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content bg-gradient-light">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><span id="EditPopupModalTitle"></span></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frm_EditPopupModalTitle" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div id="EditPopupViewContainer"></div>
+                        }
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="ProcessEditModalPopup()" class="btn btn-outline-dark">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="modal-detailView">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content bg-gradient-light">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><span id="modal-detailView-title"></span></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="div-detailView"></div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="modal-preSubmit">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-gradient-light">
+                    <div class="modal-header">
+                        <h4 class="modal-title"></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="DIV_WAITING_CLIENT_REPLY" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selClientReplyYN">ARE YOU WAITING FOR CLIENT REPLY?<br /><span>؟</span>(CLIENT REPLY)&nbsp;<span>هل تنتظر رد الموكل</span></label>
+                                    <select class="form-control select2bs4" id="selClientReplyYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="N">لا NO</option>
+                                        <option value="Y">نعم YES</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DIV_WAITING_COURT_FOLLOW" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selCourtFollowYN">هل تنتظر مراجعة المحكمة ؟</label>
+                                    <select class="form-control select2bs4" id="selCourtFollowYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="N">لا NO</option>
+                                        <option value="Y">نعم YES</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DIV_WAITING_REQ_FOLLOW" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selReqFollowYN">DO YOU FOLLOW UP THE PROCEDURE FOR THE FILE?<br /><span>؟</span>(FOLLOW UP)&nbsp;<span>هل تتابع الإجراء في الملف</span></label>
+                                    <select class="form-control select2bs4" id="selReqFollowYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="N">لا NO</option>
+                                        <option value="Y">نعم YES</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DIV_WAITING_MEMO_FOLLOW" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selMemoFollowYN">هل لا زالت المذكرة قيد الكتابة؟</label>
+                                    <select class="form-control select2bs4" id="selMemoFollowYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="N">لا NO</option>
+                                        <option value="Y">نعم YES</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DIV_CHANGE_UPDATE_DATE" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selUpdateDateYN">Change (Update Date) to be today's date? هل تريد تغيير ( تاريخ التحديث ) ليكون تاريخ اليوم؟</label>
+                                    <select class="form-control select2bs4" id="selUpdateDateYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="Y">YES</option>
+                                        <option value="N">NO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DIV_CHANGE_NEXT_HEARING_DATE" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label dir="auto" for="selNextHearingDateYN">الرجاء التأكد من تاريخ الجلسة القادمة</label>
+                                    <select class="form-control select2bs4" id="selNextHearingDateYN">
+                                        <option value="">PLEASE SELECT</option>
+                                        <option value="N">BACK عودة</option>
+                                        <option value="Y">SAVE حفظ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="ShowPreSubmit()" class="btn btn-outline-dark">Save changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+    <input type="hidden" id="txtLocationId" value="@ViewBag.LocationId" />
+    <input type="hidden" id="txtViewContainer" value="@ViewBag.ViewContainer" />
+    <input type="hidden" id="txtViewToLoad" value="@ViewBag.ViewToLoad" />
+    <input type="hidden" id="txtSessionRollId" value="@ViewBag.SessionRollId" />
+    <input type="hidden" id="HFCaseId" value="@ViewBag.HFCaseId" />
+    <input type="hidden" id="hidRequirement" value="" />
+    <input type="hidden" id="hidFirstEmailDate" value="" />
+    <input type="hidden" id="hidNextHearingDate" value="" />
+    <input type="hidden" id="hidCurrentHearingDate" value="" />
+    <input type="hidden" id="hidCourtDecisionChange" value="" />
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+    <input type="hidden" id="hidLawyerUser" value="@ViewBag.LawyerUser" />
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+        var IsValidOfficeFileNo = true;
+        $(document).ready(function () {
+            $.fn.autoResize = function () {
+                let r = e => {
+                    e.style.height = '';
+                    e.style.height = e.scrollHeight + 'px'
+                };
+                return this.each((i, e) => {
+                    e.style.overflow = 'hidden';
+                    r(e);
+                    $(e).bind('input', e => {
+                        r(e.target);
+                    })
+                })
+            };
+            var _PartialViewName = $("#txtViewToLoad").val();
+            var _CaseId = -1;
+            var _SessionRollId = -1;
+            var _Mode = "C";
+
+            var PartialContainer = $($("#txtViewContainer").val());
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+            GetTab(PartialContainer, GetSessionRollURL, _parameters);
+            ActiveButton = "btn_AllSessions";
+
+            $('input[type=radio][name=rdoLocation]').change(function () {
+                ReloadTable();
+            });
+
+            $('.navButton').click(function () {
+                $("#ModificationContainer").empty();
+                $(".navButton").each(function () {
+                    var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                    $(this).removeClass(btnActiveClass);
+                });
+
+                ActiveButton = $(this).attr("id");
+                var btnClickedClass = $(this).attr("id").split('_')[1];
+                var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+                $("#txtViewToLoad").val("_" + btnClickedClass);
+
+                $(this).addClass(btnClickedActiveClass);
+
+                $("#PartialViewContainer").empty();
+
+                var _CaseId = -1;
+                var _SessionRollId = -1;
+                var _Mode = "C";
+                var PartialContainer = $("#PartialViewContainer");
+                var _PartialViewName = $("#txtViewToLoad").val();
+
+                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, SessionRollId: _SessionRollId };
+
+                GetTab($(PartialContainer), GetSessionRollURL, _parameters);
+
+            });
+
+            $('.modal').on('hidden.bs.modal', function (event) {
+                $(this).removeClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+            });
+
+            $('.modal').on('shown.bs.modal', function (event) {
+                $("#MstDesc").val("");
+                // keep track of the number of open modals
+                if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+                    $('body').data('fv_open_modals', 0);
+                }
+
+                // if the z-index of this modal has been set, ignore.
+                if ($(this).hasClass('fv-modal-stack')) {
+                    return;
+                }
+
+                $(this).addClass('fv-modal-stack');
+                $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+                $(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+                $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+
+            });
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "860") {
+                    ModalTitle = "ADD LAWYER";
+                    DDLToAppend = $("#LawyerId");
+                }
+                else if (this.id == "861") {
+                    ModalTitle = "ADD FOLLOWER";
+                    DDLToAppend = $("#FollowerId");
+                }
+                else if (this.id == "859") {
+                    ModalTitle = "ADD CASE TYPE";
+                    DDLToAppend = $("#CaseType");
+                }
+                else if (this.id == "7") {
+                    ModalTitle = "Add Payment Head";
+                    DDLToAppend = $("#Payment_Head");
+                }
+                else if (this.id == "214") {
+                    ModalTitle = "Add Pay To";
+                    DDLToAppend = $("#Payment_To");
+                }
+                else if (this.id == "1092") {
+                    ModalTitle = "Session On Hold";
+                    DDLToAppend = $("#SessionOnHold");
+                }
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+
+            });
+
+            $('#selUpdateDateYN').on("change", function () {
+                if ($('#selUpdateDateYN').val() == "")
+                    return false;
+
+                if ($('#selUpdateDateYN').val() == "N") {
+                    $("#hidCourtDecisionChange").val("N");
+                }
+                else if ($('#selUpdateDateYN').val() == "Y") {
+                    $("#CurrentHearingDate").datepicker("setDate", new Date).datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true
+                    });
+                }
+                ShowPreSubmit();
+            });
+             
+            $('#selNextHearingDateYN').on("change", function () {
+                if ($('#selNextHearingDateYN').val() == "N") {
+                    $('#modal-preSubmit').modal('hide');
+                }
+            });
+
+            $("body").on('propertychange change keyup paste input', "#CourtDecision", function (e) {
+                $("#hidCourtDecisionChange").val("N");
+                if (this.value.length) {
+                    $("#hidCourtDecisionChange").val("Y");
+                }
+
+                $('textarea').autoResize();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,487 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+    var JDReceiveDate;
+    var JDIsFavorable;
+    function ShowInvesmentBanner() {
+        if ($('#DepartmentType').val() == "2")
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden");
+        else
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden").addClass("AppHidden");
+    }
+    function LoadJudgementLevelPV(JudgementLevelId) {
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#DIV_JudgementLevel");
+        $("#DIV_JudgementLevel").empty();
+        $("#DIV_JudgementNotFav").empty();
+        $('#DIV_CommonTask').removeClass("AppHidden");
+        $("#DIV_UPDATE").removeClass("AppHidden");
+
+        switch (JudgementLevelId) {
+            case "0":
+                $('#DIV_CommonTask').removeClass("AppHidden").addClass("AppHidden");
+                $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+                return false;
+                break;
+            case "1":
+                _PartialViewName = "_AfterJudgementReceivedPrimary";
+                JDReceiveDate = "PrimaryJDReceiveDate";
+                JDIsFavorable = "PrimaryIsFavorable";
+                JDLevelName = "PRI.JUG.RECEIVE تاريخ استلام الحكم الابتدائي";
+                break;
+            case "2":
+                _PartialViewName = "_AfterJudgementReceivedAppeal";
+                JDReceiveDate = "AppealJDReceiveDate";
+                JDIsFavorable = "AppealIsFavorable";
+                JDLevelName = "APP.JUG.RECEIVE تاريخ استلام الحكم الاستئناف";
+                break;
+            case "3":
+                _PartialViewName = "_AfterJudgementReceivedSupreme";
+                JDReceiveDate = "SupremeJDReceiveDate";
+                JDLevelName = "SUP.JUG.RECEIVE تاريخ استلام الحكم العليا";
+                JDIsFavorable = "SupremeIsFavorable";
+                break;
+            case "4":
+                _PartialViewName = "_AfterJudgementReceivedEnforcement";
+                JDReceiveDate = "EnforcementJDReceiveDate";
+                JDIsFavorable = "EnforcementIsFavorable";
+                JDLevelName = "ENFORCEMENT";
+                break;
+        }
+
+        DetailViewName = _PartialViewName;
+        $("#PartialViewName").val(DetailViewName);
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+        var _Mode = "C";
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+
+        ShowSessionNoteBanner();
+        ShowDIV();
+    }
+    function LoadCaseRegistrationPV(ActionLevel) {
+
+        console.log("function LoadCaseRegistrationPV(" + ActionLevel + ")");
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#DIV_JudgementNotFav");
+
+        $('#DIV_SessionFileStatus').removeClass("AppHidden").addClass("AppHidden");
+
+        switch (ActionLevel) {
+            case "0":
+                $("#DIV_JudgementNotFav").empty();
+                $('#DIV_SessionFileStatus').removeClass("AppHidden");
+                return false;
+                break;
+            case "2":
+                _PartialViewName = "_TBRAppeal";
+                break;
+            case "3":
+                _PartialViewName = "_TBRSupreme";
+                break;
+        }
+
+        DetailViewName = _PartialViewName;
+        $("#PartialViewName").val(DetailViewName);
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+        var _Mode = "C";
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function processFileStatusChange(FileStatusId) {
+        console.log("function processFileStatusChange(" + FileStatusId + ")");
+        $("#ActionDate").datepicker("setDate", new Date());
+        $("#DIV_ACTION_DATE").removeClass("AppHidden");
+        $("#DIV_UPDATE").removeClass("AppHidden");
+        $("#DIV_OnHoldReason").removeClass("AppHidden").addClass("AppHidden");
+        $("#SessionFileStatus").val(FileStatusId);
+
+        switch (FileStatusId) {
+            case "0":
+                $("#DIV_ACTION_DATE").removeClass("AppHidden").addClass("AppHidden");
+                $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+                break;
+            case "4":
+                $("#DIV_OnHoldReason").removeClass("AppHidden");
+                break;
+        }
+
+        $('textarea').autoResize();
+    }
+    function ClearElements(ControlNames, ControlTypes, DefaultSelectVal, DivID) {
+
+        if (ControlNames.indexOf(",") !== -1) {
+            var Namesarray = ControlNames.split(",");
+            var Typesarray = ControlTypes.split(",");
+            var DefaultSelectValarray = DefaultSelectVal.split(",");
+
+            for (i = 0; i < Namesarray.length; i++) {
+                if (Typesarray[i] == "select2")
+                    $("#" + Namesarray[i]).val(DefaultSelectValarray[i]).trigger('change');
+                else
+                    $("#" + Namesarray[i]).val(DefaultSelectValarray[i]);
+            }
+        }
+        else {
+            if (ControlTypes == "select2")
+                $("#" + ControlNames).val(DefaultSelectVal).trigger('change');
+            else
+                $("#" + ControlNames).val(DefaultSelectVal);
+        }
+        $("#" + DivID).removeClass("AppHidden").addClass("AppHidden");
+
+    }
+    function ValidateMain() {
+
+        if ($("#SessionFileStatus").val() == OfficeFileStatus.PleaseSelect) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+            NotValid = true;
+        }
+
+        if ($("#" + JDIsFavorable).val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT  " + JDIsFavorable : ValidationMessage + "<br />" + "PLEASE SELECT " + JDIsFavorable;
+            NotValid = true;
+        }
+        else {
+            if ($("#" + JDIsFavorable).val() == "N") {
+
+            }
+            else {
+                if ($("#" + JDReceiveDate).val() == "" && $("#" + JDIsFavorable).val() == "Y") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER " + JDLevelName : ValidationMessage + "<br />" + "PLEASE ENTER " + JDLevelName;
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getUTCDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    if (process($("#" + JDReceiveDate).val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? JDLevelName + " JUDGEMENT RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + JDLevelName + " JUDGEMENT RECEIVED DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+            }
+        }
+        return NotValid;
+    }
+
+    function ShowSessionNoteBanner() {
+        if (!$.trim($("#SessionNote_Remark").val())) {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
+            $("#spnNotesBanner").text("");
+        }
+        else {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden");
+            $("#spnNotesBanner").text($.trim($("#SessionNote_Remark").val()));
+            $('textarea').autoResize();
+        }
+    }
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+
+        var DIV_TO_HIDE = [
+            "#txtRequirement",
+            "#txtFirstEmailDate",
+            "#DIV_UPDATE",
+            "#DIV_TRSOURCE"
+        ];
+
+        var i;
+        for (i = 0; i < DIV_TO_HIDE.length; ++i) {
+            $(DIV_TO_HIDE[i]).removeClass("AppHidden").addClass("AppHidden");
+        }
+        if (parseInt($('#JudgementLevel').val()) > 0)
+            LoadJudgementLevelPV($('#JudgementLevel').val());
+
+        $('#JudgementLevel').on("change", function () {
+            LoadJudgementLevelPV($('#JudgementLevel').val());
+        });
+
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+
+        $('#CourtDecision').bind('input propertychange', function () {
+            $("#hidCourtDecisionChange").val("N");
+
+            if (this.value.length) {
+                $("#hidCourtDecisionChange").val("Y");
+            }
+        });
+
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                $('textarea').autoResize();
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+        });
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "7") {
+                ModalTitle = "Add Payment Head";
+                DDLToAppend = $("#Payment_Head");
+            }
+            else if (this.id == "214") {
+                ModalTitle = "Add Pay To";
+                DDLToAppend = $("#Payment_To");
+            }
+            else if (this.id == "1408") {
+                ModalTitle = "ADD LAWYER";
+                DDLToAppend = $("#LawyerId");
+            }
+            else if (this.id == "859") {
+                ModalTitle = "ADD CASE TYPE";
+                DDLToAppend = $("#CaseType");
+            }
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateMain();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            console.log($("#hidCourtDecisionChange").val());
+            console.log($("#CurrentHearingDate").val());
+            console.log($("#hidCurrentHearingDate").val());
+            ShowPreSubmit();
+
+        });
+
+        $('#DIV_FORM_HIDDEN_ITEMS').removeClass("AppHidden").addClass("AppHidden");
+
+        console.log("ShowSessionNotes");
+        console.log($('#SessionRollId').val());
+        ShowSessionNotes($('#SessionRollId').val());
+    });
+</script>
+@using (Html.BeginForm("Index", "SessionRoll", FormMethod.Post, new { id = "frm_SessionRollEditForm", enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+{
+    @model YandS.UI.Models.SessionsRollVM
+
+    {
+        ViewBag.OFB_ClientName = Model.ClientName;
+        ViewBag.OFB_Defendant = Model.Defendant;
+        ViewBag.OFB_OfficeFileNo = Model.OfficeFileNo;
+        ViewBag.OFB_SessionRollClientName = Model.SessionRollClientName;
+        ViewBag.OFB_SessionRollDefendentName = Model.SessionRollDefendentName;
+        ViewBag.OFB_AccountContractNo = Model.AccountContractNo;
+        ViewBag.OFB_ClientFileNo = Model.ClientFileNo;
+
+    }
+
+<div id="DIV_FORM_HIDDEN_ITEMS" class="">
+    @Html.EditorFor(model => model.SessionRollId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.CaseId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionClientId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.CountLocationId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.UpdatedOn, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.AgainstCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    <input type="hidden" id="hidJudFilter" value="@ViewBag.JudFilter" />
+    @Html.HiddenFor(model => model.IsDelete)
+    @Html.HiddenFor(model => model.IsAfterJudgementReceived, new { @Value = "Y" })
+    @Html.HiddenFor(model => model.PartialViewName)
+    @Html.HiddenFor(model => model.SavePV_Data, new { @Value = "_AfterJudgementReceived" })
+</div>
+    @Html.AntiForgeryToken()
+    <div class="AppHidden">
+        <a id="btn_ToCaseRegister" href="/CaseRegistration/IndexMain/@ViewBag.CaseRegistrationId"></a>
+        <input type="hidden" value="@Model.OfficeFileNo" id="PV_OFFICE_FILE_NO" />
+        <input type="hidden" value="@ViewBag._PrintRequirementFormName" id="txtPrintRequirementFormName" />
+        <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
+
+    </div>
+    <div class="card">
+        <div class="card-body">
+            @Html.Partial("_OfficeFileInfoBanner")
+            <div style="padding-top:10px">
+                <div id="DIV_JUDGMENTS">
+                    <div class="sessionRunningCategoryBar">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>JUDGEMENT DETAILS  تفاصيل الأحكام </h3></div>
+                        </div>
+                    </div>
+                    <div style="padding-top:10px" class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JudgementLevel)
+                                @Html.DropDownList("JudgementLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DIV_JudgementLevel"></div>
+                    <div id="DIV_JudgementNotFav"></div>
+                </div>
+                <div id="DIV_UPDATE" class="updatediv">
+                    <div class="col-sm-12">
+                        <div style="padding-bottom:0px !important;padding-top:10px;" class="UpdateBoxBar">
+                            <div class="row">
+                                <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+                            </div>
+                        </div>
+                        <div id="DIV_NOTES_BANNER" class="card-header GeneralActive AppHidden">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h3><span id="spnNotesBanner"></span></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                                        @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                                        <div class="form-group">
+                                            @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="SessionRemarks">LAWYER SCHEDULE توجيهات إلى المحامي</label>
+                                        <div class="form-group">
+                                            @Html.TextAreaFor(model => model.SessionRemarks, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ClientReply)
+                                        @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group" id="txtRequirement">
+                                        <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                                        <div class="form-group">
+                                            @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group" id="txtFirstEmailDate">
+                                        @Html.LabelFor(model => model.FirstEmailDate)
+                                        @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div id="DIV_TRSOURCE" class="form-group">
+                                        @Html.LabelFor(model => model.TransportationSource)
+                                        @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button id="btnSubmitForm" type="button" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+}

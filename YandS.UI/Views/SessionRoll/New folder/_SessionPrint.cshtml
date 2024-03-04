@@ -1,0 +1,193 @@
+﻿<script type="text/javascript">
+    var SessionPrintDataTable;
+    var startDate;
+    var endDate;
+    function onPreSubmit(item) {
+        console.log("Print Form Validation!");
+    }
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#PrintDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date.valueOf());
+            $('#PrintDateTo').datepicker('setStartDate', minDate);
+        });
+
+        $("#PrintDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            var maxDate = new Date(selected.date.valueOf());
+            $('#PrintDateFrom').datepicker('setEndDate', maxDate);
+        });
+
+        $('#SessionPrintHtmlTable').wrap('<div id="div_SessionPrint_Result" style="display:none"/>');
+
+        //$("#div_SessionPrint_Result").removeClass("AppHidden").addClass("AppHidden");
+
+        $('#btnPrintResult').on("click", function () {
+
+            $('#div_SessionPrint_Result').css('display', 'block');
+            if (typeof SessionPrintDataTable != 'undefined')
+                SessionPrintDataTable.destroy();
+
+            SessionPrintDataTable = $('#SessionPrintHtmlTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": false,
+                "destroy": true,
+                "ordering": true,
+                "pageLength": -1,
+                //dom: 'Blfrtip',
+                dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'Session Roll - PRINT',
+                        text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                        titleAttr: 'Export Excel',
+                        "oSelectorOpts": { filter: 'applied', order: 'current' },
+                        exportOptions: { modifier: { page: 'all', search: 'none' } }
+                    }
+                ],
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                "ajax": {
+                    "url": GetIndexDataURL,
+                    "type": "POST",
+                    "datatype": "json",
+                    data: function (d) {
+                        d.DataTableName = "PRINT";
+                        d.SessionLevel = $('#SessionLevel').val();
+                        d.DateFrom = $("#PrintDateFrom").val();
+                        d.DateTo = $("#PrintDateTo").val();
+                        d.CountLocationId = $('#CountLocationId').val();
+                        d.LawyerId = $('#LawyerId').val();
+                        d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                    }
+                },
+                "columns": [
+                    { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                    { data: 'NextHearingDate', name: 'NextHearingDate', autoWidth: true },
+                    { data: 'SessionLevelName', name: 'SessionLevelName', autoWidth: true },
+                    { data: 'CountLocationName', name: 'CountLocationName', autoWidth: true },
+                    { data: 'CaseTypeName', name: 'CaseTypeName', autoWidth: true },
+                    { data: 'SessionRollClientName', name: 'SessionRollClientName', autoWidth: true },
+                    { data: 'SessionRollDefendentName', name: 'SessionRollDefendentName', autoWidth: true },
+                    { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
+                    { data: 'LawyerName', name: 'LawyerName', autoWidth: true },
+                    { data: 'SessionRemarks', name: 'SessionRemarks', autoWidth: true }
+                ],
+                "order": [[1, "desc"]],
+                'aoColumnDefs': [
+                    { 'bSortable': false, 'aTargets': [-1] }
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    var rowColor = "";
+
+                    if (data.CaseDismisses == "Y") {
+                        rowColor = "IsSessionCaseDismissed";
+                    }
+
+                    $(row).addClass(rowColor);
+                },
+                initComplete: function () {
+                    console.log("DataTable PRINT Initiated !!");
+
+                    $("#SessionPrintHtmlTable_filter.dataTables_filter input")
+                        .unbind() // Unbind previous default bindings
+                        .bind("keyup", function (e) { // Bind our desired behavior
+                            //console.log(e.keyCode);
+                            // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                            if (e.keyCode == 13) {
+                                // Call the API search function
+                                SessionPrintDataTable.search(this.value).draw();
+                            }
+                            // Ensure we clear the search if they backspace far enough
+                            if (this.value == "") {
+                                SessionPrintDataTable.search("").draw();
+                            }
+                            return;
+                        });
+                }
+            });
+        });
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div class="card">
+    <div style="padding-bottom:0px;padding-top:10px;" class="card-header SessionPrintActive">
+        <div class="text-center"><h3>PRINT</h3></div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="SessionLevel">SESSION LEVEL درجة التقاضي</label>
+                    @Html.DropDownList("SessionLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="PrintDateFrom">FROM</label>
+                    @Html.EditorFor(model => model.PrintDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label for="PrintDateTo">TO</label>
+                    @Html.EditorFor(model => model.PrintDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="CountLocationId">COURT المحكمة</label>
+                    @Html.DropDownList("CountLocationId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="LawyerId">LAWYER المحامي</label>
+                    @Html.DropDownList("LawyerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <button id="btnPrintResult" type="button" class="btn btn-success"><i class="fas fa-file"></i> PRINT</button>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+            <table id="SessionPrintHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th class="all">F.N</th>
+                        <th>DATE التاريخ</th>
+                        <th>LEVEL المرحلة</th>
+                        <th>COURT</th>
+                        <th>CASE القاعة</th>
+                        <th>CLIENT الموكل</th>
+                        <th>DEF الخصم</th>
+                        <th>COURT DECISION قرار المحكمة</th>
+                        <th>LAWYER المحامي</th>
+                        <th>REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+﻿@model YandS.UI.Models.ApplicationUser
+@{
+    Layout = "~/Views/Shared/_LayoutRBAC.cshtml";
+}
+<div class="panel">
+    @using (Html.BeginForm("UserCreate", "Admin", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <legend><strong> Create User</strong></legend>
+            <br />
+            <table style='width: 100%'>
+                <tr>
+                    <td style='width: 10%; font-weight: bold' class='userTable'>
+                        @Html.LabelFor(model => model.UserName, "Username")
+                    </td>
+                    <td class='userTable'>
+                        @Html.TextBoxFor(model => model.UserName, new { style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </td>
+                </tr>
+                <tr>
+                    <td style='width: 10%; font-weight: bold' class='userTable'>
+                        @Html.LabelFor(model => model.Email, "Email")
+                    </td>
+                    <td class='userTable'>
+                        @Html.TextBoxFor(model => model.Email, new { style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style='width: 10%; font-weight: bold' class='userTable'>
+                        @Html.LabelFor(model => model.Firstname, "Firstname")
+                    </td>
+                    <td class='userTable'>
+                        @Html.TextBoxFor(model => model.Firstname, new { style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.Firstname)
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style='width: 10%; font-weight: bold' class='userTable'>
+                        @Html.LabelFor(model => model.Lastname, "Lastname")
+                    </td>
+                    <td class='userTable'>
+                        @Html.TextBoxFor(model => model.Lastname, new { style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.Lastname)
+                    </td>
+                </tr>
+
+            </table>
+            <br />
+            <input class="btn btn-default" type="submit" value="Create" />
+        </fieldset>
+    }
+</div>
+<div>
+    @Html.ActionLink("Go to Users", "Index", "Admin")
+</div>

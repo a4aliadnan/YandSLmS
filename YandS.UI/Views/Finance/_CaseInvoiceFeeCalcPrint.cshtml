@@ -1,0 +1,17 @@
+﻿@model YandS.UI.Models.CaseInvoiceFeeCalculation
+@{
+    var ClaimAmount = Model.ClaimAmount.Value.ToString("0.###");
+
+    var varClaimAmountCalculated = (decimal)Model.ClaimAmount * (decimal)(Model.ClaimAmountPct / 100);
+
+    var varFeeAmountCalculated = (decimal)varClaimAmountCalculated * (decimal)(Model.FeeAmountPct / 100);
+
+    ViewBag.ClaimAmountCalculated = varClaimAmountCalculated.ToString("0.###");
+
+    ViewBag.FeeAmountCalculated = varFeeAmountCalculated.ToString("0.###");
+
+    ViewBag.ClaimAmountPct = Model.ClaimAmountPct.ToString("0.###");
+
+    ViewBag.FeeAmountPct = Model.FeeAmountPct.ToString("0.###");
+}
+<tr><td style="text-align:center !important">@ViewBag.ClaimAmountPct&nbsp;%&nbsp;of&nbsp;@ClaimAmount&nbsp;=&nbsp;@ViewBag.ClaimAmountCalculated&nbsp;and&nbsp;@ViewBag.FeeAmountPct&nbsp;%&nbsp;of&nbsp;@ViewBag.ClaimAmountCalculated&nbsp;=&nbsp;@ViewBag.FeeAmountCalculated</td></tr>

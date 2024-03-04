@@ -1,0 +1,208 @@
+﻿@using Microsoft.AspNet.Identity
+@using YandS.DAL
+<aside class="main-sidebar elevation-4 sidebar-light-lightblue">
+    <!-- Brand Logo -->
+    <a href="@Url.Action("Index", "Home")" class="brand-link navbar-white">
+        <img src="../../Content/dist/img/AdminLTELogo.png" alt="Y & S LEGAL" Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Y & S LEGAL</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item has-treeview @Html.RouteIf("Admin", "menu-open")">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-object-group"></i>
+                        <p>
+                            ADMINISTRATION
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Admin")" class="nav-link @Html.RouteIf("Index", "active")">
+                                <p>MANAGE USERS</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("RoleIndex", "Admin")" class="nav-link @Html.RouteIf("RoleIndex", "active")">
+                                <p>MANAGE ROLES</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("PermissionIndex", "Admin")" class="nav-link @Html.RouteIf("PermissionIndex", "active")">
+                                <p>MANAGE PERMISSIONS</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("ResetPasswordAdmin", "Account")" class="nav-link @Html.RouteIf("ResetPasswordAdmin", "active")">
+                                <p>RESET PASSWORD FOR USER</p>
+                            </a>
+                        </li>
+                        @if (User.IsInRole("ClientAccessAdmin"))
+                        {
+                            <li class="nav-item">
+                                <a href="@Url.Action("ManageClientAccess", "Home")" class="nav-link @Html.RouteIf("ManageClientAccess", "active")">
+                                    <p>MANAGE CLIENT ACCESS</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("ClientIndex", "Home")" class="nav-link @Html.RouteIf("ClientIndex", "active")">
+                                    <p>CLIENT HOME</p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+
+
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Employees")" class="nav-link @Html.RouteIf("Employees", "active")">
+                        <i class="nav-icon fas fa-user text-green"></i><p>EMPLOYEES FILES</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "CourtCases", new { id = DBNull.Value })" class="nav-link clsCourtCases @Html.RouteIf("CourtCases", "active")">
+                        <i class="nav-icon fas fa-file-archive text-info"></i><p>CASE  MANAGEMENT</p>
+                    </a>
+                </li>
+                <li id="btn_Corporate" class="nav-item">
+                    <a href="@Url.Action("Index", "CourtCases", new { id = -4 })" class="nav-link clsCourtCases clsCorporate">
+                        <i class="nav-icon fas fa-building text-warning"></i><p>CORPORATE</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "SessionRoll", new { id = DBNull.Value })" class="nav-link clsSessionRoll @Html.RouteIf("SessionRoll", "active")">
+                        <i class="nav-icon fas fa-database text-info"></i><p>RUNNING CASE</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "CourtCases", new { id = -2 })" class="nav-link clsCourtCases clsCourtFollow">
+                        <i class="nav-icon fas fa-object-group text-danger"></i><p>COURT FOLLOW</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "CourtCases", new { id = -3 })" class="nav-link clsCourtCases clsClientReply">
+                        <i class="nav-icon fas fa-envelope-open text-warning"></i><p>CLIENT REPLY</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "SessionRoll", new { id = -2 })" class="nav-link clsFollowup @Html.RouteIf("SessionRoll", "active")">
+                        <i class="nav-icon fas fa-sitemap text-success"></i><p>AFTER JUDGMENT PROCEEDINGS</p>
+                    </a>
+                </li>
+                <li id="btn_Translate" class="nav-item">
+                    <a href="@Url.Action("Index", "CourtCases", new { id = -5 })" class="nav-link clsCourtCases clsTranselation">
+                        <i class="nav-icon fas fa-language text-indigo"></i><p>TRANSELATION</p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview @Html.RouteIf("Finance", "menu-open")">
+                    <a href="#" class="nav-link"><i class="nav-icon fas fa-desktop text-info"></i><p> FINANCE<i class="right fas fa-angle-left"></i></p></a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("InvoiceCreateIndex", "Finance")" class="nav-link @Html.RouteIf("InvoiceCreateIndex", "active")">
+                                <p>FINANCE MANAGEMENT</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("InvoiceManageIndex", "Finance")" class="nav-link @Html.RouteIf("InvoiceManageIndex", "active")">
+                                <p>MANAGE INVOICE</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("PayVoucherIndexRefNonRef", "Finance", new { id = DBNull.Value })" class="nav-link @Html.RouteIf("PayVoucherIndexRefNonRef", "active")">
+                                <p>OFFICE EXPENSES</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("PayVoucherTaxVat", "Finance")" class="nav-link @Html.RouteIf("PayVoucherTaxVat", "active")">
+                                <p>TAX AND VAT</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("PayVoucherIndex", "Finance")" class="nav-link @Html.RouteIf("PayVoucherIndex", "active")">
+                                <p>INTRA-TRANSACTIONS</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("InvoiceNotificationIndex", "Finance")" class="nav-link @Html.RouteIf("InvoiceNotificationIndex", "active")">
+                                <p>INVOICE NOTIFICATION</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview @Html.RouteIf("MasterSetups", "menu-open")">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-hammer text-red"></i>
+                        <p>
+                            MASTER LISTS
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "MasterSetups")" class="nav-link @Html.RouteIf("Index", "active")">
+                                <p>MANAGE MASTERS</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("CourtCasesDetail", "CaseReports")" class="nav-link @Html.RouteIf("CourtCasesDetail", "active")">
+                        <i class="nav-icon fas fa-file text-red"></i><p>CASES REPORT</p>
+                    </a>
+                </li>
+                @if (User.IsInRole("VoucherApproval") || User.Identity.Name.In("4","5","6","9","46","52"))
+                {
+                    <li class="nav-item has-treeview @Html.RouteIf("Report", "menu-open")">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-money-bill text-blue"></i>
+                            <p>
+                                FINANCE REPORTS
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @if (User.IsInRole("VoucherApproval") || User.Identity.Name.In("4", "6", "9"))
+                            {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("InvoiceReport", "Report")" class="nav-link @Html.RouteIf("InvoiceReport", "active")">
+                                        <p>INVOICE REPORT</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("PVIntraTrans", "Report")" class="nav-link @Html.RouteIf("PVIntraTrans", "active")">
+                                        <p>INTRA-TRANSACTION REPORT</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("REFPVReport", "Report")" class="nav-link @Html.RouteIf("REFPVReport", "active")">
+                                        <p>REFUNDABLE PV REPORT</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("NONREFPVReport", "Report")" class="nav-link @Html.RouteIf("NONREFPVReport", "active")">
+                                        <p>NON-REFUNDABLE PV REPORT</p>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("InvoiceReport", "Report")" class="nav-link @Html.RouteIf("InvoiceReport", "active")">
+                                        <p>INVOICE REPORT</p>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+

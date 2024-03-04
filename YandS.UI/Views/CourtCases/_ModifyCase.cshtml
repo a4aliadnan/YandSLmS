@@ -1,0 +1,1492 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var ValidateUserURL = '@Url.Action("ValidateUserPassword", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    var GetClientClassificationURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var CreateClientMasterURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var LoadClientByClassificationURL = '@Url.Action("LoadClientByClassification", "CommonTask", new { area = string.Empty })';
+    var CheckDuplicateDetailURL = '@Url.Action("CheckDuplicateDetail", "CommonTask", new { area = string.Empty })';
+    var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("TobeReg", "CourtCases", new { area = string.Empty })';
+    var SubmitClosureFormURL = '@Url.Action("FileClosure", "CommonTask", new { area = string.Empty })';
+    var _parameters = {};
+    var CurrentCaseLevel = 0;
+    var ClientClassification = 0;
+    var ClientClassificationCode = "";
+    var CaseTypeCode = "";
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+
+            var url = "";
+            var _MstDesc = ""
+            var _MstParentId = 0;
+            var _Remarks = "";
+            console.log($("#ClientClassificationCode").val());
+
+            if (parseInt($("#MstParentId").val()) == 241) {
+                if ($("#ClientClassificationCode").val() == "0") {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: "Please Select Client Classification"
+                    });
+                    return false;
+                }
+
+                url = CreateMasterTableDetailForPayToURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _Remarks = $("#ClientClassificationCode").val();
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+
+
+            }
+            else {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: url,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+    function generate_modal_body(ModalToGenerateId) {
+        //var ModalToGenerateId = this.id.split('-')[1] ;
+        var ModalToGenerate = $("#" + ModalToGenerateId).val();
+
+        if (ModalToGenerate != "") {
+            console.log(ModalToGenerate);
+
+            if (typeof DefendentTable != 'undefined')
+                DefendentTable.destroy();
+
+            DefendentTable = $('#tblDefaulterDetail').DataTable({
+                lengthChange: false,
+                ajax: {
+                    url: GetDefaulterDetailURL,
+                    "dataSrc": "",
+                    type: 'POST',
+                    data: function (d) {
+                        d.P_DataParameter = ModalToGenerate;
+                        d.P_DataFor = ModalToGenerateId;
+                    }
+                },
+                "columns": [
+                    { data: 'OfficeFileNo' },
+                    { data: 'AccountContractNo' },
+                    { data: 'ClientFileNo' },
+                    { data: 'Defendant' },
+                    { data: 'CaseStatusName' }
+                ],
+                initComplete: function () {
+                    $('#modal-ViewDefendent').modal('show');
+                }
+            });
+
+        }
+        else {
+            // Failed show errors
+            console.log("Failed ModalToGenerate is null");
+            //$('#modal-ViewDefendent').modal('hide');
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter ' + ModalToGenerateId
+            });
+        }
+    }
+    function LoadClientByClassification(p_ClassificationId) {
+        _parameters = { ClientClassificationId: p_ClassificationId };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadClientByClassificationURL,
+            success: function (Result) {
+
+                if (Result.length > 0) {
+                    var $select = $('#ClientCode');
+                    $select.find('option').remove();
+                    var newOption = new Option("PLEASE SELECT", "0", true, true);
+                    $select.append(newOption).trigger('change');
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption).trigger('change');
+                    }
+                    $select.val("0").trigger('change');
+
+                }
+                else {
+                    var $select = $('#ClientCode');
+                    $select.find('option').remove();
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function fnCheckDuplicateDetail(p_ValueToSearch, p_TypeToSearch) {
+        console.log("fnCheckDuplicateDetail");
+        console.log("ValueToSearch :: " + p_ValueToSearch);
+        console.log("TypeToSearch :: " + p_TypeToSearch);
+
+        _parameters = { ValueToSearch: p_ValueToSearch, TypeToSearch: p_TypeToSearch };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: CheckDuplicateDetailURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function fnCheckDuplicate(control) {
+        console.log("fnCheckDuplicate");
+        console.log("ValueToSearch :: " + $.trim($(control).val()));
+        console.log("TypeToSearch :: " + $(control).attr("id"));
+
+        _parameters = { ValueToSearch: $.trim($(control).val()), TypeToSearch: $(control).attr("id") };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: CheckDuplicateDetailURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.Message);
+
+                if (Result.Message == "Error") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ErrorMessage
+                    });
+                }
+                else {
+                    if (Result.Message != "") {
+                        Swal.fire({
+                            type: "info",
+                            title: 'File Already Exists',
+                            html: Result.Message
+                        });
+                    }
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function ProcessAgainstCodeChange() {
+        $("#DivOmaniExp").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#AgainstCode').val() == "1")
+            $("#DivOmaniExp").removeClass("AppHidden");
+
+        if ($('#AgainstCode').val() == "3") {
+            $("#divDefClient").removeClass("AppHidden");
+            $("#divDefendant").removeClass("AppHidden").addClass("AppHidden");
+        }
+        else {
+            $("#divDefClient").removeClass("AppHidden").addClass("AppHidden");
+            $("#divDefendant").removeClass("AppHidden");
+        }
+    }
+    function ProcessClientCodeChange() {
+        $(".ClientODB").removeClass("AppHidden").addClass("AppHidden");
+        $(".ClientOMASCO").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#ClientClassificationCode').val() == "1") {
+            if ($('#ClientCode').val() == "10") {
+                $(".ClientODB").removeClass("AppHidden");
+            }
+            else {
+                $('#ClientCaseType').val("0").trigger('change');
+                $('#ODBBankBranch').val("0").trigger('change');
+                $('#LoanManager').val("0").trigger('change');
+            }
+        }
+        else if ($('#ClientClassificationCode').val() == "2") {
+            if ($('#ClientCode').val() == "170") {
+                $(".ClientODB").removeClass("AppHidden");
+            }
+            else if ($('#ClientCode').val() == "23") {
+                $(".ClientOMASCO").removeClass("AppHidden");
+            }
+            else {
+                $('#LoanManager').val("0").trigger('change');
+                $('#ClientCaseType').val("0").trigger('change');
+            }
+        }
+    }
+    function ProcessClientClassificationChange() {
+        $("#div_CaseLevelPartialView").empty();
+        $("#PartialViewContainerBoxCC").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_CurrentCaseLevel").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_ArabicData").removeClass("AppHidden").addClass("AppHidden");
+
+        if (CaseTypeCode == "6") {
+            ClientClassificationCode = "7";
+            $("#ClassificationText").text("CORPORATE");
+        }
+        else {
+            if (ClientClassificationCode == "1") {
+                $("#ClassificationText").text("BANKS");
+            }
+            else if (ClientClassificationCode == "2") {
+                $("#ClassificationText").text("FINANCE");
+            }
+            else if (ClientClassificationCode == "3") {
+                $("#ClassificationText").text("REAL ESTATE");
+            }
+            else if (ClientClassificationCode == "4") {
+                $("#ClassificationText").text("INSURANCE");
+            }
+            else if (ClientClassificationCode == "5") {
+                $("#ClassificationText").text("COMPANIES");
+            }
+            else if (ClientClassificationCode == "6") {
+                $("#ClassificationText").text("INDIVIDUALS");
+            }
+        }
+
+        var PartialContainer = $("#PartialViewContainerCC");
+        _parameters = { ClassificationId: ClientClassificationCode, Mode: $('#CaseId').val() };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+    }
+    function ProcessNotConsultancy() {
+        $("#PartialViewContainerBoxCC").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_ArabicData").removeClass("AppHidden").addClass("AppHidden");
+
+        if (ClientClassificationCode == "1") {
+            $("#ClassificationText").text("BANKS");
+        }
+        else if (ClientClassificationCode == "2") {
+            $("#ClassificationText").text("FINANCE");
+        }
+        else if (ClientClassificationCode == "3") {
+            $("#ClassificationText").text("REAL ESTATE");
+        }
+        else if (ClientClassificationCode == "4") {
+            $("#ClassificationText").text("INSURANCE");
+        }
+        else if (ClientClassificationCode == "5") {
+            $("#ClassificationText").text("COMPANIES");
+        }
+        else if (ClientClassificationCode == "6") {
+            $("#ClassificationText").text("INDIVIDUALS");
+        }
+
+        var PartialContainer = $("#PartialViewContainerCC");
+        _parameters = { ClassificationId: ClientClassificationCode, Mode: $('#CaseId').val() };
+
+        GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+    }
+    function ProcessCaseTypeChange() {
+
+        var PartialContainer = $("#PartialViewContainerCC");
+
+        if (CaseTypeCode == "6") {
+            $("#PartialViewContainerBoxCC").removeClass("AppHidden").addClass("AppHidden");
+            $("#div_ArabicData").removeClass("AppHidden").addClass("AppHidden");
+            $("#ClassificationText").text("CORPORATE");
+            _parameters = { ClassificationId: "7", Mode: $('#CaseId').val() };
+            GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+        }
+        else {
+            ProcessNotConsultancy();
+        }
+    }
+    function ProcessCaseLevelChange() {
+        if (CurrentCaseLevel > 0) {
+            if (CurrentCaseLevel == 7) {
+                if ($("#hidAllowCloseCase").val() == "N") {
+
+                    Swal.fire({
+                        type: "error",
+                        title: 'UnAuthorize Access!!',
+                        html: "You are not Authorize to Close the Case"
+                    });
+                    return false;
+                }
+            }
+            else {
+                var _PartialViewName = "";
+                if ($('#CaseLevelCode').val() == "2") {
+                    _PartialViewName = "_PartViewBeforeCourt";
+                }
+                else if ($('#CaseLevelCode').val() == "1") {
+                    _PartialViewName = "_PartViewTobeReg";
+                }
+                else if ($('#CaseLevelCode').val() == "3") {
+                    _PartialViewName = "_PartViewPrimary";
+                }
+                else if ($('#CaseLevelCode').val() == "4") {
+                    _PartialViewName = "_PartViewAppeal";
+                }
+                else if ($('#CaseLevelCode').val() == "5") {
+                    _PartialViewName = "_PartViewSupreme";
+                }
+                else if ($('#CaseLevelCode').val() == "6") {
+                    _PartialViewName = "_PartViewEnforcement";
+                }
+
+                var PartialContainer = $("#div_CaseLevelPartialView");
+                _parameters = { ClassificationId: _PartialViewName, Mode: $('#CaseId').val() };
+
+                GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+            }
+        }
+    }
+    function submitForm() {
+        var data = new FormData(jQuery('#frm_ModifyCase')[0]);
+
+        $.ajax({
+            type: "POST",
+            url: SubmitFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.Category) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.Message
+                    });
+                }
+                else {
+                    //Swal.fire({
+                    //    type: 'success',
+                    //    title: 'Done!',
+                    //    html: "Data Save Successfully"
+                    //});
+                    if ($("#hidIsCorporate").val() == "Y") {
+
+                    }
+                    else {
+                        $("#PartialViewContainer").empty();
+                        $("#PartialViewContainer").append("Loading...");
+                        $("#PartialViewContainer").html(result);
+                    }
+                    ResetHiddenItems();
+
+                    LoadPrintRequirementForm("SaveResult");
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function submitClosureForm() {
+        var data = new FormData(jQuery('#frm_FileClose')[0]);
+
+        $.ajax({
+            type: "POST",
+            url: SubmitClosureFormURL,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.Category == "Error") {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'ERROR...',
+                        html: result.Message
+                    });
+                }
+                else {
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Done!',
+                        html: "Data Save Successfully"
+                    });
+
+                    switch (result.Category) {
+                        case "btnClosurePartialSave":
+                            LoadResultTable();
+                            break;
+                        case "btnClosureAccountsDepSave":
+                        case "btnClosureAccountsFinSave":
+                            table.ajax.reload();
+                            break;
+                        case "btnClosureArchiveSave":
+                            break;
+                        case "btnFinalClosureSave":
+                            LoadResultTable();
+                            break;
+                        case "btnFinalClosurApprovaleSave":
+                            $("#FinalClosureFormButton").get(0).click();
+                            LoadResultTable();
+                            $("#divClosureFinal").addClass("disableDIV");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+    function LoadClosingNoteTable() {
+        if (typeof closingNoteTable != 'undefined')
+            closingNoteTable.destroy();
+
+        closingNoteTable = $('#closingNoteHtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 25,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'ENFORCEMENT   تنفيذ الأحكام',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100, 1000, 99999], [5, 10, 25, 50, 100, 1000, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "ENF-GENERAL";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                    d.CallerName = $('#hidUserName').val();
+                    d.EnfCourtLocation = $('#ENF_SEARCH_CourtLocationid').val();
+                    d.EnfGovernorate = $('#ENF_SEARCH_GovernorateId').val();
+                    d.EnfClientCode = $('#ENF_SEARCH_ClientCode').val();
+                    d.EnfStage = $('#ENF_SEARCH_EnforcementlevelId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                { data: 'ClientName', name: 'ClientName', autoWidth: false },
+                { data: 'DefClientName', name: 'DefClientName', autoWidth: false },
+                { data: 'GovernorateName', name: 'GovernorateName', autoWidth: false },
+                { data: 'COURT', name: 'COURT', autoWidth: false },
+                { data: 'CourtRefNo', name: 'CourtRefNo', autoWidth: false },
+                { data: 'CurrentEnforcementLevel', name: 'CurrentEnforcementLevel', autoWidth: false },
+                { data: 'DaysCounter', name: 'DaysCounter', autoWidth: false },
+                { data: 'CourtDecision', name: 'CourtDecision', autoWidth: false },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false, render: function (data, type, row) { return FormatAccount_ClientFileNo(row); } },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+
+                            return '<a class="btn btn-info btn-sm btnLink" title="" id="M_' + row.CaseId + '" href="javascript:void(0)" data-original-title="Enforcement Management"><i class="fas fa-pencil-alt"></i></a>';
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': "_all" },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: [1, 2, 3, 4, 5, 6]
+                },
+                {
+                    targets: 8, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "drawCallback": function (settings) {
+                $("#ENF_ModificationContainer").empty();
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                $('.btn').bstooltip();
+
+                var info = table.page.info();
+
+                var MCTRecords = table.ajax.json().MuscatTotal;
+                var SLLRecords = table.ajax.json().SalalahTotal;
+                var recordsTotal = table.ajax.json().recordsTotal;
+
+                $('#TTL').text(recordsTotal);
+
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                }
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+
+        $('.table tbody').on('click', '.btnLink', function () {
+            var _Mode = this.id.split('_')[0];
+            var _id = parseInt(this.id.split('_')[1]);
+            var data = table.row($(this).parents('tr')).data();
+            processbtnLinkClick(_Mode, data);
+            return false;
+        });
+    }
+    function InitClaimAmountFormatting() {
+        const anElement = new AutoNumeric('#ClaimAmount', {
+            formulaMode: true,
+            allowDecimalPadding: false,
+            decimalPlaces: 3,
+            decimalPlacesRawValue: 0
+        });
+    }
+
+    $(document).ready(function () {
+        console.log("Modify Case Partail View Document Ready Page");
+        CurrentCaseLevel = parseInt($('#CaseLevelCode').val());
+        CaseTypeCode = $('#CaseTypeCode').val();
+        ClientClassificationCode = $('#ClientClassificationCode').val();
+        ClientClassification = parseInt($('#ClientClassificationCode').val());
+
+        console.log("CaseTypeCode :: " + CaseTypeCode);
+        console.log("CaseLevelCode :: " + CurrentCaseLevel);
+        console.log("ClientClassificationCode :: " + ClientClassificationCode);
+        console.log("ClientClassification :: " + ClientClassification);
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        ProcessClientClassificationChange();
+
+        if ($("#hidAllowAddClient").val() == "N") {
+            $("#241").prop('disabled', true);
+        }
+
+        if ($("#hidAllowCloseCase").val() == "N") {
+            $("#CaseLevelCode").find("option[value='7']").attr('disabled', 'disabled');
+            $("#CaseLevelCode").select2();
+        }
+
+        bsCustomFileInput.init();
+        $("#ReceptionDate").datepicker({
+            format: "dd/mm/yyyy"
+        });
+
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        ProcessCaseTypeChange();
+        ProcessAgainstCodeChange();
+
+
+
+        ProcessCaseLevelChange();
+
+        $('#ClientCode').on("change", function () {
+            ProcessClientCodeChange();
+        });
+        $('#AgainstCode').on("change", function () {
+            ProcessAgainstCodeChange();
+        });
+        $('#CaseLevelCode').on("change", function () {
+            CurrentCaseLevel = parseInt($('#CaseLevelCode').val());
+            $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+            ProcessCaseLevelChange();
+        });
+        $('#ClientClassificationCode').on("change", function () {
+            ClientClassificationCode = $('#ClientClassificationCode').val();
+            ClientClassification = parseInt($('#ClientClassificationCode').val());
+            $("#div_CaseLevelPartialView").empty();
+            $("#PartialViewContainerBoxCC").removeClass("AppHidden").addClass("AppHidden");
+            $("#div_CurrentCaseLevel").removeClass("AppHidden").addClass("AppHidden");
+            $("#div_ArabicData").removeClass("AppHidden").addClass("AppHidden");
+
+            if (ClientClassificationCode == "1") {
+                $("#ClassificationText").text("BANKS");
+            }
+            else if (ClientClassificationCode == "2") {
+                $("#ClassificationText").text("FINANCE");
+            }
+            else if (ClientClassificationCode == "3") {
+                $("#ClassificationText").text("REAL ESTATE");
+            }
+            else if (ClientClassificationCode == "4") {
+                $("#ClassificationText").text("INSURANCE");
+            }
+            else if (ClientClassificationCode == "5") {
+                $("#ClassificationText").text("COMPANIES");
+            }
+            else if (ClientClassificationCode == "6") {
+                $("#ClassificationText").text("INDIVIDUALS");
+            }
+
+            if (CaseTypeCode == "6") {
+                ClientClassificationCode = "7";
+                $("#ClassificationText").text("CORPORATE");
+            }
+
+
+            var PartialContainer = $("#PartialViewContainerCC");
+
+            if ($('#CaseTypeCode').val() == "6") {
+                $('#CaseTypeCode').select2().trigger('change');
+                LoadClientByClassification($('#ClientClassificationCode').val())
+            }
+            else {
+                if ($('#ClientClassificationCode').val() == "0") {
+                    PartialContainer.empty();
+                    var $select = $('#ClientCode');
+                    $select.find('option').remove();
+
+                }
+                else {
+                    LoadClientByClassification($('#ClientClassificationCode').val())
+
+                    _parameters = { ClassificationId: ClientClassificationCode, Mode: $('#CaseId').val() };
+
+                    GetTab(PartialContainer, GetClientClassificationURL, _parameters);
+
+                }
+            }
+
+            console.log("Calling Case Level Change ");
+            ProcessCaseLevelChange();
+
+        });
+        $('#CaseTypeCode').on("change", function () {
+            CaseTypeCode = $('#CaseTypeCode').val();
+            ProcessCaseTypeChange();
+        });
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "241") {
+                ModalTitle = "Add Client";
+                DDLToAppend = $("#ClientCode");
+            }
+            else if (this.id == "285") {
+                ModalTitle = "Add Client Case Type";
+                DDLToAppend = $("#ClientCaseType");
+            }
+            else if (this.id == "16") {
+                ModalTitle = "Add ODB Loan";
+                DDLToAppend = $("#ODBLoanCode");
+            }
+            else if (this.id == "18") {
+                ModalTitle = "Add ODB Bank Branch";
+                DDLToAppend = $("#ODBBankBranch");
+            }
+            else if (this.id == "428") {
+                ModalTitle = "Add Loan Manager";
+                DDLToAppend = $("#LoanManager");
+            }
+            else if (this.id == "532") {
+                ModalTitle = "Add Case Subject";
+                DDLToAppend = $("#CaseSubject");
+            }
+            else if (this.id == "913") {
+                ModalTitle = "ADD ARABIC CLIENT";
+                DDLToAppend = $("#SessionClientId");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $(document).on('blur', '#ClaimAmount', function () {
+            var $ClaimAmount = this.value;
+            var $ClaimAmountClean = this.value.replace(/,(?=.*\.\d+)/g, '');
+
+            console.log("ClaimAmount :: " + $ClaimAmount);
+            console.log("ClaimAmountCl :: " + $ClaimAmountClean);
+            if (parseInt($ClaimAmountClean) >= 100000) {
+                Swal.fire({
+                    type: "info",
+                    title: 'Enter Special Instruction',
+                    html: 'Make sure to Enter Special Instruction or Commission for amount ' + this.value
+                });
+            }
+        });
+
+        //$('#ClaimAmount').on("blur", function () {
+
+
+        //});
+
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateBasic();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            if (ClientClassification == 1) {
+
+                NotValid = ValidateBank();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (ClientClassification == 2) {
+
+                NotValid = ValidateFinance();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (ClientClassification == 3) {
+
+                NotValid = ValidateRealEstate();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            if (CurrentCaseLevel == 3) {
+
+                NotValid = ValidatePrimary();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 4) {
+                NotValid = ValidateAppeal();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 5) {
+                NotValid = ValidateSupreme();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (CurrentCaseLevel == 6) {
+                NotValid = ValidateEnforcement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            console.log($("#hidCourtDecisionChange").val());
+            console.log($("#CurrentHearingDate").val());
+            console.log($("#hidCurrentHearingDate").val());
+            ShowPreSubmit();
+        });
+
+
+        $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+        $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#DIV_TRSOURCE").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#ClientReply').val() == "1") {
+            $("#txtRequirement").removeClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden");
+
+            console.log($("#Requirements").val());
+            console.log($("#FirstEmailDate").val());
+
+            $("#hidRequirement").val($("#Requirements").val());
+            $("#hidFirstEmailDate").val($("#FirstEmailDate").val());
+
+            console.log($("#hidRequirement").val());
+            console.log($("#hidFirstEmailDate").val());
+
+            $('textarea').autoResize();
+
+            if ($("#FirstEmailDate").val() == "") {
+                $("#FirstEmailDate").datepicker("setDate", new Date());
+            }
+        }
+
+        if ($('#TransportationFee').val() == "1") {
+            $("#DIV_TRSOURCE").removeClass("AppHidden");
+        }
+
+        $('#ClientReply').on("change", function () {
+            $("#txtRequirement").removeClass("AppHidden").addClass("AppHidden");
+            $("#txtFirstEmailDate").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#ClientReply').val() == "1") {
+                $("#txtRequirement").removeClass("AppHidden");
+                $("#txtFirstEmailDate").removeClass("AppHidden");
+
+                $('textarea').autoResize();
+
+                if ($("#Requirements").val() == "" && $("#FirstEmailDate").val() == "") {
+                    console.log($("#hidRequirement").val());
+                    console.log($("#hidFirstEmailDate").val());
+                    $("#Requirements").val($("#hidRequirement").val());
+                    $("#FirstEmailDate").datepicker("setDate", $("#hidFirstEmailDate").val());
+                }
+            }
+            else {
+                $("#FirstEmailDate").val("");
+                $("#Requirements").val("");
+            }
+        });
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+
+        $("#divCaseHistory").removeClass("AppHidden").addClass("AppHidden");
+        $("#divAllJudgements").removeClass("AppHidden").addClass("AppHidden");
+        $("#divClosing").removeClass("AppHidden").addClass("AppHidden");
+
+        $('.HistoryDetail').click(function () {
+            $("#divCaseHistory").removeClass("AppHidden").addClass("AppHidden");
+            $("#divAllJudgements").removeClass("AppHidden").addClass("AppHidden");
+            $("#divClosing").removeClass("AppHidden").addClass("AppHidden");
+
+            $(".HistoryDetail").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedClass = $(this).attr("id").split('_')[1];
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+            $(this).addClass(btnClickedActiveClass);
+
+            $("#" + btnClickedClass).removeClass("AppHidden");
+        });
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        $(".AddNewMaster").prop("disabled", false);
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+
+        $('.ClosureDetail').click(function () {
+
+            $(".ClosureDetail").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedClass = $(this).attr("id").split('_')[1];
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+            $(this).addClass(btnClickedActiveClass);
+
+            //$("#" + btnClickedClass).removeClass("AppHidden");
+
+            _parameters = { ClassificationId: btnClickedClass, Mode: $("#CaseId").val() };
+            GetTab($("#divClosureDetail"), GetClientClassificationURL, _parameters);
+
+        });
+    });
+
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+<input type="hidden" id="hidAllowCloseCase" value="@ViewBag.AllowCloseCase" />
+<input type="hidden" id="hidAllowAddClient" value="@ViewBag.AllowAddClient" />
+<input type="hidden" id="hidReqReOpenCase" value="@ViewBag.ReqReOpenCase" />
+@using (Html.BeginForm("TobeReg", "CourtCases", FormMethod.Post, new { id = "frm_ModifyCase" }))
+{
+    <div id="DIV_ModifyCase" class="@ViewBag.FinalClosureInProgress">
+        <div class="card card-danger">
+            <div class="card-header">
+                <div class="text-center">
+                    <span class="h3">BASIC INFORMATION المعلومات الأساسية</span>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <div class="card-body">
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.CaseId)
+                    @Html.HiddenFor(model => model.PartialViewName)
+                    @Html.HiddenFor(model => model.TransportationFee)
+                    @Html.HiddenFor(model => model.UpdatedOn)
+                    @Html.HiddenFor(model => model.SavePV_Data, new { @Value = "_ModifyCase" })
+                    <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.OfficeFileNo)
+                                @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceiveLevelCode)
+                                @Html.DropDownList("ReceiveLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    @Html.LabelFor(model => model.ClientCode)
+                                    <div class="input-group mb-3">
+                                        @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "6" })
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-info AddNewMaster" id="241">
+                                                ADD
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.ClientCode, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientClassificationCode)
+                                @Html.DropDownList("ClientClassificationCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "1" })
+                                @Html.ValidationMessageFor(model => model.ClientClassificationCode, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CaseTypeCode)
+                                @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "4" })
+                            </div>
+                            <div class="form-group">
+                                <label id="divDefClient" class="AppHidden" for="Defendant">PLAINTIFF NAME</label>
+                                <label id="divDefendant" class="" for="Defendant">DEFENDANT NAME</label>
+                                @Html.EditorFor(model => model.Defendant, new { htmlAttributes = new { @class = "form-control", @tabindex = "7", onblur = "fnCheckDuplicate(this)" } })
+                                @Html.ValidationMessageFor(model => model.Defendant, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceptionDate)
+                                @Html.EditorFor(model => model.ReceptionDate, new { htmlAttributes = new { @class = "form-control datepicker", @tabindex = "2" } })
+                                @Html.ValidationMessageFor(model => model.ReceptionDate, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AgainstCode)
+                                @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+                            </div>
+                            <div id="DivOmaniExp" class="col-sm-12">
+                                <div class="row">
+                                    @Html.LabelFor(model => model.OmaniExp)
+                                    <div class="input-group mb-3">
+                                        @Html.DropDownList("OmaniExp", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "14" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div_ArabicData" class="card card-danger AppHidden">
+            <div class="card-header ArabicInfoBanner">
+                <div class="text-center">
+                    <span class="h3">ARABIC DATA البيانات بالعربي</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="SessionClientId">CLIENT الموكل</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("SessionClientId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="913">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="SessionRollDefendentName">DEFENDANT الخصم</label>
+                            @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label class="" for="StatusCode">TRANSELATION</label>
+                        @Html.DropDownList("Translation", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="PartialViewContainerBoxCC" class="card card-info AppHidden">
+            <div class="card-header">
+                <div class="text-center">
+                    <span class="h3" id="ClassificationText"></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="PartialViewContainerCC">
+
+                </div>
+            </div>
+        </div>
+        <div id="div_CurrentCaseLevel" class="card AppHidden">
+            <div class="card-header enfGeneralActive">
+                <div class="text-center">
+                    <span class="h3">CURRENT CASE LEVEL مرحلة التقاضي</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseLevelCode)
+                            @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "8" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="div_CaseLevelPartialView" class="col-sm-12">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DIV_UPDATE" class="row AppHidden">
+            <div class="col-sm-12">
+                <div style="padding-bottom:0px !important;padding-top:10px;" class="UpdateBoxBar">
+                    <div class="row">
+                        <div class="col-sm-12 text-center"><h3>UPDATE التحديث</h3></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                                @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group AppHidden">
+                                <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+                                @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientReply)
+                                @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" id="txtRequirement">
+                                <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group" id="txtFirstEmailDate">
+                                @Html.LabelFor(model => model.FirstEmailDate)
+                                @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <div id="DIV_TRSOURCE" class="form-group">
+                                @Html.LabelFor(model => model.TransportationSource)
+                                @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card-footer text-center col-sm-12">
+                <button id="btnSubmitForm" type="button" class="btn btn-lg btn-cool-blues btn-rounded"><span class="btn-text-med">SAVE</span></button>&nbsp;&nbsp;
+            </div>
+        </div>
+    </div>
+    <div style="padding-top:10px;padding-bottom:10px;" class="col-sm-12">
+        <div class="row">
+            <div class="col-3">
+                <button type="button" id="btn_divCaseHistory" style="font-size: 1.2rem !important;" class="btn btn-block divCaseHistory @ViewBag.divCaseHistoryActive btn-lg HistoryDetail">CASE HISTORY</button>
+            </div>
+            <div class="col-3">
+                <button type="button" id="btn_divAllJudgements" style="font-size: 1.2rem !important;" class="btn btn-block divAllJudgements @ViewBag.divAllJudgementsActive btn-lg HistoryDetail">ALL JUDGEMENT جميع الأحكام</button>
+            </div>
+            <div class="col-3">
+                <button type="button" id="btn_divClosing" style="font-size: 1.2rem !important;" class="btn btn-block divClosing @ViewBag.divClosingActive btn-lg HistoryDetail">FILE CLOSURE غلق الملف</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="divCaseHistory" class="card card-success">
+        <div class="card-header">
+            <div class="text-center">
+                <span class="h3">CASE HISTORY</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div style="text-align:right !important" id="div_CaseHistoryDetail" dir="auto">@Html.Raw((String)ViewBag.CaseHistoryDetail)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divAllJudgements" class="card card-success">
+        <div class="card-header">
+            <div class="text-center">
+                <span class="h3">ALL JUDGEMENT جميع الأحكام</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div style="text-align:right !important" id="div_AllJudgementsDetail" dir="auto">@Html.Raw((String)ViewBag.AllJudgementsDetail)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("FileClosure", "CommonTask", FormMethod.Post, new { id = "frm_FileClose", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.FileClosureDetail.btnSave)
+    @Html.HiddenFor(model => model.FileClosureDetail.CaseId)
+    @Html.HiddenFor(model => model.CaseId)
+
+    <div id="divClosing" class="card card-success">
+        <div class="card-header divClosingActive">
+            <div class="text-center">
+                <span class="h3">FILE CLOSURE غلق الملف</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="padding-top:10px;padding-bottom:10px;" class="col-sm-12">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" id="btn_ClosurePartial" style="font-size: 1.2rem !important;" class="btn btn-block ClosurePartial @ViewBag.ClosurePartialActive btn-lg ClosureDetail">PARTIAL CLOSURE<br />الغلق الجزئي</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" id="btn_ClosureFinal" style="font-size: 1.2rem !important;" class="btn btn-block ClosureFinal @ViewBag.ClosureFinalActive btn-lg ClosureDetail">FINAL CLOSURE<br />الغلق الكلي</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" id="btn_ClosureAccounts" style="font-size: 1.2rem !important;" class="btn btn-block ClosureAccounts @ViewBag.ClosureAccountsActive btn-lg ClosureDetail" @ViewBag.AccountTeam>ACCOUNTS<br />المحاسبة</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" id="btn_ClosureArchive" style="font-size: 1.2rem !important;" class="btn btn-block ClosureArchive @ViewBag.ClosureArchiveActive btn-lg ClosureDetail" @ViewBag.AccountTeam>ARCHIVE<br />الأرشيف</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" id="btn_ClosureNotes" style="font-size: 1.2rem !important;" class="btn btn-block ClosureNotes @ViewBag.ClosureNotesActive btn-lg ClosureDetail">NOTES<br />ملاحظات</button>
+                    </div>
+                </div>
+            </div>
+            <div id="divClosureDetail" style="padding-top:10px">
+
+            </div>
+        </div>
+    </div>
+}
+<div class="modal fade" id="modal-ViewDefendent">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title">CHECK DETAIL</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <table id="tblDefaulterDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Office File No</th>
+                            <th>Account Contract No</th>
+                            <th>Client File No</th>
+                            <th>Defendant</th>
+                            <th>Case Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="modal-AddMasterValue2">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <select id="ClientClassification" class="form-control select2bs4">
+                            <option value="1">BANKS</option>
+                            <option value="2">FINANCE</option>
+                            <option value="3">REAL ESTATE</option>
+                            <option value="4">INSURANCE</option>
+                            <option value="5">COMPANIES</option>
+                            <option value="6">INDIVIDUALS</option>
+                            <option value="7">CONSULTANCY</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient2()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

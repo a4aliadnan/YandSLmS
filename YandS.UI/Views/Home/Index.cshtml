@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Case Management System - Home Page";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Y & S ASSOCIATES</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">HOME</a></li>
+                        <li class="breadcrumb-item active">MAIN PAGE</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="col-sm-12">
+            <div class="row text-center">
+                <div class="col-lg-4 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h4>TOTAL CASES : @ViewBag.ToBeRegTTL</h4>
+                            <p>MUSCAT : @ViewBag.ToBeRegMCT</p>
+                            <p>SALALAH : @ViewBag.ToBeRegSLL</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            <h4>TO BE REGISTER</h4>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h4>TOTAL CASES : @ViewBag.PrimaryTTL</h4>
+                            <p>MUSCAT : @ViewBag.PrimaryMCT</p>
+                            <p>SALALAH : @ViewBag.PrimarySLL</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            <h4>PRIMARY COURT</h4>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-orange">
+                        <div class="inner">
+                            <h4>TOTAL CASES : @ViewBag.AppealTTL</h4>
+                            <p>MUSCAT : @ViewBag.AppealMCT</p>
+                            <p>SALALAH : @ViewBag.AppealSLL</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            <h4>APPEAL COURT</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-lg-6 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-purple text-secondary" style="background-color: #D2B4DE !important; color:black !important;">
+                        <div class="inner">
+                            <h4>TOTAL CASES : @ViewBag.SupremeTTL</h4>
+                            <p>MUSCAT : @ViewBag.SupremeMCT</p>
+                            <p>SALALAH : @ViewBag.SupremeSLL</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer" style="color:black !important;">
+                            <h4>SUPREME COURT</h4>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-6">
+                    <!-- small card -->
+                    <div class="small-box bg-primary">
+                        <div class="inner">
+                            <h4>TOTAL CASES : @ViewBag.EnforcementTTL</h4>
+                            <p>MUSCAT : @ViewBag.EnforcementMCT</p>
+                            <p>SALALAH : @ViewBag.EnforcementSLL</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            <h4>ENFORCEMENT</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div style="padding-top:10px;" class="fill">
+            <img src="~/Content/dist/img/MainPagePic0.jpg" />
+        </div>*@
+
+
+    </section>
+    <!-- /.content -->
+</div>
+@section pagespecific {
+  
+}

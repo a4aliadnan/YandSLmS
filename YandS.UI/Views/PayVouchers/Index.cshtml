@@ -1,0 +1,222 @@
+﻿@model IEnumerable<YandS.UI.Models.PayVoucher>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Voucher</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Payment Voucher List</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">Payment Voucher List</h3>
+
+                <div class="card-tools">
+                    @Html.ActionLink("Create New", "Create", "PayVouchers", null, new { @class = "btn btn-primary btn-sm" })
+
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="IndexTable"  class="table table-bordered table-striped dataTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                System No.
+                            </th>
+                            <th>
+                                PV Number.
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Voucher_Date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.VoucherType)
+                            </th>
+                            <th>
+                               Authorize Status
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Amount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Status)
+                            </th>
+                          
+                            <th style="width:100px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            string rowColor = string.Empty;
+
+                            if (item.Status == "-1")
+                            {
+                                rowColor = "PVcancel";
+                            }
+                            else if (item.VoucherStatus == "1" && item.Status == "1")
+                            {
+                                rowColor = "PVclear";
+                            }
+                            else if (item.VoucherStatus == "1" && item.Status == "2")
+                            {
+                                rowColor = "PVBounce";
+                            }
+                            else if (item.VoucherStatus == "1" && item.Status == "3")
+                            {
+                                rowColor = "PVnotDeposit";
+
+                            }
+                            else if (item.VoucherStatus == "2")
+                            {
+                                rowColor = "PVRejected";
+
+                            }
+                            else if (item.VoucherStatus == "0")
+                            {
+                                rowColor = "PVInitiated";
+
+                            }
+                            else if (item.VoucherStatus == "1")
+                            {
+                                rowColor = "PVApproved";
+
+                            }
+
+                            <tr class="@rowColor">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Voucher_No)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PV_No)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Voucher_Date)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.VoucherTypeName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.VoucherStatusName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StatusName)
+                                </td>
+                                @*<td>
+                                    @if (item.Credit_Account > 0)
+                                    {
+                                        @Html.DisplayFor(modelItem => item.CreditAccountName)
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.PaymentHeadName)
+                                    }
+
+                                </td>*@
+                                @*<td>
+                                    @Html.DisplayFor(modelItem => item.DebitAccountName)
+                                </td>*@
+                                <td class="project-actions text-right">
+                                    @if (User.IsInRole("VoucherApproval"))
+                                    {
+                                        <a class="btn btn-primary btn-lg" title="Approve / Reject Voucher" href="@Url.Action("ApproveVoucher", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-user"></i></a>
+                                    }
+                                    else
+                                    {
+                                        if (item.Status == "0" && item.VoucherStatus == "0")
+                                        {
+                                            <a class="btn btn-danger btn-sm" title="Cancel Voucher" href="@Url.Action("Delete", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-trash"></i></a>
+                                        }
+                                        else if (item.Status == "-1" && item.VoucherStatus == "0")
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            if (item.Status == "1" && item.VoucherStatus == "1")
+                                            {
+                                                <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="@Url.Action("PrintVoucher", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-file"></i></a>
+                                            }
+                                            else if ((item.Status == "0" && item.VoucherStatus == "1") || (item.Status == "3" && item.VoucherStatus == "1"))
+                                            {
+                                                <a class="btn btn-info btn-sm" title="Edit Voucher" href="@Url.Action("Edit", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-pencil-alt"></i></a>
+                                                <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="@Url.Action("PrintVoucher", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-file"></i></a>
+                                            }
+                                            else if (item.VoucherStatus == "2")
+                                            {
+                                            }
+                                            else if (item.Status == "2")
+                                            {
+                                                <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="@Url.Action("PrintVoucher", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-file"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-danger btn-sm" title="Cancel Voucher" href="@Url.Action("Delete", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-trash"></i></a>
+                                                <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="@Url.Action("PrintVoucher", "PayVouchers", new { id = item.Voucher_No })" id=@item.Voucher_No><i class="fas fa-file"></i></a>
+                                            }
+                                        }
+
+                                    }
+
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Index PV Page");
+            var bootstrapTooltip = $.fn.tooltip.noConflict();
+            $.fn.bstooltip = bootstrapTooltip;
+            $('.btn').bstooltip();
+        
+            $('#IndexTable').DataTable({
+                //scrollY: '50vh',
+                scrollCollapse: true,
+                //paging: false,
+                "paging": true,
+                pageLength: 10,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "order": [[0, "dsc"]],
+                'aoColumnDefs': [{
+                    'bSortable': false,
+                    'aTargets': [-1] /* 1st one, start by the right */
+                }]
+            });
+        });
+    </script>
+}

@@ -1,0 +1,97 @@
+﻿@model YandS.DAL.RepCaseParameterForm
+@{
+    ViewBag.Title = "Y & S Associates - Court Cases By Status Report";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Court Cases By Status Report</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Reports</li>
+                        <li class="breadcrumb-item active"><a href="#">Court Cases By Status</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm())
+        {
+            <div class="card card-success">
+
+                <div class="card-header">
+                    <h3 class="card-title">Court Cases By Status Report - Parameters</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="card card-success card-outline card-outline-tabs">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" id="CourtCase-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="CaseInformaton-tab" data-toggle="pill" href="#tabs-CaseInformaton" role="tab" aria-controls="tabs-CaseInformaton" aria-selected="true">Report Parameters</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="CourtCase-tabContent">
+                                    <div class="tab-pane fade show active" id="tabs-CaseInformaton" role="tabpanel" aria-labelledby="CaseInformaton-tab">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Location)
+                                                    @Html.DropDownList("Location", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ReceptionDateFrom,"Date From")
+                                                    @Html.EditorFor(model => model.ReceptionDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CaseStatus)
+                                                    @Html.DropDownList("CaseStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ReceptionDateTo, "Date To")
+                                                    @Html.EditorFor(model => model.ReceptionDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-file-archive"></i> Generate Report</button>
+                </div>
+            </div>
+        }
+    </section>
+</div>
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            console.log("Reporting Case Detail form ");
+            bsCustomFileInput.init();
+        });
+    </script>
+}

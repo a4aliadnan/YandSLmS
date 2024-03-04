@@ -1,0 +1,78 @@
+﻿<script type="text/javascript">
+    $('.datepicker').datepicker({
+        format: "dd/mm/yyyy",
+        todayBtn: "linked",
+        clearBtn: true,
+        autoclose: true,
+        orientation: "bottom auto"
+    });
+    $('.select2bs4').select2({
+        theme: 'bootstrap4'
+    });
+    $('.AddNewMaster').on("click", function () {
+        console.log(this.id);
+        console.log($(this).val());
+        var ModalTitle = "";
+        $("#MstParentId").val(this.id);
+
+        if (this.id == "241") {
+            ModalTitle = "ADD Client";
+            DDLToAppend = $("#ClientCode");
+        }
+        else if (this.id == "285") {
+            ModalTitle = "ADD Client Case Type";
+            DDLToAppend = $("#ClientCaseType");
+        }
+        else if (this.id == "16") {
+            ModalTitle = "ADD ODB Loan";
+            DDLToAppend = $("#ODBLoanCode");
+        }
+        else if (this.id == "18") {
+            ModalTitle = "ADD ODB Bank Branch";
+            DDLToAppend = $("#ODBBankBranch");
+        }
+        else if (this.id == "428") {
+            ModalTitle = "ADD Loan Manager";
+            DDLToAppend = $("#LoanManager");
+        }
+        else if (this.id == "532") {
+            ModalTitle = "ADD Case Subject";
+            DDLToAppend = $("#CaseSubject");
+        }
+
+        $("#ModalTitle").text(ModalTitle);
+
+        $('#modal-AddMasterValue').modal('show');
+
+    });
+    InitClaimAmountFormatting();
+    //$('#ClaimAmount').on("blur", function () {
+    //    if (parseInt(this.value) >= 100000) {
+    //        Swal.fire({
+    //            type: "info",
+    //            title: 'Enter Special Instruction',
+    //            html: 'Make sure to Enter Special Instruction or Commission for amount ' + this.value
+    //        });
+    //    }
+
+    //});
+</script>
+@model YandS.UI.Models.ToBeRegisterVM
+@Html.HiddenFor(model => model.CaseSubject)
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Subject)
+            @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control", @tabindex = "12" } })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClaimAmount)
+            @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control", @tabindex = "12" } })
+        </div>
+    </div>
+    <div class="col-sm-4">
+    </div>
+</div>
+

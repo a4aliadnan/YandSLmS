@@ -1,0 +1,273 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "ALLSESSIONS";
+
+    $(document).ready(function () {
+        $('.clsFollowup').removeClass("active");
+        $('.clsSessionRoll').removeClass("active").addClass("active");
+        AddbuttonPressHandler();
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 5,
+            //dom: 'Blfrtip',
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'SESSION ROLL  مواعيد الجلسات',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFN', name: 'OfficeFN', autoWidth: true },
+                { data: 'NextHearingDate', name: 'NextHearingDate', autoWidth: true },
+                { data: 'SessionLevelName', name: 'SessionLevelName', autoWidth: true },
+                { data: 'CountLocationName', name: 'CountLocationName', autoWidth: true },
+                { data: 'SessionRollClientName', name: 'SessionRollClientName', autoWidth: true },
+                { data: 'SessionRollDefendentName', name: 'SessionRollDefendentName', autoWidth: true },
+                { data: 'SessionFileStatusDesc', name: 'SessionFileStatusDesc' },
+                { data: 'CourtDecision', name: 'CourtDecision' },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false, render: function (data, type, row) { return FormatAccount_ClientFileNo(row); } },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if ($("#txtUserRole").val() == "VoucherApproval")
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="Cancel Sessions Roll" id="D_' + row.SessionRollId + '" href="javascript:void(0)"><i class="fas fa-trash"></i></a>';
+                            else {
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i></a>';
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [[1, "asc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 2
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 4
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 5
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+
+                    },
+                    targets: 7
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            if (data.length > 40)
+                                return "<div class='text-wrap'>" + data.replace(/\W+/g, " ") + "</div>";
+                            else
+                                return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+
+                    },
+                    targets: 8
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 9
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 6
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                if (data.CaseDismisses == "Y") {
+                    rowColor = "IsSessionCaseDismissed";
+                }
+
+                $(row).addClass(rowColor);
+            },
+            "drawCallback": function (settings) {
+                //alert('DataTables has redrawn the table');
+                if (SmartFilter) {
+                    SmartFilter = false;
+                    $("#ModificationContainer").empty();
+                }
+            },
+            initComplete: function () {
+                console.log("DataTable AllSessions Initiated !!");
+                var info = table.page.info();
+
+                $('#TTL').text(info.recordsTotal);
+
+                //table.on('draw.dt', function (data) {
+                //    var SearchValue = $("#HtmlTable_filter.dataTables_filter input").val();
+                //    console.log(SearchValue);
+                //    if (!table.data().count()) {
+                //        //alert('Empty table');
+                //        CheckCaseDetail(SearchValue);
+                //    }
+                //});
+
+                $("#HtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            SmartFilter = true;
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            SmartFilter = true;
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+        var AllowedUsers = ["1", "2", "3"];
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) >= 0) {
+            $(".clsaddNewFile").removeClass("AppHidden");
+        }
+
+    });
+
+
+
+    $('.table tbody').on('click', '.btnLink', function () {
+        var _Mode = this.id.split('_')[0];
+        var _id = parseInt(this.id.split('_')[1]);
+
+        var data = table.row($(this).parents('tr')).data();
+
+        processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId, data);
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row AllSessionsActive">
+    <div class="col-sm-12 text-center"><h3>SESSION ROLL مواعيد الجلسات</h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row AllSessionsActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" id="Div_OfficeFileNoMain" class="row">
+    <div class="col-sm-2">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="input-group mb-3">
+                    <input id="OfficeFileNoMain" class="form-control form-control" type="text" placeholder="ADD NEW FILE">
+                    <div class="input-group-append">
+                        <button type="button" onclick="GetCaseDetailMain(document.getElementById('OfficeFileNoMain').value,dataForTable)" class="btn btn-info" id="btnCaseSearchMain">
+                            SEARCH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+    </div>
+    <div class="col-sm-2">
+
+
+    </div>
+</div>
+@Html.Partial("_CreateSessionInfoBanner")
+
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width:50px !important" class="all VMiddle text-center">F.N</th>
+                <th class="VMiddle">NEXT<br />HEARING<br />DATE<br /> موعد<br />الجلسة<br />القادمة</th>
+                <th style="width:80px !important" class="VMiddle text-center">CURRENT<br />CASE LEVEL</th>
+                <th style="width:80px !important" class="VMiddle text-center">COURT</th>
+                <th style="width:100px !important" class="VMiddle text-center">CLIENT الموكل</th>
+                <th style="width:100px !important" class="VMiddle text-center">DEF الخصم</th>
+                <th style="width:200px !important" class="VMiddle text-center">FILE STATUS<br />حالة الملف</th>
+                <th class="VMiddle">COURT DECISION<br />قرار المحكمة</th>
+                <th style="width:200px !important;" class="VMiddle text-center">CLIENT REF</th>
+                <th class="all"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

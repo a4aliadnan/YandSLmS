@@ -1,0 +1,46 @@
+﻿@model YandS.UI.Models.ApplicationUser
+@{if (Model != null)
+  {     
+    <div id="expanderContent">
+        <table style='width: 100%'>
+            <tr>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    User Name:
+                </td>
+                <td style='width: 28%' class='userTable'>
+                    @Model.UserName
+                </td>
+
+                <td style='font-weight: bold' class='userTable'>
+                    Inactive:
+                </td>
+                <td class='userTable'>
+                    @Html.DisplayFor(modelItem => modelItem.Inactive)
+                </td>                                                  
+            </tr>
+            <tr>                           
+                <td style='width: 8%; font-weight: bold' class='userTable'>
+                    Last Name:
+                </td>
+                <td style='width: 20%' class='userTable'>
+                    @Model.Lastname
+                </td>     
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    Firstname:
+                </td>
+                <td style='width: 30%' class='userTable'>
+                    @Model.Firstname
+                </td>                              
+            </tr>      
+            <tr>
+                <td style='font-weight: bold' class='userTable'>
+                    Email:
+                </td>
+                <td class='userTable'>
+                    @Model.Email
+                </td>
+            </tr>      
+        </table>
+    </div>
+  }
+}

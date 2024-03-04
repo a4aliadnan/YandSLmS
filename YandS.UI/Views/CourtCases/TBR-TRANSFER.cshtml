@@ -1,0 +1,71 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        $(".AddNewMaster").prop("disabled", false);
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+
+        $('textarea').autoResize();
+    });
+</script>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+            @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="col-sm-12">
+            <div class="row">
+                <label for="ConsultantId">ADVISOR المستشار</label>
+                <div class="input-group mb-3">
+                    @Html.DropDownList("ConsultantId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    <div class="input-group-append">
+                        <button type="button" onclick="AddMasterValue('ADD CONSULTANT NAME','ConsultantId','1408')" class="btn btn-info" id="1408">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        @Html.Partial("_TBR_REMARKS", Model)
+    </div>
+</div>

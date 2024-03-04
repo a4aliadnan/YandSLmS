@@ -1,0 +1,119 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+
+        console.log("_CaseRegPayVoucher Partial Page Loaded");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        //var form = $("#frm_CourtDetail");
+        ////console.log(form);
+        ////console.log(CourtDetailContainer);
+        //form.removeData('validator');
+        //form.removeData('unobtrusiveValidation');
+        //$.validator.unobtrusive.parse(form);
+    });
+</script>
+@model YandS.UI.Models.CaseRegistrationVM
+<div class="card card-info card-outline">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-edit"> </i> OBJECTION
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PrimaryObjectionNo)
+                    @Html.EditorFor(model => model.PrimaryObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PrimaryObjectionCourt)
+                    @Html.DropDownList("PrimaryObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApealObjectionNo)
+                    @Html.EditorFor(model => model.ApealObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApealObjectionCourt)
+                    @Html.DropDownList("ApealObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SupremeObjectionNo)
+                    @Html.EditorFor(model => model.SupremeObjectionNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SupremeObjectionCourt)
+                    @Html.DropDownList("SupremeObjectionCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-info card-outline">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-edit"> </i> PLAINT
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PrimaryPlaintNo)
+                    @Html.EditorFor(model => model.PrimaryPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PrimaryPlaintCourt)
+                    @Html.DropDownList("PrimaryPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApealPlaintNo)
+                    @Html.EditorFor(model => model.ApealPlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApealPlaintCourt)
+                    @Html.DropDownList("ApealPlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SupremePlaintNo)
+                    @Html.EditorFor(model => model.SupremePlaintNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SupremePlaintCourt)
+                    @Html.DropDownList("SupremePlaintCourt", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

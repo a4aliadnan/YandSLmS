@@ -1,0 +1,131 @@
+﻿<script type="text/javascript">
+    var TobeUpdateDataTable;
+    $(document).ready(function () {
+        if (typeof TobeUpdateDataTable != 'undefined')
+            TobeUpdateDataTable.destroy();
+
+        TobeUpdateDataTable = $('#TobeUpdateHtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": -1,
+            //dom: 'Blfrtip',
+            dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'Session Roll - TOBE UPDATE',
+                    text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "TOBEUPDATE";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                { data: 'DaysCounterTobeUpdate', name: 'DaysCounterTobeUpdate', autoWidth: true },
+                { data: 'NextHearingDate', name: 'NextHearingDate', autoWidth: true },
+                { data: 'CountLocationName', name: 'CountLocationName', autoWidth: true },
+                { data: 'SessionRollClientName', name: 'SessionRollClientName', autoWidth: true },
+                { data: 'SessionRollDefendentName', name: 'SessionRollDefendentName', autoWidth: true },
+                { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
+                { data: 'CaseId', name: 'CaseId', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if ($("#txtUserRole").val() == "VoucherApproval")
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="Cancel Sessions Roll" id="D_' + row.SessionRollId + '" href="#"><i class="fas fa-trash"></i></a>';
+                            else {
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Sessions Roll" id="E_' + row.SessionRollId + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [[1, "desc"]],
+            'aoColumnDefs': [
+                { 'bSortable': false, 'aTargets': [-1] }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                if (data.CaseDismisses == "Y") {
+                    rowColor = "IsSessionCaseDismissed";
+                }
+
+                $(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable TobeUpdateDataTable Initiated !!");
+
+                $("#TobeUpdateHtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            TobeUpdateDataTable.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            TobeUpdateDataTable.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+    $('.table tbody').on('click', '.btnLink', function () {
+        var _Mode = this.id.split('_')[0];
+        var _id = parseInt(this.id.split('_')[1]);
+
+        var data = TobeUpdateDataTable.row($(this).parents('tr')).data();
+
+        console.log(data);
+        console.log(_id);
+        console.log(data.CaseId);
+        console.log(data.SessionRollId);
+        
+        processbtnLinkClick(_Mode, data.SessionRollId, data.CaseId);
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SessionTobeUpdatedActive">
+    <div class="col-sm-12 text-center"><h3>TO BE UPDATED</h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="TobeUpdateHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th class="all">F.N</th>
+                <th>D.C</th>
+                <th>DATE التاريخ</th>
+                <th>COURT</th>
+                <th>CLIENT الموكل</th>
+                <th>DEF الخصم</th>
+                <th>COURT DECISION قرار المحكمة</th>
+                <th>CASE NO.</th>
+                <th class="all"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

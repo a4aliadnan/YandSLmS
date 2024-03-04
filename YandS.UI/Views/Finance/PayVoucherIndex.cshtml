@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Payment Voucher List";
+    ViewBag.DataFor = "INTRA";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        INTRA TRANSACTION
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Intra Transaction List</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">
+                    INTRA TRANSACTION LIST
+                </h3>
+                <div class="card-tools">
+                    <button title="CREATE INTRA TRANSACTION" class="btn btn-primary btn-sm bg-maroon" onclick="location.href='@Url.Action("PayVoucherCreateIntra", "Finance")';return false;">CREATE INTRA TRANSACTION</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="IndexTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="all">
+                                NO.
+                            </th>
+                            <th>
+                                DATE
+                            </th>
+                            <th>
+                                REASON
+                            </th>
+                            <th>
+                                STATUS
+                            </th>
+                            <th>AMOUNT</th>
+                            @*<th>VAT AMOUNT</th>
+                            <th>TOTAL AMOUNT</th>*@
+                            <th>
+                                MODE
+                            </th>
+
+
+                            <th class="all"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        var GetIndexDataURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { DataFor = @ViewBag.DataFor })';
+        var GetIndexDataREFURL = '@Url.Action("AjaxIndexDataPV", "CommonTask", new { DataFor = @ViewBag.DataFor })';
+        var table;
+        var tableRefundable;
+        var tableNonRefundable;
+        var tableRefundableApr;
+        var tableNonRefundableApr;
+        var tableRefundableRej;
+        var tableNonRefundableRej;
+        var tablePDC;
+        var GetDocNameURL = '@Url.Action("GetPVDocName", "CommonTask", new { area = string.Empty })';
+        function openInNewTab(url) {
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+        $(document).ready(function () {
+            console.log("Index PV Page");
+
+            table = $('#IndexTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": false,
+                "destroy": true,
+                "ordering": true,
+                "ajax": {
+                    "url": GetIndexDataURL,
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { data: 'PV_No', name: 'PV_No', autoWidth: true },
+                    { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                    { data: 'TransReasonName', name: 'TransReasonName', autoWidth: true },
+                    { data: 'VoucherStatusName', name: 'PaymentHeadName', autoWidth: true },
+                    //{ data: 'Amount', name: 'Amount', autoWidth: true },
+                    //{ data: 'VatAmount', name: 'VatAmount', autoWidth: true },
+                    { data: 'TotalAmount', name: 'TotalAmount', autoWidth: true },
+                    { data: 'PaymentModeName', name: 'PaymentModeName', autoWidth: true },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            console.log(data.PV_No);
+                            console.log(data.Status);
+                            console.log(data.VoucherStatus);
+
+                            if (type === 'display') {
+                                if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && data.VoucherStatus == "0")
+                                    return '<a class="btn btn-primary btn-SM" title="Approve / Reject Voucher" href="/Finance/PayVoucherApprove/' + row.Voucher_No + '"><i class="fas fa-user"></i></a>';
+                                else if ($("#txtUserRole").val() == "VoucherApproval" && data.Status == "0" && parseInt(data.VoucherStatus) > 0)
+                                    return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                else {
+                                    if (data.Status == "0" && data.VoucherStatus == "0")
+                                        return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a>';
+                                    else if (data.Status == "-1" && data.VoucherStatus == "0")
+                                        return null;
+                                    else {
+                                        if (data.Status == "1" && data.VoucherStatus == "1")
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if ((data.Status == "0" && data.VoucherStatus == "1") || (data.Status == "3" && data.VoucherStatus == "1"))
+                                            return '<a class="btn btn-info btn-sm" title="Edit Voucher" href="/Finance/PayVoucherEdit/' + row.Voucher_No + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else if (data.VoucherStatus == "2")
+                                            return null;
+                                        else if (data.Status == "2")
+                                            return '<a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                        else
+                                            return '<a class="btn btn-danger btn-sm" title="Cancel Voucher" href="/Finance/PayVoucherDelete/' + row.Voucher_No + '"><i class="fas fa-trash"></i></a> <a class="btn btn-primary btn-sm" title="Print Voucher" target="_blank" href="/Finance/PayVoucherPrint/' + row.Voucher_No + '"><i class="fas fa-file"></i></a> <a class="btn btn-success btn-sm ShowDocsBTR" title="SHOW BANK TRANSFER DOCUMENTS" href="#" id="' + row.Voucher_No + '"><i class="fas fa-arrow-circle-down"></i></a>';
+                                    }
+                                }
+                            }
+                            return data;
+                        },
+                        className: "project-actions text-right"
+                    }],
+                "order": [[0, "desc"]],
+                'aoColumnDefs': [
+                    { 'bSortable': false, 'aTargets': [-1] },
+                    { type: 'natural', targets: 0 }
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    var rowColor = "";
+                    console.log(data.VoucherStatus);
+
+                    if (data.VoucherStatus == "2") {
+                        rowColor = "PVRejected";
+
+                    }
+                    else if (data.VoucherStatus == "0") {
+                        rowColor = "PVpending";
+
+                    }
+                    else if (data.VoucherStatus == "1") {
+                        rowColor = "PVApproved";
+
+                    }
+                    $(row).addClass(rowColor);
+                },
+                initComplete: function () {
+                    console.log("DataTable Initiated !!");
+                    //var bootstrapTooltip = $.fn.tooltip.noConflict();
+                    //$.fn.bstooltip = bootstrapTooltip;
+                    //$('.btn').bstooltip();
+
+                    $(".dataTables_filter input")
+                        .unbind() // Unbind previous default bindings
+                        .bind("keyup", function (e) { // Bind our desired behavior
+                            //console.log(e.keyCode);
+                            // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                            if (e.keyCode == 13) {
+                                // Call the API search function
+                                table.search(this.value).draw();
+                            }
+                            // Ensure we clear the search if they backspace far enough
+                            if (this.value == "") {
+                                table.search("").draw();
+                            }
+                            return;
+                        });
+                }
+            });
+
+
+            $('.table tbody').on('click', '.ShowDocsBTR', function () {
+                GetDocName(this.id, "PVTransfers");
+                return false;
+            });
+
+            $('.table tbody').on('click', '.ShowDocsPV', function () {
+                GetDocName(this.id, "PVDocuments");
+                return false;
+            });
+
+            function GetDocName(p_id, p_type) {
+                console.log("p_id");
+                console.log(p_id);
+
+                console.log("p_type");
+                console.log(p_type);
+
+                _parameters = { Id: p_id, type: p_type };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: GetDocNameURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            if (Result.FileName == "#") {
+                                Swal.fire({
+                                    type: "error",
+                                    title: 'Error...',
+                                    html: "Document not Found"
+                                });
+                            }
+                            else {
+                                openInNewTab("/Uploads/" + p_type + "/" + Result.FileName);
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

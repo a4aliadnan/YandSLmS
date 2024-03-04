@@ -1,0 +1,47 @@
+﻿@model YandS.UI.Models.CaseInvoiceFeeCalculation
+@using (Html.BeginCollectionItem("FeeCaclId"))
+{
+<div class="caseinvoicefeeCalculationRow">
+    @Html.HiddenFor(model => model.FeeCaclId)
+    @Html.HiddenFor(model => model.InvoiceId)
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="form-group" style="padding-left:30px;padding-top:10px;">
+                <div class="icheck-primary d-inline">
+                    @Html.CheckBoxFor(model => model.ShowInInvoice, new { @class = "chkReadOnly"  })
+                    @Html.LabelFor(model => model.ShowInInvoice)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control ClaimAmountPctCalc ClaimAmount dlsDigits", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmountPct, new { htmlAttributes = new { @class = "form-control ClaimAmountPctCalc ClaimAmountPct dlsDigits", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.ClaimAmountCalculated, new { htmlAttributes = new { @class = "form-control txtClaimAmountValue", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.FeeAmountPct, new { htmlAttributes = new { @class = "form-control FeeAmountPctCalc dlsDigits", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.EditorFor(model => model.FeeAmountCalculated, new { htmlAttributes = new { @class = "form-control txtFeeAmountValue", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="col-sm-1">
+        </div>
+
+    </div>
+</div>
+ }
+

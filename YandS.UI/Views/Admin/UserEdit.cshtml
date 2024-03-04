@@ -1,0 +1,42 @@
+﻿@model YandS.UI.Models.ApplicationUser
+@{
+    Layout = "~/Views/Shared/_LayoutRBAC.cshtml";
+}
+@{
+    ViewBag.Title = "User - " + Model.UserName;
+    if ((Model.UserName != null) && (Model.UserName != ""))
+    {
+        ViewBag.Title = ViewBag.Title + " (" + Model.UserName + ")";
+    }
+}
+@using (Html.BeginForm("UserEdit", "Admin", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+    <input name='User_Id' id='User_Id' type="hidden" value="@ViewBag.UserId" />
+    <fieldset>
+        <legend>
+            <h3 style="font-weight:bold; font-size:x-large">
+                User Details
+            </h3>
+        </legend>
+        @Html.Partial("_userDetailsEdit", Model)
+        <br />
+        <input class="btn btn-default" type="submit" value="Save" />
+    </fieldset>
+
+    <fieldset>
+        <legend>
+            <h3>
+                Roles Associated with this User
+            </h3>
+        </legend>
+        <div class="panel" id="RolesTable">
+            @Html.Partial("_ListUserRoleTable", Model)
+        </div>
+        @Html.Partial("_ListEditableUserRoleTable")
+    </fieldset>
+}
+<br />
+<div>
+    @Html.ActionLink("Go to Users", "Index", "Admin")
+</div>

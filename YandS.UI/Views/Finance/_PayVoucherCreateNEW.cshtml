@@ -1,0 +1,1046 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var LoadCaseLevelURL = '@Url.Action("LoadCaseLevelByCaseId", "CommonTask", new { area = string.Empty })';
+    var LoadPayForURL = '@Url.Action("LoadPayFor", "CommonTask", new { area = string.Empty })';
+    var GetCaseDetailURL = '@Url.Action("GetCaseDetailByCaseId", "CommonTask", new { area = string.Empty })';
+    var CreatePVURL = '@Url.Action("PayVoucherCreateRefNonRef", "Finance", new { area = string.Empty })';
+    var MYPVURL = '@Url.Action("AjaxIndexDataPV", "Finance", new { area = string.Empty })';
+    var PayForRemarks = "";
+    var IsValidOfficeFileNo = true;
+    var skipIDs = "1,2,3";
+    var table;
+    var dataForTable = "MY_TASK-PV";
+
+    function ProcessAddClient() {
+        var url = "";
+        var _MstDesc = ""
+        var _MstParentId = 0;
+        var _Remarks = "";
+
+        var _PayToBankName = "";
+        var _PayToAccountNumber = "";
+        var _PayToEmail = "";
+        var _PayToContactNo = "";
+        var _PayMst_Value = "";
+
+        var PAYTOs = ["1900", "1901", "1902", "1903", "1905"];
+        if (PAYTOs.indexOf($("#MstParentId").val()) >= 0) {
+            if ($("#PayToMstDesc").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter PAY TO BENEFICIARY'
+                });
+
+                return false;
+            }
+
+            if ($("#PayToEmail").val() == "") {
+
+            }
+            else {
+                if (!validateEmail($("#PayToEmail").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Email Address'
+                    });
+
+                    return false;
+                }
+            }
+
+            if ($("#PayToContactNo").val() == "") {
+
+            }
+            else {
+                if (!validateContactNo($("#PayToContactNo").val())) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Enter Valid Contact No'
+                    });
+
+                    return false;
+                }
+            }
+
+            url = AddNewPayToDetailURL;
+
+            _MstParentId = parseInt($("#MstParentId").val());
+            _MstDesc = $("#PayToMstDesc").val();
+
+            var _PayToBankName = $("#PayToBankName").val();
+            var _PayToAccountNumber = $("#PayToAccountNumber").val();
+            var _PayToEmail = $("#PayToEmail").val();
+            var _PayToContactNo = $("#PayToContactNo").val();
+            var _PayToMessageLang = $("#PayToMessageLang").val();
+
+            if ($(".clsDisableInModify").hasClass("disableDIV")) {
+                _PayMst_Value = $("#PayToMstValue").val();
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang, PayMst_Value: _PayMst_Value };
+            }
+            else
+                _parameters = { MstParentId: _MstParentId, PayToMstDesc: _MstDesc, PayToBankName: _PayToBankName, PayToAccountNumber: _PayToAccountNumber, PayToEmail: _PayToEmail, PayToContactNo: _PayToContactNo, PayToMessageLang: _PayToMessageLang };
+
+        }
+        else {
+            if ($("#MstDesc").val() != "") {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _Remarks = PayForRemarks;
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });
+                return false;
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: url,
+            success: function (Result) {
+
+                if (Result.Message == "Success") {
+                    if (Result.NoNeedAppend == "Y") {
+                        DDLToAppend.val(Result.id).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                    else {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+                    }
+                }
+                else {
+                    $('#modal-AddMasterValue').modal('hide');
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ErrorMessage
+                    });
+                }
+            }
+        });
+    }
+    function LoadCaseLevel(p_OfficeFileNo) {
+        console.log(p_OfficeFileNo);
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadCaseLevelURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+                    var $select = $('#CourtType');
+                    $select.find('option').remove();
+                    //var newOption = new Option("PLEASE SELECT", "0", true, true);
+                    //$select.append(newOption).trigger('change');
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        //$select.append('<option value=' + key + '>' + value + '</option>');
+                        var newOption = new Option(value, key, true, true);
+                        $select.append(newOption).trigger('change');
+
+                        console.log("key :: " + key);
+                        console.log("value :: " + value);
+                    }
+                    $select.val("0").trigger('change');
+
+                }
+                else {
+                    var $select = $('#CourtType');
+                    $select.find('option').remove();
+
+                    //Swal.fire({
+                    //    type: "error",
+                    //    title: 'Error...',
+                    //    html: Result.ErrorMessage
+                    //});
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function GetCaseDetail(p_OfficeFileNo) {
+        console.log(p_OfficeFileNo);
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetCaseDetailURL,
+            success: function (Result) {
+                console.log(Result);
+                //console.log(Result.ClientName);
+                //console.log(Result.length);
+
+                if (Result.CaseId > 0) {
+                    IsValidOfficeFileNo = true;
+                    $("#CaseId").val(Result.CaseId);
+                    $('#spanOfficeFileNo').text(Result.OfficeFileNo);
+                    $('#spanClientName').text(Result.ClientName);
+                    $('#spanDefendant').text(Result.Defendant);
+                    //LoadCaseLevel(p_OfficeFileNo);
+                    $("#div-CaseDetail").removeClass("AppHidden");
+                }
+                else {
+                    IsValidOfficeFileNo = false;
+                    //var $select = $('#CourtType');
+                    //$select.find('option').remove();
+                    //<h4><span id="spanOfficeFileNo"></span><span class="YandSTitleSpacing">-</span><span id="spanClientName"></span><span class="YandSTitleSpacing">-</span><span id="spanDefendant"></span></h4>
+                    $('#spanOfficeFileNo').text("");
+                    $('#spanClientName').text("");
+                    $('#spanDefendant').text("");
+                    Swal.fire({
+                        type: "info",
+                        title: 'INFO',
+                        html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                    });
+                    $('#OfficeFileNo').val("");
+                    $("#div-CaseDetail").removeClass("AppHidden").addClass("AppHidden");
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+    function CalcTotal() {
+        var p_Amt = $("#Amount").val() == "" ? 0 : parseFloat($("#Amount").val());
+        var p_VarAmt = $("#VatAmount").val() == "" ? 0 : parseFloat($("#VatAmount").val());
+
+        var p_TtlAmt = p_Amt + p_VarAmt;
+
+        $("#TotalAmount").val(p_TtlAmt);
+
+    }
+
+    $(document).ready(function () {
+        console.log("Create Expence");
+        console.log($("#hidUserName").val());
+        InitDropDownList($('#CourtType'));
+        bsCustomFileInput.init();
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        //$(".datepicker").datepicker("setDate", new Date());
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        //$("#Amount").val("");
+        var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+        $("#Amount").regexMask(IsDigitmask);
+        $("#VatAmount").regexMask(IsDigitmask);
+
+        $('.txtCalc').on("blur", function () { CalcTotal(); });
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            //console.log($(this).text());
+            var ModalTitle = "";
+            var p_mst_Value = "0";
+            $(".clsMstDesc").removeClass("AppHidden").addClass("AppHidden");
+
+            if (this.id == "7") {
+                if ($("#Payment_Head").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY FOR سبب الصرف'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#Payment_Head').select2('data')
+
+                ModalTitle = "ADD PAY FOR DETAIL FOR " + data[0].text;
+                $("#MstParentId").val($("#Payment_Head").val());
+                DDLToAppend = $("#PaymentHeadDetail");
+
+                $("#ModalDiv_7").removeClass("AppHidden");
+
+            }
+            else if (this.id == "1898") {
+                if ($("#Payment_To").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'Please Select PAY TO الدفع إلى'
+                    });
+
+                    return false;
+                }
+
+                if ($("#Payment_To").val() == "1901") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: 'EMPLOYEE CANNOT BE ADDED FROM HERE'
+                    });
+
+                    return false;
+                }
+
+                var data = $('#Payment_To').select2('data')
+                ModalTitle = "ADD BENEFICIARY FOR " + data[0].text;
+                $("#MstParentId").val($("#Payment_To").val());
+                DDLToAppend = $("#PaymentToBenificry");
+
+                $("#ModalDiv_214").removeClass("AppHidden");
+
+            }
+            else if (this.id == "214") {
+                $("#MstParentId").val(this.id);
+                ModalTitle = "ADD PAY TO";
+                DDLToAppend = $("#Payment_To");
+                $("#ModalDiv_214").removeClass("AppHidden");
+            }
+            ClearPayToFields(p_mst_Value)
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnCaseSearch').on("click", function () {
+            var p_OfficeFileNo = $('#OfficeFileNo').val();
+            GetCaseDetail(p_OfficeFileNo);
+        });
+
+        $("#OfficeFileNo").on("keypress", function (e) {
+            if (e.which === 13) {
+                var p_OfficeFileNo = $('#OfficeFileNo').val();
+                GetCaseDetail(p_OfficeFileNo);
+            }
+        });
+
+        $('input[type=radio][name=Payment_Mode]').change(function () {
+            if (this.value == '1') {
+                //alert("CHEQUE");
+                $("#DivFutureChequeDate").removeClass("AppHidden");
+                $("#DivPDCRefNo").removeClass("AppHidden");
+                $("#divDebit_Account").removeClass("AppHidden");
+                $("#DivSpecialNotification").removeClass("AppHidden");
+            }
+            else {
+                //alert("NOT CHEQUE");
+                $("#DivFutureChequeDate").removeClass("AppHidden").addClass("AppHidden");
+                $("#FutureChequeDate").val("");
+                $("#DivPDCRefNo").removeClass("AppHidden").addClass("AppHidden");
+                $("#PDCRefNo").val("");
+                $("#divDebit_Account").removeClass("AppHidden").addClass("AppHidden");
+                $("#Debit_Account").val("0").trigger('change');
+                $("#DivSpecialNotification").removeClass("AppHidden").addClass("AppHidden");
+                $("#SpecialNotification").val("");
+
+            }
+        });
+
+        $('#Payment_Head').on("change", function () {
+            if (this.value == '10007') {
+                var p_OfficeFileNo = $('#OfficeFileNo').val();
+                LoadCaseLevel(p_OfficeFileNo);
+                $("#divRefundable").removeClass("AppHidden");
+                $('textarea').autoResize();
+            }
+            else {
+                $("#CaseId").val("");
+                $("#OfficeFileNo").val("");
+                var $select = $('#CourtType');
+                $select.find('option').remove();
+                var newOption = new Option("PLEASE SELECT", "0", true, true);
+                $select.append(newOption).trigger('change');
+                $("#divRefundable").removeClass("AppHidden").addClass("AppHidden");
+                $("#div-CaseDetail").removeClass("AppHidden").addClass("AppHidden");
+            }
+
+            LoadDependentDDLByParentId($('#Payment_Head').val(), $('#PaymentHeadDetail'));
+            $('textarea').autoResize();
+        });
+
+        $('#Payment_To').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#Payment_To").val() == "0") {
+                InitDropDownList($('#PaymentToBenificry'));
+
+                return false;
+            }
+
+            LoadDependentDDLByParentId($('#Payment_To').val(), $('#PaymentToBenificry'), skipIDs);
+        });
+
+        $('#PaymentToBenificry').on("change", function () {
+            $(".clsPayToDetail").removeClass("AppHidden").addClass("AppHidden");
+            if ($("#PaymentToBenificry").val() == "0")
+                return false;
+
+            SetPayToDetails(parseInt($("#Payment_To").val()), $("#PaymentToBenificry").val());
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            /* Set Hidden Radio Values*/
+            //$("#VoucherType").val($('input[name="VoucherType"]:checked').val());
+
+            if ($("#Payment_Head").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT PAY FOR'
+                });
+                return false;
+            }
+            else {
+                if ($("#Payment_Head").val() == "10007" || $("#Payment_Head").val() == "10018")
+                    $("#VoucherType").val("1");
+                else
+                    $("#VoucherType").val("2");
+            }
+
+            if ($("#PaymentHeadDetail").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT DETAIL'
+                });
+                return false;
+            }
+
+            if ($("#Payment_To").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT PAY TO'
+                });
+                return false;
+            }
+
+            if ($("#PaymentToBenificry").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT BENEFICIARY'
+                });
+                return false;
+            }
+
+            if ($("#VoucherType").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT PLEASE SELECT PAY FOR'
+                });
+                return false;
+            }
+            else if ($("#VoucherType").val() == "1") {
+                if ($("#CourtType").val() == "" || $("#CourtType").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT CASE LEVEL'
+                    });
+                    return false;
+                }
+
+                if ($("#OfficeFileNo").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+                    });
+                    return false;
+                }
+
+                if ($("#div-CaseDetail").hasClass("AppHidden")) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE CLICK ON SEARCH BUTTON TO VALIDATE OFFICE FILE NUMBER'
+                    });
+                    return false;
+                }
+            }
+            else if ($("#VoucherType").val() == "2") {
+                $("#CourtType").val("0");
+            }
+
+            $("#Payment_Mode").val($('input[name="Payment_Mode"]:checked').val());
+
+            if ($("#Payment_Mode").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT PAYMENT MODE (O-CHEQUE, O-CASH OR O-BANK TRANSFER)'
+                });
+                return false;
+            }
+            else if ($("#Payment_Mode").val() == "1") {
+                if ($("#FutureChequeDate").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE ENTER CHQ DATE'
+                    });
+                    return false;
+                }
+                console.log($("#Debit_Account").val());
+                if ($("#Debit_Account").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE ENTER WITHDRAWAL BANK'
+                    });
+                    return false;
+                }
+            }
+
+            console.log($("#Amount").val());
+            if ($("#Amount").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER VALID AMOUNT.'
+                });
+
+                return false;
+
+            }
+
+            //if ($("#BillNumber").val() == "") {
+            //    Swal.fire({
+            //        type: "error",
+            //        title: 'ERROR...',
+            //        html: 'PLEASE ENTER REFERENCE NO.'
+            //    });
+            //    return false;
+            //}
+
+            if ($("#uploadPVSupDocs")[0].files.length === 0) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'SUPPORTING DOCUMENTS ARE REQUIRED.'
+                });
+                return false;
+            }
+
+            var data = new FormData(jQuery('#frm_PayVoucher')[0]);
+            $.ajax({
+                type: "POST",
+                url: CreatePVURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.redirectTo) {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Done!',
+                            html: "Data Save Successfully"
+                        });
+
+                        $("#btn_General").trigger('click');
+                    } else {
+                        $("#PartialViewContainerBox").html(result);
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        });
+
+        var AllowedUsers = ["1","2"];
+        $(".AddNewMaster").prop("disabled", false);
+        $(".EditMaster").prop("disabled", false);
+        $(".TransMaster").prop("disabled", false);
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+            $(".EditMaster").prop("disabled", true);
+            $(".TransMaster").prop("disabled", true);
+        }
+
+        $("#DivSpecialNotification").removeClass("AppHidden").addClass("AppHidden");
+        SetPayToDetails(parseInt($("#Payment_To").val()), $("#PaymentToBenificry").val());
+
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 25,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'MY PAYMENT VOUCHERS',
+                    text: 'Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100, 99999], [5, 10, 25, 50, 100, 'ALL']],
+            "ajax": {
+                "url": MYPVURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = dataForTable;
+                }
+            },
+            "columns": [
+                { data: 'Voucher_Date', name: 'Voucher_Date', autoWidth: true },
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYFOR_DETAIL"); } },
+                { data: null, name: null, autoWidth: false, render: function (data, type, row) { return DisplayInMultiLine(row, "PAYTO_BENEFICIARY"); } },
+                { data: 'TotalAmount', name: 'TotalAmount', autoWidth: false, render: function (data, type, row) { if (row.Payment_Head == "10001") return data.toString().replace(data.toString(), "***"); else return data; } },
+                { data: null, name: null, autoWidth: false, render: function (data, type, row) { return Merge_PaymentModeNBankDetail(row); } },
+                { data: 'RejectReason', name: 'RejectReason', autoWidth: false }
+            ],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: [2, 3, 4, 5, 6, 7, 8]
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+                //$(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+                var info = table.page.info();
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+    });
+</script>
+
+@model YandS.UI.Models.PayVoucher
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>ADD PAYMENT VOUCHER</h1>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    @using (Html.BeginForm("PayVoucherCreateRefNonRef", "Finance", FormMethod.Post, new { id = "frm_PayVoucher", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">ADD PAYMENT VOUCHER</h3>
+                <div class="float-right">
+                    VOUCHER DATE : @ViewBag.VoucherDate
+                </div>
+            </div>
+            <div id="div-CaseDetail" class="AppHidden">
+                <div class="card-header bg-maroon">
+                    <div class="text-center">
+                        <h4><span id="spanOfficeFileNo"></span><span class="YandSTitleSpacing">-</span><span id="spanClientName"></span><span class="YandSTitleSpacing">-</span><span id="spanDefendant"></span></h4>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <div class="card-body">
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Payment_Type, new { @Value = "1" })
+                    @Html.HiddenFor(model => model.Payment_Mode)
+                    @Html.HiddenFor(model => model.VoucherType)
+                    @Html.HiddenFor(model => model.Status, new { @Value = "0" })
+                    @Html.HiddenFor(model => model.VoucherStatus, new { @Value = "0" })
+                    @Html.HiddenFor(model => model.LocationCode, new { @Value = "0" })
+                    @Html.HiddenFor(model => model.Credit_Account, new { @Value = 0 })
+                    @Html.HiddenFor(model => model.TransTypeCode, new { @Value = "-2" })
+                    @Html.HiddenFor(model => model.TransReasonCode, new { @Value = "0" })
+                    @Html.HiddenFor(model => model.CaseId)
+                    @Html.HiddenFor(model => model.CaseInvoices)
+                    @Html.HiddenFor(model => model.BillNumber)
+                    @Html.HiddenFor(model => model.IsDeleted)
+                    @Html.HiddenFor(model => model.ReturnApprove, new { @Value = "N" })
+
+                    <div class="col-12">
+                        <div class="row text-center">
+                            <div class="col-6">
+
+                            </div>
+                            <div class="col-6 AppHidden">
+                                <div class="form-group clearfix">
+                                    <div style="padding-right:10px" class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.Payment_Mode, "1", new { id = "Payment_Mode1" })
+                                        <label for="Payment_Mode1">CHEQUE</label>
+                                    </div>
+                                    <div class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.Payment_Mode, "2", new { id = "Payment_Mode2" })
+                                        <label for="Payment_Mode2">CASH</label>
+                                    </div>
+                                    <div style="padding-left:10px" class="icheck-primary d-inline">
+                                        @Html.RadioButtonFor(m => m.Payment_Mode, "3", new { id = "Payment_Mode3", @checked = "checked" })
+                                        <label for="Payment_Mode3">BANK TRANSFER</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divRefundable" class="row AppHidden">
+                        <div class="col-4">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label for="OfficeFileNo"><span id="lblOfficeFileNo">Y & S FILE</span></label>
+                                    <div class="input-group mb-3">
+                                        @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-info" id="btnCaseSearch">
+                                                SEARCH
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="CourtType">CASE LEVEL</label>
+                                @Html.DropDownList("CourtType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                @Html.ValidationMessageFor(model => model.CourtType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="Payment_Head">PAY FOR سبب الصرف</label>
+                                @Html.DropDownList("Payment_Head", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label for="PaymentHeadDetail">DETAILS التفاصيل</label>
+                                    <div class="input-group mb-3">
+                                        @Html.DropDownList("PaymentHeadDetail", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                        <div class="input-group-append">
+                                            <button title="ADD PAY TO DETAIL" type="button" class="btn btn-info AddNewMaster" id="7">
+                                                ADD
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="Payment_To">PAY TO الدفع إلى</label>
+                                @Html.DropDownList("Payment_To", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label for="Payment_Head">BENEFICIARY المستفيد</label>
+                                    <div class="input-group mb-3">
+                                        @Html.DropDownList("PaymentToBenificry", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                        <div class="input-group-append">
+                                            <button title="ADD PAY TO BENEFICIARY" type="button" class="btn btn-info AddNewMaster" id="1898">
+                                                ADD
+                                            </button>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <button title="MODIFY PAY TO BENEFICIARY" type="button" onclick="EditMasterList('MODIFY PAY TO BENEFICIARY','PaymentToBenificry','1898',document.getElementById('PaymentToBenificry').value)" class="btn btn-warning EditMaster">
+                                                Edit
+                                            </button>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <button title="TRANSFER FROM MPLOYEE to INDIVISUAL" type="button" onclick="TransferEmployeeToIndivisual(document.getElementById('PaymentToBenificry').value)" class="btn btn-danger TransMaster">
+                                                Transfer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group clsPayToDetail AppHidden">
+                                @Html.LabelFor(model => model.PayToBankNameDisp)
+                                @Html.EditorFor(model => model.PayToBankNameDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group clsPayToDetail AppHidden">
+                                @Html.LabelFor(model => model.PayToAccountNumberDisp)
+                                @Html.EditorFor(model => model.PayToAccountNumberDisp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    @Html.LabelFor(model => model.Amount)
+                                    <div class="input-group mb-3">
+                                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                                        <div class="input-group-append">
+                                            @Html.EditorFor(model => model.VatAmount, new { htmlAttributes = new { @class = "form-control txtCalc", @placeholder = "Vat الضريبة" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-2">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.VatAmount)
+                                    @Html.EditorFor(model => model.VatAmount, new { htmlAttributes = new { @class = "form-control txtCalc" } })
+                                </div>
+                            </div>*@
+                        <div class="col-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TotalAmount)
+                                @Html.EditorFor(model => model.TotalAmount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div id="DivFutureChequeDate" class="form-group AppHidden">
+                                @Html.LabelFor(model => model.FutureChequeDate)
+                                @Html.EditorFor(model => model.FutureChequeDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+
+                        </div>
+                        <div class="col-4">
+                            <div id="divDebit_Account" class="form-group AppHidden">
+                                <label for="Debit_Account">WITHDRAWAL BANK</label>
+                                @Html.DropDownList("Debit_Account", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div id="DivPDCRefNo" class="form-group AppHidden">
+                                @Html.LabelFor(model => model.PDCRefNo)
+                                @Html.EditorFor(model => model.PDCRefNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DivSpecialNotification" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SpecialNotification)
+                                @Html.TextAreaFor(model => model.SpecialNotification, 1, 200, new { @class = "form-control", @placeholder = "Please Enter Special Notification" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="Remarks">REMARKS ملاحظات</label>
+                                @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control", @dir = "auto" } })
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="UploadedFile">SUPPORTING DOCUMENT المستندات الداعمة للطلب</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="uploadPVSupDocs" name="uploadPVSupDocs">
+                                        <label class="custom-file-label" for="uploadPVSupDocs">CHOOSE DOCUMENT</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="button" id="btnSubmitForm" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+            </div>
+        </div>
+        <div style="padding-bottom:0px;padding-top:10px;" class="row SuspendedActive">
+            <div class="col-sm-3 text-left"><h3><span id="MCTTTL" disabled></span></h3></div>
+            <div class="col-sm-6 text-center"><h3>EXPENSES REQUEST سجل الطلبات</h3></div>
+            <div class="col-sm-3 text-right"><h3><span id="SLLTTL" disabled></span></h3></div>
+        </div>
+        <div class="card-body">
+            <div id="dtTableRow" class="row">
+                <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+                    <table id="HtmlTable" class="table table-bordered dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="width:25px !important;" class="all VMiddle text-center">DATE</th>
+                                <th style="width:10px !important;" class="VMiddle text-center">Y&S NO</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">CLIENT</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">DEFENDANT</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">PAY FOR</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">BENEFICIARY</th>
+                                <th style="width:40px !important;" class="VMiddle text-center">AMOUNT</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">TRANSFER DETAIL</th>
+                                <th style="width:150px !important;" class="VMiddle text-center">REASON سبب الرفض</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</section>
+<!-- /.content -->
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <div id="ModalDiv_7" class="row AppHidden clsMstDesc">
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div id="ModalDiv_214" class="row AppHidden clsMstDesc">
+                    @Html.HiddenFor(model => model.PayToMstValue)
+                    <div class="col-12 clsDisableInModify">
+                        <div class="form-group">
+                            <label for="PayToMstDesc">BENEFICIARY المستفيد</label>
+                            @Html.EditorFor(model => model.PayToMstDesc, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToBankName">BANK البنك</label>
+                            @Html.DropDownList("PayToBankName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToAccountNumber">ACC الحساب</label>
+                            @Html.EditorFor(model => model.PayToAccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToContactNo">Contact Number</label>
+                            @Html.EditorFor(model => model.PayToContactNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToEmail">Email</label>
+                            @Html.EditorFor(model => model.PayToEmail, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="PayToBankName">Language اللغة</label>
+                            @Html.DropDownList("PayToMessageLang", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,1153 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var CreateMasterTableDetailForPayToURL = '@Url.Action("CreateMasterTableDetailForPayTo", "CommonTask", new { area = string.Empty })';
+    var GetCaseDetailURL = '@Url.Action("GetCaseDetailByCaseId", "CommonTask", new { area = string.Empty })';
+    var GetRegisterCourtURL = '@Url.Action("GetRegisterCourtDetail", "CommonTask", new { area = string.Empty })';
+    var LoadFileStatusURL = '@Url.Action("LoadFileStatusddl", "CommonTask", new { area = string.Empty })';
+    var GetEnforcementDetailURL = '@Url.Action("GetEnforcementDetail", "CommonTask", new { area = string.Empty })';
+
+    var _parameters = {};
+    var DDLToAppend;
+
+    var IsValidOfficeFileNo = true;
+
+    function onPreSubmit(item) {
+        console.log($("#HFCaseId").val());
+
+        $("#CaseId").val(parseInt($("#HFCaseId").val()));
+
+        if ($("#OfficeFileNo").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+            });
+            return false;
+        }
+
+        if ($("#div-CaseDetail").hasClass("AppHidden")) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE CLICK ON SEARCH BUTTON TO VALIDATE OFFICE FILE NUMBER'
+            });
+            return false;
+        }
+
+        if ($("#ActionDate").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER ACTION DATE'
+            });
+            return false;
+        }
+
+        if ($("#AdminFile").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER ADMIN DETAIL'
+            });
+            return false;
+        }
+
+        if ($("#OfficeProcedure").val() == "") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE ENTER NOTES'
+            });
+            return false;
+        }
+
+        if ($("#ActionLevel").val() == "" || $("#ActionLevel").val() == "0") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE SELECT ACTION LEVEL'
+            });
+            return false;
+        }
+        else if ($("#ActionLevel").val() == "1") {
+            
+        }
+        else if ($("#ActionLevel").val() == "2" || $("#ActionLevel").val() == "3") {
+            if ($("#JudgementDate").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER JUDGEMENT DATE'
+                });
+                return false;
+            }
+
+            if ($("#ActionLevel").val() == "2") {
+                if ($("#DepartmentType").val() == "" || $("#DepartmentType").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT DEPARTEMENT TYPE'
+                    });
+                    return false;
+                }
+            }
+
+            
+        }
+        else if ($("#ActionLevel").val() == "4") {
+            if ($("#EnforcementDispute").val() == "" || $("#EnforcementDispute").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT ENFORCEMENT DISPUTE'
+                });
+                return false;
+            }
+            else if ($("#EnforcementDispute").val() == "1" || $("#EnforcementDispute").val() == "3") {
+                if ($("#JudgementDate").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE ENTER DATE OF RECEIPT DECISION'
+                    });
+                    return false;
+                }
+            }
+            else if ($("#EnforcementDispute").val() == "2" || $("#EnforcementDispute").val() == "4") {
+                if ($("#JudgementDate").val() == "") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE ENTER PRIMARY JUG. DATE'
+                    });
+                    return false;
+                }
+            }
+        }
+
+        if ($("#FileStatus").val() == "6") {
+            if ($("#ActionLevel").val() == "1" || $("#ActionLevel").val() == "2") {
+                if ($("#CourtRegistration").val() == "" || $("#CourtRegistration").val() == "0") {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: 'PLEASE SELECT COURT REGISTRATION'
+                    });
+                    return false;
+                }
+            }
+        }
+       
+
+        if ($("#FileStatus").val() == "" || $("#FileStatus").val() == "0") {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: 'PLEASE SELECT FILE STATUS'
+            });
+            return false;
+        }
+        else if ($("#FileStatus").val() == "2") {
+            if ($("#SendDate").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER SEND DATE'
+                });
+                return false;
+            }
+
+            if ($("#OmanPostNo").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER OMAN POST NO'
+                });
+                return false;
+            }
+
+            if ($("#FirstReminderDate").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER REMINDER DATE'
+                });
+                return false;
+            }
+
+            if ($('#upload').get(0).files.length === 0) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ATTACH OMAN POST DOCUMENT'
+                });
+                return false;
+            }
+        }
+        else if ($("#FileStatus").val() == "4") {
+            if ($("#OnHoldReasonDDL").val() == "" || $("#OnHoldReasonDDL").val() == "0") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT ON HOLD REASON'
+                });
+                return false;
+            }
+        }
+        else if ($("#FileStatus").val() == "6") {
+            if ($("#FileStatusRemarks").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER ELECTRONIC NO.'
+                });
+                return false;
+            }
+        }
+        else if ($("#FileStatus").val() == "7") {
+            if ($("#CourtMessage").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER COURT MESSAGE'
+                });
+                return false;
+            }
+        }
+        else if ($("#FileStatus").val() == "8") {
+            if ($("#FileStatusRemarks").val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE ENTER FEE'
+                });
+                return false;
+            }
+        }
+
+    }
+
+    function ProcessAddClient() {
+        if ($("#MstDesc").val() != "") {
+            var url = "";
+            var _MstDesc = ""
+            var _MstParentId = 0;
+            var _Remarks = "";
+
+            if (parseInt($("#MstParentId").val()) == 214) {
+                url = CreateMasterTableDetailForPayToURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            else if (parseInt($("#MstParentId").val()) == 7) {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = 567;
+                _Remarks = "1";
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId, Remarks: _Remarks };
+
+            }
+            else {
+                url = CreateMasterTableDetailURL;
+                _MstDesc = $("#MstDesc").val();
+                _MstParentId = parseInt($("#MstParentId").val());
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+
+            }
+            console.log(parseInt($("#MstParentId").val()));
+            console.log($("#MstDesc").val());
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: url,
+                success: function (Result) {
+
+                    if (Result.Message == "Success") {
+                        var newOption = new Option(Result.name, Result.id, true, true);
+                        DDLToAppend.append(newOption).trigger('change');
+                        $('#modal-AddMasterValue').modal('hide');
+
+                    }
+                    else {
+                        $('#modal-AddMasterValue').modal('hide');
+                        Swal.fire({
+                            type: "error",
+                            title: 'Error...',
+                            html: Result.ErrorMessage
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            // Failed show errors
+            console.log("Failed errors");
+            Swal.fire({
+                type: "error",
+                title: 'Error...',
+                html: 'Please Enter Description of List'
+            });
+        }
+    }
+
+    function AddPaymentVoucher() {
+        console.log("Function AddPaymentVoucher Called!!");
+    }
+
+    function GetCaseDetail(p_OfficeFileNo) {
+        console.log(p_OfficeFileNo);
+
+        _parameters = { OfficeFileNo: p_OfficeFileNo };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: GetCaseDetailURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.CaseId);
+                //console.log(Result.length);
+
+                if (Result.CaseId > 0) {
+                    IsValidOfficeFileNo = true;
+                    $("#CaseId").val(Result.CaseId);
+                    $("#HFCaseId").val(Result.CaseId);
+                    $('#spanOfficeFileNo').text(Result.OfficeFileNo);
+                    $('#spanClientName').text(Result.ClientName);
+                    $('#spanDefendant').text(Result.Defendant);
+                    $('#ReceptionDate').val(Result.ReceptionDate);
+                    $('#dispACCNO').val(Result.AccountContractNo);
+                    $('#dispCFNO').val(Result.ClientFileNo);
+                    $('#HFClaimAmount').val(Result.ClaimAmount);
+
+                    //LoadCaseLevel(p_OfficeFileNo);
+                    $("#div-CaseDetail").removeClass("AppHidden");
+
+                    if (Result.RegistrationLevel != "") {
+                        Swal.fire({
+                            type: "info",
+                            title: 'FILE NO IS ALREADY REGISTERED',
+                            html: Result.RegistrationLevel
+                        });
+                    }
+                }
+                else {
+                    IsValidOfficeFileNo = false;
+                    //var $select = $('#CourtType');
+                    //$select.find('option').remove();
+                    //<h4><span id="spanOfficeFileNo"></span><span class="YandSTitleSpacing">-</span><span id="spanClientName"></span><span class="YandSTitleSpacing">-</span><span id="spanDefendant"></span></h4>
+                    $('#spanOfficeFileNo').text("");
+                    $('#spanClientName').text("");
+                    $('#spanDefendant').text("");
+                    $('#dispACCNO').val("");
+                    $('#dispCFNO').val("");
+
+                    Swal.fire({
+                        type: "info",
+                        title: 'INFO',
+                        html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                    });
+                    $('#OfficeFileNo').val("");
+                    $("#div-CaseDetail").removeClass("AppHidden").addClass("AppHidden");
+                }
+
+                //$("#OfficeFileNo").removeAttr("disabled");
+                //$("#btnCaseSearch").removeAttr("disabled");
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+
+    function GetEnforcementDetail() {
+        console.log(parseInt($("#HFCaseId").val()));
+        console.log($("#EnforcementDispute").val());
+        var _CaseId = parseInt($("#HFCaseId").val());
+        var _EnforcemetDispute = $("#EnforcementDispute").val();
+
+        _parameters = { CaseId: _CaseId, EnforcemetDispute: _EnforcemetDispute };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(_parameters),
+                url: GetEnforcementDetailURL,
+                success: function (Result) {
+                    console.log(Result);
+                    console.log(Result.EnforcementNo);
+                    console.log(Result.EnforcementCourt);
+                    console.log(Result.EnforcementCourt.length);
+
+                    if (Result.EnforcementNo.length > 0) {
+                        $('#dispENFNO').val(Result.EnforcementNo);
+                        $('#dispENFCOURT').val(Result.EnforcementCourt);
+                    }
+                    else {
+
+                        //Swal.fire({
+                        //    type: "info",
+                        //    title: 'INFO',
+                        //    html: 'OFFICE FILE NO ' + p_OfficeFileNo + ' NOT FOUND IN DATABASE PLEASE MAKE SURE THE FILE NO IS CORRECT'
+                        //});
+                        $('#dispENFNO').val("");
+                        $('#dispENFCOURT').val("");
+                    }
+
+                    //$("#OfficeFileNo").removeAttr("disabled");
+                    //$("#btnCaseSearch").removeAttr("disabled");
+                },
+                error: function (response) {
+                    console.log("error");
+
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log("failure");
+                    console.log(response.responseText);
+                }
+            });
+        }
+
+    function LoadFileStatus(p_Id, selectId) {
+        console.log(p_Id);
+
+        _parameters = { Id: p_Id };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: LoadFileStatusURL,
+            success: function (Result) {
+                console.log(Result);
+                console.log(Result.length);
+
+                if (Result.length > 0) {
+                    var $select = $("#" + selectId);
+
+                    $select.find('option').remove();
+
+                    for (var i = 0; i < Result.length; i++) {
+                        key = Result[i].Mst_Value;
+                        value = Result[i].Mst_Desc;
+
+                        $select.append('<option value=' + key + '>' + value + '</option>');
+                    }
+                    $select.val("0");
+                }
+                else {
+                    var $select = $("#" + selectId);
+                    $select.find('option').remove();
+                }
+            },
+            error: function (response) {
+                console.log("error");
+
+                console.log(response.responseText);
+            },
+            failure: function (response) {
+                console.log("failure");
+                console.log(response.responseText);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+
+        /********************** FOR CREATION START HERE ********************************/
+        console.log("Case Registration Partail View Loaded");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        bsCustomFileInput.init();
+
+        var AlphaNumericSpecial = new RegExp(/^[-@@.\/#&+()\[\]\w\s]*$/);
+
+        $("#FileStatusRemarks").regexMask(AlphaNumericSpecial);
+
+        $("#ActionDate").datepicker({ format: "dd/mm/yyyy" });
+
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+
+
+            if (this.id == "4") {
+                ModalTitle = "Add Court Registration";
+                DDLToAppend = $("#CourtRegistration");
+                $("#MstParentId").val(this.id);
+            }
+            else if (this.id == "btn_RegCourt") {
+                ModalTitle = "Add Court";
+                DDLToAppend = $("#CourtReg_RegCourt");
+                $("#MstParentId").val("4");
+            }
+            else if (this.id == "7") {
+                ModalTitle = "Add Payment Head";
+                DDLToAppend = $("#Payment_Head");
+            }
+            else if (this.id == "214") {
+                ModalTitle = "Add Pay To";
+                DDLToAppend = $("#Payment_To");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnCaseSearch').on("click", function () {
+            var p_OfficeFileNo = $('#OfficeFileNo').val();
+            GetCaseDetail(p_OfficeFileNo);
+        });
+
+        $("#EnforcementDispute").on("change", function () {
+            $("#lblJudgementDate").text("");
+            $("#divJudgementDate").val("");
+            $("#divJudgementDate").removeClass("AppHidden").addClass("AppHidden");
+            if (this.value == "1" || this.value == "3") {
+                $("#lblJudgementDate").text("DATE OF RECEIPT DECISION");
+                $("#divJudgementDate").removeClass("AppHidden");
+
+            }
+            else if (this.value == "2" || this.value == "4") {
+                $("#lblJudgementDate").text("PRIMARY JUDGEMENT DATE");
+                $("#divJudgementDate").removeClass("AppHidden");
+            }
+            GetEnforcementDetail();
+
+        });
+
+        $("#ActionLevel").on("change", function () {
+            console.log("ActionLevel Change");
+            console.log(this.value);
+            /*
+             * RESET FILE STATUS
+             */
+
+            $("#DivFileStatusDetail").removeClass("AppHidden").addClass("AppHidden");
+            $("#2").removeClass("AppHidden").addClass("AppHidden");
+            $("#4").removeClass("AppHidden").addClass("AppHidden");
+            $("#7").removeClass("AppHidden").addClass("AppHidden");
+
+            $(".action1").removeClass("AppHidden").addClass("AppHidden");
+            $(".action2").removeClass("AppHidden").addClass("AppHidden");
+            $(".action3").removeClass("AppHidden").addClass("AppHidden");
+            $(".action4").removeClass("AppHidden").addClass("AppHidden");
+
+            $(".cls6").removeClass("AppHidden").addClass("AppHidden");
+            $(".clsPA").removeClass("AppHidden").addClass("AppHidden");
+            $(".clsP").removeClass("AppHidden").addClass("AppHidden");
+            $(".cls8").removeClass("AppHidden").addClass("AppHidden");
+            $(".clsE").removeClass("AppHidden").addClass("AppHidden");
+            $("#lblFileStatusRemarks").text("");
+            $("#FileStatusRemarks").off();
+            $("#FileStatusRemarks").val("");
+            var AlphaNumericSpecial = new RegExp(/^[-@@.\/#&+()\[\]\w\s]*$/);
+            $("#FileStatusRemarks").regexMask(AlphaNumericSpecial);
+            /*
+             * END RESET FILE STATUS
+             */
+
+            $("#DivAppealDeptt").removeClass("AppHidden").addClass("AppHidden");
+            $("#DivActionLevelDetail").removeClass("AppHidden").addClass("AppHidden");
+            $("#divReceptionDate").removeClass("AppHidden").addClass("AppHidden");
+            $("#divJudgementDate").removeClass("AppHidden").addClass("AppHidden");
+            $("#divEnforcementDispute").removeClass("AppHidden").addClass("AppHidden");
+            $("#lblJudgementDate").text("");
+            $("#lblCourtRegistration").text("");
+
+            $(".action" + this.value).removeClass("AppHidden")
+
+            if (this.value == "1") {
+                $("#divReceptionDate").removeClass("AppHidden");
+                $("#lblCourtRegistration").text("PRIMARY COURT");
+                $("#SpanActionLevelTitle").text("NEW CASES");
+                $("#h3ActionLevelTitle").removeClass("CaseRegAppealActive CaseRegSupremeActive").addClass("CaseRegNewCaseActive");
+                LoadFileStatus("N", "FileStatus");
+
+            }
+            else if (this.value == "2") {
+                $("#DivAppealDeptt").removeClass("AppHidden");
+                $("#divJudgementDate").removeClass("AppHidden");
+                $("#lblJudgementDate").text("PRIMARY JUDGEMENT DATE");
+                $("#lblCourtRegistration").text("APPEAL COURT");
+                $("#SpanActionLevelTitle").text("APPEAL");
+                $("#h3ActionLevelTitle").removeClass("CaseRegNewCaseActive CaseRegSupremeActive").addClass("CaseRegAppealActive");
+                LoadFileStatus("A", "FileStatus");
+
+            }
+            else if (this.value == "3") {
+                $("#divJudgementDate").removeClass("AppHidden");
+                $("#lblJudgementDate").text("APPEAL JUDGEMENT DATE");
+                $("#lblCourtRegistration").text("SUPREME COURT");
+                $("#SpanActionLevelTitle").text("SUPREME");
+                $("#h3ActionLevelTitle").removeClass("CaseRegNewCaseActive CaseRegAppealActive").addClass("CaseRegSupremeActive");
+                $("#CourtRegistration").val("1").trigger('change');
+                LoadFileStatus("S", "FileStatus");
+            }
+            else if (this.value == "4") {
+                $(".clsE").removeClass("AppHidden");
+                $("#divEnforcementDispute").removeClass("AppHidden");
+                $("#lblCourtRegistration").text("COURT REGISTRATION");
+                $("#SpanActionLevelTitle").text("ENFORCEMENT");
+                $("#h3ActionLevelTitle").removeClass("CaseRegNewCaseActive CaseRegAppealActive CaseRegSupremeActive");
+                LoadFileStatus("E", "FileStatus");
+            }
+
+            if (this.value == "0") {
+                $("#DivActionLevelDetail").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else
+                $("#DivActionLevelDetail").removeClass("AppHidden");
+
+        });
+
+        $("#FileStatus").on("change", function () {
+            console.log("FileStatus Change");
+            console.log(this.value);
+            if (parseInt($("#ActionLevel").val()) <= 0) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: 'PLEASE SELECT ACTION LEVEL'
+                });
+                return false;
+            }
+            else {
+                $("#DivFileStatusDetail").removeClass("AppHidden").addClass("AppHidden");
+                $("#2").removeClass("AppHidden").addClass("AppHidden");
+                $("#4").removeClass("AppHidden").addClass("AppHidden");
+                $("#7").removeClass("AppHidden").addClass("AppHidden");
+                $("#9").empty();
+                $("#10").empty();
+                $("#PaymentVoucherContainer").empty();
+                $("#DivCourtInfo").empty();
+                $(".cls6").removeClass("AppHidden").addClass("AppHidden");
+                $(".clsPA").removeClass("AppHidden").addClass("AppHidden");
+                $(".clsP").removeClass("AppHidden").addClass("AppHidden");
+                $(".cls8").removeClass("AppHidden").addClass("AppHidden");
+                $("#lblFileStatusRemarks").text("");
+                $("#FileStatusRemarks").off();
+                $("#FileStatusRemarks").val("");
+                var AlphaNumericSpecial = new RegExp(/^[-@@.\/#&+()\[\]\w\s]*$/);
+                $("#FileStatusRemarks").regexMask(AlphaNumericSpecial);
+
+
+                if (this.value == "2") {
+                    $("#DivFileStatusDetail").removeClass("AppHidden");
+                    $("#2").removeClass("AppHidden");
+                    $("#SpanFileStatusTitle").text("LEGAL NOTICE");
+                }
+                else if (this.value == "4") {
+                    $("#DivFileStatusDetail").removeClass("AppHidden");
+                    $("#4").removeClass("AppHidden");
+                    $("#lblFileStatusRemarks").text("ON HOLD REASON");
+                    $("#SpanFileStatusTitle").text("ON HOLD");
+
+                }
+                else if (this.value == "6") {
+                    $("#DivFileStatusDetail").removeClass("AppHidden");
+                    $(".cls6").removeClass("AppHidden");
+
+                    if ($("#ActionLevel").val() == "1") {
+                        $(".clsP").removeClass("AppHidden");
+
+                        var _Mode = "C";
+                        var _PartialViewName = "_CaseRegCaseManagementInfo";
+                        var _CaseId = parseInt($("#HFCaseId").val());
+                        var _CaseRegisterId = parseInt($("#txtCaseRegisterId").val());
+
+                        var PartialContainer = $("#DivCourtInfo");
+                        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, CaseRegisterId: _CaseRegisterId };
+
+                        GetTab(PartialContainer, GetCaseRegistrationURL, _parameters);
+                    }
+
+                    if ($("#ActionLevel").val() == "1" || $("#ActionLevel").val() == "2")
+                        $(".clsPA").removeClass("AppHidden");
+
+                    $("#lblFileStatusRemarks").text("ELECTRONIC NO.");
+                    $("#SpanFileStatusTitle").text("ONLINE SUBMISSION");
+                }
+                else if (this.value == "7") {
+                    $("#DivFileStatusDetail").removeClass("AppHidden");
+                    $("#7").removeClass("AppHidden");
+                    $("#SpanFileStatusTitle").text("COURT REQUEST");
+
+                }
+                else if (this.value == "8") {
+                    $("#DivFileStatusDetail").removeClass("AppHidden");
+                    $(".cls8").removeClass("AppHidden");
+                    $("#lblFileStatusRemarks").text("FEE");
+                    var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+                    $("#FileStatusRemarks").regexMask(IsDigitmask);
+                    $("#SpanFileStatusTitle").text("PAYMENT");
+
+                    console.log(parseInt($("#txtCaseRegisterId").val()));
+
+                    var _PartialViewName = "_CaseRegPayVoucher";
+                    var _CaseId = parseInt($("#HFCaseId").val());
+                    var _CaseRegisterId = parseInt($("#txtCaseRegisterId").val());
+                    var _Mode = _CaseRegisterId == 0 ? "C" : "E";
+
+                    var PartialContainer = $("#PaymentVoucherContainer");
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, CaseRegisterId: _CaseRegisterId };
+
+                    GetTab(PartialContainer, GetCaseRegistrationURL, _parameters);
+
+                    $("#PaymentVoucherContainer").removeClass("AppHidden");
+                }
+                else if (this.value == "9") {
+                    if (parseInt($("#txtCaseRegisterId").val()) > 0) {
+                        $("#DivFileStatusDetail").removeClass("AppHidden");
+                        $("#9").removeClass("AppHidden");
+                        $("#SpanFileStatusTitle").text("REGISTERED");
+
+                        var _PartialViewName = $("#ActionLevel").val() == "4" ? "_CaseRegEnforcement" : "_CaseRegCourtInfo";
+                        var _CaseId = parseInt($("#HFCaseId").val());
+                        var _CaseRegisterId = parseInt($("#txtCaseRegisterId").val());
+                        var _Mode = _CaseRegisterId == 0 ? "C" : "E";
+
+                        var PartialContainer = $("#9");
+                        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, CaseRegisterId: _CaseRegisterId };
+
+                        GetTab(PartialContainer, GetCaseRegistrationURL, _parameters);
+                    }
+                    else {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: 'PLEASE FIRST REGISTER CASE'
+                        });
+                        $(this).val("0");
+                        return false;
+                    }
+                }
+                else if (this.value == "10") {
+                    if (parseInt($("#txtCaseRegisterId").val()) > 0) {
+                        $("#DivFileStatusDetail").removeClass("AppHidden");
+                        $("#10").removeClass("AppHidden");
+                        $("#SpanFileStatusTitle").text("BEFORE COURT REG.");
+
+                        var _PartialViewName = "_CaseRegBeforeCourt";
+                        var _CaseId = parseInt($("#HFCaseId").val());
+                        var _CaseRegisterId = parseInt($("#txtCaseRegisterId").val());
+                        var _Mode = _CaseRegisterId == 0 ? "C" : "E";
+
+                        var PartialContainer = $("#10");
+                        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: _CaseId, CaseRegisterId: _CaseRegisterId };
+
+                        GetTab(PartialContainer, GetCaseRegistrationURL, _parameters);
+                    }
+                    else {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: 'PLEASE FIRST REGISTER CASE'
+                        });
+                        $(this).val("0");
+                        return false;
+                    }
+                }
+            }
+        });
+
+        $("#OfficeFileNo").on("keypress", function (e) {
+            if (e.which === 13) {
+                var p_OfficeFileNo = $('#OfficeFileNo').val();
+                GetCaseDetail(p_OfficeFileNo);
+            }
+        });
+
+        if ($("#FileStatus").val() == "8") {
+            $("#FileStatusRemarks").off();
+            var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+            $("#FileStatusRemarks").regexMask(IsDigitmask);
+
+            var PartialContainer = $("#PaymentVoucherContainer");
+            _parameters = { Mode: "E", PartialViewName: "_CaseRegPayVoucher" };
+
+            GetTab(PartialContainer, GetCaseRegistrationURL, _parameters);
+
+        }
+
+        /********************** FOR CREATION END   HERE ********************************/
+    });
+
+</script>
+@model YandS.UI.Models.CaseRegistrationVM
+@using (Html.BeginForm("IndexMain", "CaseRegistration", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">REGISTRATION ( @ViewBag.FormMode )</h3>
+        </div>
+        <div id="div-CaseDetail" class="@ViewBag.CaseDetailClass">
+            <div class="card-header bg-maroon">
+                <div class="text-center">
+                    <h4><span id="spanOfficeFileNo">@ViewBag.OfficeFileNo</span><span class="YandSTitleSpacing">-</span><span id="spanClientName">@ViewBag.ClientName</span><span class="YandSTitleSpacing">-</span><span id="spanDefendant">@ViewBag.Defendant</span></h4>
+                </div>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <!-- form start -->
+        <div class="card-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @if (ViewBag.FormMode == "CREATE")
+                {
+                    Html.HiddenFor(model => model.CaseRegistrationId);
+                    Html.HiddenFor(model => model.CaseId);
+                }
+                else
+                {
+                    Html.HiddenFor(model => model.CaseRegistrationId);
+                    Html.HiddenFor(model => model.CaseId);
+                }
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="OfficeFileNo"><span id="lblOfficeFileNo">Y & S FILE</span></label>
+                                <div class="input-group mb-3">
+                                    <input id="OfficeFileNo" class="form-control form-control-lg" type="text" value="@ViewBag.OfficeFileNo" placeholder="OFFICE FILE NO" @ViewBag.IsEdit>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info" id="btnCaseSearch" @ViewBag.IsEdit>
+                                            SEARCH
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="dispACCNO">A/C No.</label>
+                            <input id="dispACCNO" type="text" class="form-control" value="@ViewBag.dispACCNO" disabled>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="dispCFNO">CLIENT FILE No.</label>
+                            <input id="dispCFNO" type="text" class="form-control" value="@ViewBag.dispCFNO" disabled>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ActionLevel)
+                            @Html.DropDownList("ActionLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FileStatus)
+                            @Html.DropDownList("FileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div id="DivActionLevelDetail" class="card card-primary @ViewBag.DivActionLevelDetail">
+                    <div id="h3ActionLevelTitle" class="text-center card-header">
+                        <h3><span id="SpanActionLevelTitle">@ViewBag.SpanActionLevelTitle</span></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3 clsE @ViewBag.divEnforcementDispute">
+                                <div class="form-group">
+                                    <label for="dispENFNO">ENFORCEMENT NO</label>
+                                    <input id="dispENFNO" type="text" class="form-control" value="@ViewBag.dispENFNO" disabled>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 clsE @ViewBag.divEnforcementDispute">
+                                <div class="form-group">
+                                    <label for="dispENFCOURT">COURT</label>
+                                    <input id="dispENFCOURT" type="text" class="form-control" value="@ViewBag.dispENFCOURT" disabled>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 clsE @ViewBag.divEnforcementDispute">
+                                <div id="divEnforcementDispute" class="form-group">
+                                    @Html.LabelFor(model => model.EnforcementDispute)
+                                    @Html.DropDownList("EnforcementDispute", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+
+                                <div id="divReceptionDate" class="form-group @ViewBag.divReceptionDate">
+                                    <label for="ReceptionDate">RECEIVED DATE</label>
+                                    @Html.EditorFor(model => model.ReceptionDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                </div>
+                                <div id="divJudgementDate" class="form-group @ViewBag.divJudgementDate">
+                                    <label for="JudgementDate"><span id="lblJudgementDate">@ViewBag.lblJudgementDate</span></label>
+                                    @Html.EditorFor(model => model.JudgementDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ActionDate)
+                                    @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="AdminFile">ADMIN</label>
+                                    @Html.EditorFor(model => model.AdminFile, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            <div id="DivAppealDeptt" class="col @ViewBag.DivAppealDeptt">
+                                <div class="form-group">
+                                    <label for="DepartmentType">DEPARTMENT TYPE</label>
+                                    @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        @Html.LabelFor(model => model.UrgentCaseDays)
+                                        <div class="input-group mb-3">
+                                            @Html.EditorFor(model => model.UrgentCaseDays, new { htmlAttributes = new { @class = "form-control" } })
+                                            <div class="input-group-append">
+                                                <div class="col-sm-3">
+                                                    <div class="form-group" style="padding-top:10px;">
+                                                        <div class="icheck-primary d-inline">
+                                                            @Html.CheckBoxFor(model => model.CourtDetailRegistered)
+                                                            <label for="CourtDetailRegistered">NOW</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="OfficeProcedure">NOTES</label>
+                                    @Html.TextAreaFor(model => model.OfficeProcedure, 5, 200, new { @class = "form-control", @placeholder = "Please Enter Notes" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="DivFileStatusDetail" class="card card-success @ViewBag.DivFileStatusDetail">
+                    <div id="h3FileStatusTitle" class="text-center card-header">
+                        <h3><span id="SpanFileStatusTitle">@ViewBag.SpanFileStatusTitle</span></h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="2" class="row @ViewBag.Div2">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="ReceptionDate">SENT DATE</label>
+                                    @Html.EditorFor(model => model.SendDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <label for="ReceptionDate">OMAN POSTE NO.</label>
+                                        <div class="input-group mb-3">
+                                            @Html.EditorFor(model => model.OmanPostNo, new { htmlAttributes = new { @class = "form-control" } })
+                                            <div class="input-group-append">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="upload" name="upload">
+                                                    <label class="custom-file-label" for="upload"> Attach</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (@ViewBag.OmanPostDoc == "#")
+                            {
+                            }
+                            else
+                            {
+                                <div class="col" style="padding-top:30px;">
+                                    <div class="form-group">
+                                        <a target="_blank" class="btn btn-outline-warning" title="VIEW OMAN POST ATTACHED DOCUMENT" href="~/Uploads/OmanPost/@ViewBag.OmanPostDoc">VIEW</a>                                        
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="ReceptionDate">REMINDER DATE</label>
+                                    @Html.EditorFor(model => model.FirstReminderDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="4" class="row @ViewBag.Div4">
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label for="OnHoldReasonDDL">REASON</label>
+                                    @Html.DropDownList("OnHoldReasonDDL", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="7" class="row @ViewBag.Div7">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="CourtMessage">COURT REQUEST</label>
+                                    @Html.TextAreaFor(model => model.CourtMessage, 5, 200, new { @class = "form-control", @placeholder = "Please Enter Court Request" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3 clsPA @ViewBag.clsPA">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <label for="CourtRegistration"><span id="lblCourtRegistration">@ViewBag.lblCourtRegistration</span></label>
+                                        <div class="input-group mb-3">
+                                            @Html.DropDownList("CourtRegistration", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-info AddNewMaster" id="4">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-5 cls8 cls6 @ViewBag.cls8cls6">
+                                <div class="form-group">
+                                    <label for="FileStatusRemarks"><span id="lblFileStatusRemarks">@ViewBag.lblFileStatusRemarks</span></label>
+                                    @Html.EditorFor(model => model.FileStatusRemarks, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            <div class="col-sm-4 clsP @ViewBag.clsP">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CourtReg_ClaimAmount)
+                                    @Html.EditorFor(model => model.CourtReg_ClaimAmount, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            @if (User.IsInRole("VoucherApproval"))
+                            {
+                                <div class="col-sm-3 cls8 @ViewBag.cls8">
+                                    <label for="PaymentDate">PAID DATE</label>
+                                    @Html.EditorFor(model => model.PaymentDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            }
+                        </div>
+                        <div id="DivCourtInfo"></div>
+                        <div id="9"></div>
+                        <div id="10"></div>
+                    </div>
+                </div>
+                @if (User.IsInRole("VoucherApproval"))
+                {
+                    <div id="PaymentVoucherContainer" class="@ViewBag.PaymentVoucherContainer"></div>
+                }
+
+                <div class="card card-light">
+                    <div class="text-center card-header">
+                        <h3>
+                            FORM PRINTING
+                        </h3>
+                    </div>
+                    <div class="card-body action1 action2 action3 action4 AppHidden">
+                        <div class="row">
+                            <div class="col action2 action3 action4 AppHidden">
+                                <div class="form-group">
+                                    <label for="FormPrintDefendant">JUG. DATE</label>
+                                    @Html.EditorFor(model => model.FormPrintJugDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="FormPrintDefendant">DEFENDANT</label>
+                                    @Html.EditorFor(model => model.FormPrintDefendant, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="FormPrintLastDate">LAST DATE</label>
+                                    @Html.EditorFor(model => model.FormPrintLastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="FormPrintWorkRequired">WORK REQUIRED</label>
+                                    @Html.EditorFor(model => model.FormPrintWorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-center">
+            <button type="submit" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+}
+<div class="modal fade" id="modal-AddMasterValue">
+    <div class="modal-dialog">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+

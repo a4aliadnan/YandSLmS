@@ -1,0 +1,86 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    var tableClosure;
+    var dataForTable = "";
+    var SP_NAME = "";
+
+
+    $(document).ready(function () {
+        console.log("ClosurePartial Table PartialView");
+
+        if (typeof tableClosure != 'undefined')
+            tableClosure.destroy();
+
+        dataForTable = "CLOSURE_FINAL";
+        SP_NAME = "GetDetailTable";
+
+        tableClosure = $('#HtmlTableClosure').DataTable({
+            lengthChange: false,
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = SP_NAME;
+                    d.CaseId = $('#CaseId').val();
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'ClosureDate', name: 'ClosureDate', autoWidth: false },
+                { data: 'ClosureInitiatedBy', name: 'ClosureInitiatedBy', autoWidth: false },
+                { data: 'ClosureApproveddBy', name: 'ClosureApproveddBy', autoWidth: false },
+                { data: 'FileArchive', name: 'FileArchive', autoWidth: false },
+                { data: 'StoreDate', name: 'StoreDate', autoWidth: false },
+
+            ],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [1, 2, 3]
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: [0, 4]
+                }
+            ],
+            initComplete: function () {
+                $('textarea').autoResize();
+            }
+        });
+    });
+</script>
+
+<div class="card-header FinalClosureBanner">
+    <div class="text-center">
+        <span class="h3">ARCHIVE أرشيف الغلق النهائي للملف</span>
+    </div>
+</div>
+<div class="card-body">
+    <table id="HtmlTableClosure" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width:150px !important;" class="VMiddle text-center">CLOUSER DATE<br />تاريخ الغلق الجزئي</th>
+                <th style="width:50px !important;" class="VMiddle text-center">MAKER NO</th>
+                <th style="width:50px !important;" class="VMiddle text-center">CHECKER NO</th>
+                <th style="width:50px !important;" class="VMiddle text-center">FILE ARCHIVE</th>
+                <th style="width:50px !important;" class="VMiddle text-center">STORE DATE<br />تاريخ حفظ الملف</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

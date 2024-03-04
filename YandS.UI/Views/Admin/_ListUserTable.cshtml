@@ -1,0 +1,98 @@
+﻿@model IEnumerable<YandS.UI.Models.ApplicationUser>
+<div class="panel" id="divUsers">
+    <table id="UserTable" style="width:100%">
+        <tr>
+            <td style="font-weight:bold; font-size:large">
+                UserName
+            </td>
+            <td style="font-weight:bold; font-size:large">
+                Last Name
+            </td>
+            <td style="font-weight:bold; font-size:large">
+                First Name
+            </td>
+            <td style="font-weight:bold; font-size:large">
+                Inactive
+            </td>
+            <td style="font-weight:bold; font-size:large">
+                Email
+            </td>
+            <td style="font-weight:bold; font-size:large;width:50px">
+                Action
+            </td>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>                    
+                    @Html.ActionLink(item.UserName, "UserDetails", new { id = item.Id })
+                </td>                
+                <td>
+                    @item.Lastname
+                </td>
+                <td>
+                    @item.Firstname
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inactive)
+                </td>
+
+                <td>@item.Email</td>
+                <td>
+                    <center>
+                        <a href="@Url.Action("UserEdit", "Admin", new { id = item.Id })" id=@item.Id>
+                            <img src="@Url.Content("~/Content/images/pen.png")" />
+                        </a>
+                        <img class="deleteUser" id=@item.Id src="@Url.Content("~/Content/images/bin.png")" />
+                    </center>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Unbind the original image 'href' set by the controller...
+        $('.deleteUser').attr('href', 'javascript://');
+        $('.deleteUser').click(function () {
+            $dialog.data('id', $(this).attr('id')).data('Id', $(this).attr('Id')).dialog("open");
+        });
+
+        var $dialog = $('<div/>')
+		.html("Warning: This will delete the selected User from the System and will prevent future access to the System.<br/><br/>Do you wish to continue?")
+		.dialog({
+		    autoOpen: false,
+		    resizable: false,
+		    height: 250,
+		    modal: true,
+		    title: 'Delete User',
+		    buttons: [
+						{
+						    text: "Continue",
+						    id: "continuebtn",
+						    click: function () {
+						        var _id = $(this).data('Id');
+						        var _parameters = { userId: _id };
+						        $.ajax({
+						            url: "/Admin/DeleteUserReturnPartialView",
+						            type: "GET",
+						            data: _parameters,
+						            success: function (data, textStatus, jqXHR) {
+						                $('#UserTable').html(data);
+						            }
+						        });
+						        $(this).dialog('close');
+						    }
+						},
+						{
+						    text: "Cancel",
+						    id: "cancelbtn",
+						    click: function () {
+						        $(this).dialog("close");
+						    }
+						}]
+		});
+    });
+</script>

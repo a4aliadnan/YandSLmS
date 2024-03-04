@@ -1,0 +1,280 @@
+﻿<script type="text/javascript">
+    var GetIndexDataURL = '@Url.Action("GetDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var ProcessURL = '@Url.Action("ProcessDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var DefendentTRansferDataTable;
+    var objDTO = {};
+
+    function processDefendentTransfer(data) {
+        console.log(data);
+        _parameters = { objDTO: data };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(_parameters),
+            url: ProcessURL,
+            success: function (Result) {
+
+                if (Result.ProcessFlag == "Y") {
+                    DefendentTRansferDataTable.ajax.reload(function (json) {
+                        console.log(json);
+                        SetSum();
+                    });
+
+                    if ($('#btnAddAmount').hasClass("btn-warning")) {
+                        $('#btnAddAmount').removeClass("btn-warning").addClass("btn-info");
+                        $('#btnAddAmountLabel').text("ADD");
+                    }
+
+                    $('#frmDate').val("");
+                    $('#frmAmount').val("");
+
+                }
+                else {
+                    Swal.fire({
+                        type: "error",
+                        title: 'Error...',
+                        html: Result.ProcessMessage
+                    });
+                }
+            }
+        });
+    }
+
+    function SetSum() {
+        var sum = $('#DefendentTRansferHtmlTable').DataTable().column(1).data().sum();
+        $('#frmTotal').val(sum);
+    }
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        
+        $('#btnAddAmount').on("click", function () {
+            if ($('#frmDate').val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Transfer Date',
+                    html: "Please Enter Valid Transfer Date"
+                });
+
+                return false;
+
+            }
+
+            if ($('#frmAmount').val() == "") {
+                Swal.fire({
+                    type: "error",
+                    title: 'Transfer Date',
+                    html: "Please Enter Valid Transfer Date"
+                });
+
+                return false;
+
+            }
+
+            if ($('#btnAddAmount').hasClass("btn-warning")) {
+
+                objDTO["TransferDate"] = $('#frmDate').val();
+                objDTO["Amount"] = parseFloat($('#frmAmount').val());
+
+
+            }
+            else {
+                objDTO = {
+                    DataFor: "CREATE",
+                    DefendentTransferId: 0,
+                    CaseId: parseInt($("#hid_CaseId").val()),
+                    CaseLevelCode: $("#CaseLevelCode").val(),
+                    TransferDate: $('#frmDate').val(),
+                    Amount: parseFloat($('#frmAmount').val())
+                };
+            }
+            processDefendentTransfer(objDTO);
+        });
+
+        if (typeof DefendentTRansferDataTable != 'undefined')
+            DefendentTRansferDataTable.destroy();
+
+        DefendentTRansferDataTable = $('#DefendentTRansferHtmlTable').DataTable({
+            "processing": false,
+            "serverSide": false,
+            "filter": false,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": false,
+            "pageLength": -1,
+            dom: 'ti',
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.CaseId = parseInt($("#hid_CaseId").val());
+                    d.CaseLevel = $("#CaseLevelCode").val();
+                    //d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'TransferDate', name: 'TransferDate', autoWidth: true },
+                { data: 'Amount', name: 'Amount', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if ($("#txtUserRole").val() == "VoucherApproval")
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Defendent Transfer" id="E_' + row.DefendentTransferId + '" href="#"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm btnLink" title="Cancel Defendent Transfer" id="D_' + row.DefendentTransferId + '" href="#"><i class="fas fa-trash"></i></a>';
+                            else {
+                                return '<a class="btn btn-info btn-sm btnLink" title="Edit Defendent Transfer" id="E_' + row.DefendentTransferId + '" href="#"><i class="fas fa-pencil-alt"></i></a>';
+                            }
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [[1, "desc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': [0, 1, 2] },
+                { 'visible': false, 'targets': [2] },
+                {
+                    targets: 0,
+                    render: function (data) {
+                        return moment(data).format('DD/MM/YYYY');
+                    }
+                }
+            ],
+            initComplete: function () {
+                console.log("DataTable DefendentTRansferDataTable Initiated !!");
+                SetSum();
+                $("#DefendentTRansferHtmlTable_filter.dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            DefendentTRansferDataTable.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            DefendentTRansferDataTable.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+    });
+    $('.table tbody').on('click', '.btnLink', function () {
+        var _Mode = this.id.split('_')[0];
+        var _id = parseInt(this.id.split('_')[1]);
+
+        var dataFor = this.id.split('_')[0] == "E" ? "UPDATE" : "DELETE";
+
+        var data = DefendentTRansferDataTable.row($(this).parents('tr')).data();
+
+        //console.log(data);
+
+        //objDTO = {
+        //    DataFor : dataFor,
+        //    DefendentTransferId : _id,
+        //    CaseId : data.CaseId,
+        //    CaseLevelCode : data.CaseLevelCode,
+        //    TransferDate : data.TransferDate,
+        //    Amount : data.Amount
+        //};
+
+        //processDefendentTransfer(objDTO);
+
+        if (_Mode == "E") {
+            objDTO = {
+                DataFor: dataFor,
+                DefendentTransferId: _id,
+                CaseId: data.CaseId,
+                CaseLevelCode: data.CaseLevelCode
+            };
+
+            $('#frmDate').val(moment(data.TransferDate).format('DD/MM/YYYY'));
+            $('#frmAmount').val(data.Amount);
+
+            $('#btnAddAmount').removeClass("btn-info").addClass("btn-warning");
+            $('#btnAddAmountLabel').text("MODIFY");
+        }
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+
+                    objDTO = {
+                        DataFor: dataFor,
+                        DefendentTransferId: _id,
+                        CaseId: data.CaseId,
+                        CaseLevelCode: data.CaseLevelCode,
+                        TransferDate: moment(data.TransferDate).format('DD/MM/YYYY'),
+                        Amount: data.Amount
+                    };
+
+                    processDefendentTransfer(objDTO);
+                }
+            });
+        }
+        return false;
+    });
+</script>
+<div style="padding-bottom:0px !important;padding-top:10px;background-color: #ebf0f9 !important; color: black !important;">
+    <div class="row">
+        <div class="col-sm-12 text-center"><h3>DEFENDANT TRANSFER</h3></div>
+    </div>
+</div>
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="frmDate">TRANSFER DATE</label>
+                <input id="frmDate" class="form-control form-control-lg datepicker" type="text" placeholder="Date">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="frmAmount">AMOUNT</label>
+                <div class="input-group input-group-lg">
+                    <input id="frmAmount" class="form-control form-control-lg" type="text" placeholder="Amount">
+                    <span class="input-group-append">
+                        <button id="btnAddAmount" type="button" class="btn btn-info btn-lg btn-flat"><span id="btnAddAmountLabel">Add</span></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="frmTotal">TOTAL</label>
+                <input id="frmTotal" class="form-control form-control-lg" type="text" readonly>
+            </div>
+        </div>
+    </div>
+    <div style="padding-bottom:10px !important;padding-top:15px;" class="row">
+        <table id="DefendentTRansferHtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:200px;">TRANSFER DATE</th>
+                    <th style="width:250px;">AMOUNT</th>
+                    <th style="width:200px;"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

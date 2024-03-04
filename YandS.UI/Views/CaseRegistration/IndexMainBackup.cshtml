@@ -1,0 +1,1023 @@
+﻿@{
+    ViewBag.Title = "Y & S Associates - Case Registration List";
+}
+<style>
+    div.dt-buttons {
+        width: auto !important;
+    }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div style="background-color: #ffff00 !important; color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                    <h1>REGISTRATION IN PROGRESS</h1>
+                </div>
+                @if (User.IsInRole("VoucherApproval"))
+                {
+                    <div class="col-sm-1"></div>
+                    <div style="background-color: #ffff00 !important; color: black !important;padding-top:10px;" class="col-sm-3 text-center">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary1" value="A" name="rdoLocation" @ViewBag.VoucherApproval>
+                                <label for="radioPrimary1"> ALL </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary2" value="M" name="rdoLocation">
+                                <label for="radioPrimary2"> MUSCAT </label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="radioPrimary3" value="S" name="rdoLocation">
+                                <label for="radioPrimary3"> SALALAH </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1"></div>
+                }
+                else
+                {
+                    <div class="col-sm-5 text-center">
+
+                    </div>
+
+                }
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Case Registration In Progress</li>
+                        <li class="breadcrumb-item active"><a href="#">Main List</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title"><span class="IndexTotalBG btn-lg btn-flat disabled">TO BE REGISTER</span>&nbsp;<span style="background-color: #fbe5d6 !important; color:black !important;" class="btn-lg btn-flat bg-maroon disabled" id="TTL_TBR"></span>&nbsp;<span class="IndexTotalBG btn-lg btn-flat disabled">NEW CASES</span>&nbsp;<span style="background-color: #fbe5d6 !important; color:black !important;" class="btn-lg btn-flat bg-maroon disabled" id="TTL_NEWCASES"></span> </h3>
+                <div class="card-tools">
+                    <button title="REGISTRATION" style="background-color: #92d050 !important;" class="btn btn-flat btn-lg bg-light" onclick="location.href='@Url.Action("Create", "CaseRegistration")';return false;">REGISTRATION</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div style="padding-bottom:10px;" class="row">
+                   
+                    <div class="col-sm-2">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="URGENT_Total">@ViewBag.URGENT_Total</span></h3>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="text-center">
+                            <h3 style="background-color: #ff2d2d !important; color: white !important;">URGENT CASES</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexURGENT" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+
+                                <th>DAYS COUNTER</th>
+                                <th class="all">FILE NO.</th>
+                                <th>COURT</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>JUDGEMENT DATE</th>
+                                <th>ACTION LEVEL</th>
+                                <th>ENFORCEMENT DISPUTE</th>
+                                <th>FILE STATUS</th>
+                                <th>ON HOLD REASON</th>
+                                <th>COURT MESSAGE</th>
+                                <th>ELECTRONIC NO.</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding-bottom:10px;" class="row">
+                   
+                    <div class="col-sm-2">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="SUPREME_Total"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-center">
+                            <h3 class="CaseRegSupreme">SUPREME</h3>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        @*<div class="form-group">
+                            <select id="ddlFilterSupreme" class="form-control select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                <option value="A" selected="selected">ALL</option>
+                                <option value="2">WRITING SUBMISSION</option>
+                                <option value="3">ON HOLD</option>
+                                <option value="5">SCANNED</option>
+                                <option value="6">ONLINE SUBMISSION</option>
+                                <option value="7">PAYMENT</option>
+                                <option value="10">STOP REGISTRATION</option>
+                            </select>
+                        </div>*@
+                        <div class="form-group">
+                            @Html.DropDownList("ddlFilterSupreme", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexSUPREME" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+
+                                <th>DAYS COUNTER</th>
+                                <th class="all">FILE NO.</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>APPEAL JUDGEMENT DATE</th>
+                                <th>FILE STATUS</th>
+                                <th>ACTION DATE</th>
+                                <th>ON HOLD REASON</th>
+                                <th>COURT MESSAGE</th>
+                                <th>ELECTRONIC NO.</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding-bottom:10px;" class="row">
+
+                    <div class="col-sm-2">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="APPEAL_Total"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-center">
+                            <h3 class="CaseRegAppeal">APPEAL</h3>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.DropDownList("ddlFilterAppeal", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexAPPEAL" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+
+                                <th>DAYS COUNTER</th>
+                                <th class="all">FILE NO.</th>
+                                <th>COURT</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>PRIMARY JUDGEMENT DATE</th>
+                                <th>FILE STATUS</th>
+                                <th>ACTION DATE</th>
+                                <th>ON HOLD REASON</th>
+                                <th>COURT MESSAGE</th>
+                                <th>ELECTRONIC NO.</th>
+                                <th>COURT FEE</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding-bottom:10px;" class="row">
+
+                    <div class="col-sm-2">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="NEWCASES_Total">@ViewBag.NEWCASES_MCTTotal</span></h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-center">
+                            <h3 class="CaseRegNewCase">NEW CASES</h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            @Html.DropDownList("ddlFilterNewCases", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexNEWCASES" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+
+                                <th>DAYS COUNTER</th>
+                                <th class="all">FILE NO.</th>
+                                <th>COURT</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>FILE STATUS</th>
+                                <th>ADMIN FILE</th>
+                                <th>SENT DATE</th>
+                                <th>SENT COUNTER</th>
+                                <th>1ST REMINDER</th>
+                                <th>RM NO.</th>
+                                <th>RM COUNTER</th>
+                                <th>ON HOLD REASON</th>
+                                <th>ELECTRONIC NO.</th>
+                                <th>ACTION COUNTER</th>
+                                <th>COURT REQUEST</th>
+                                <th>REQ COUNTER</th>
+                                <th>OFFICE PROCEDURE</th>
+                                <th>COURT FEE</th>
+                                <th>PAID COUNTER</th>
+                                <th>ASSIGNED TO</th>
+                                <th>ASSIGNED COUNTER</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding-bottom:10px;" class="row">
+                    
+                    <div class="col-sm-2">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="TOBEREG_Total"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="text-center">
+                            <h3 style="background-color: #d9d9d9 !important; color: black !important;">TO BE REGISTER</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexTOBEREG" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>DAYS COUNTER</th>
+                                <th class="all">FILE NO.</th>
+                                <th>COURT</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>RECEIVED DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding-bottom:10px;" class="row">
+                    <div class="col-sm-2 AppHidden">
+                        <div class="text-center">
+                            <h3 class="IndexTotalBG">TOTAL&nbsp;:&nbsp;<span id="STOPREG_Total">@ViewBag.STOPREG_MCTTotal</span></h3>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="text-center">
+                            <h3 class="bg-black">STOP REGISTRATION</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="padding-bottom:10px;" class="col-sm-12">
+                    <table id="IndexSTOPREG" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>DAYS COUNTER</th>
+                                <th>COURT</th>
+                                <th>ELECTRONIC NO.</th>
+                                <th class="all">FILE NO.</th>
+                                <th>CLIENT</th>
+                                <th>DEFENDANT</th>
+                                <th>REASON OF STOP REGISTRATION</th>
+                                <th>COURT MESSAGE</th>
+                                <th class="all"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+    <input type="hidden" id="txtUserRole" value="@ViewBag.UserRole" />
+    <input type="hidden" id="txtDataFor" value="@ViewBag.DataFor" />
+    <input type="hidden" id="txtLocationId" value="@ViewBag.LocationId" />
+
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+        var GetIndexDataURL = '@Url.Action("AjaxIndexData", "CaseRegistration", new { DataFor = @ViewBag.DataFor })';
+        var tableUrgent;
+        var tableSupreme;
+        var tableAppeal;
+        var tableNewCases;
+        var tableToBeRegister;
+        var tableStopRegistration;
+        var TableTotalURL = '@Url.Action("GetTableTotal", "CaseRegistration", new { area = string.Empty })';
+
+        $(document).ready(function () {
+            console.log("Index Case Registration Page");
+            LoadDataTables();
+
+            function LoadDataTables() {
+                if (typeof tableUrgent != 'undefined')
+                    tableUrgent.destroy();
+
+                tableUrgent = $('#IndexURGENT').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    //dom: 'Blfrtip',
+                    dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Case Registration - URGENT CASES',
+                            text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                            titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: { modifier: { page: 'all', search: 'none' } }
+                        }
+                    ],
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "URGENT";
+                            d.FileStatus = "A";
+                            d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                        }
+                    },
+                    "columns": [
+                        { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'CourtRegistrationName', name: 'CourtRegistrationName', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'JudgementDate', name: 'JudgementDate', autoWidth: true },
+                        { data: 'ActionLevelName', name: 'ActionLevelName', autoWidth: true },
+                        { data: 'EnforcementDisputeName', name: 'EnforcementDisputeName', autoWidth: true },
+                        { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true },
+                        { data: 'OnHoldReason', name: 'OnHoldReason', autoWidth: true },
+                        { data: 'CourtMessage', name: 'CourtMessage', autoWidth: true },
+                        { data: 'ElectronicNo', name: 'ElectronicNo', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    return '<a class="btn btn-info btn-sm" title="Edit Case Registration" href="/CaseRegistration/Edit/' + row.CaseRegistrationId + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm" title="Cancel Case Registration" href="/CaseRegistration/Delete/' + row.CaseRegistrationId + '"><i class="fas fa-trash"></i></a>';
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[1, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [0, -1] },
+                        { type: 'natural', targets: 1 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                    },
+                    initComplete: function () {
+                        console.log("DataTable URGENT CASES Initiated !!");
+                        CalculateTableTotal("URGENT");
+
+                        $("#IndexURGENT_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableUrgent.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableUrgent.search("").draw();
+                                }
+                                return;
+                            });
+
+                    }
+                });
+
+                ReloadTable("tableSupreme");
+
+                ReloadTable("tableAppeal");
+
+                ReloadTable("tableNewCases");
+
+                if (typeof tableToBeRegister != 'undefined')
+                    tableToBeRegister.destroy();
+
+                tableToBeRegister = $('#IndexTOBEREG').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    //dom: 'Blfrtip',
+                    dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Case Registration - TO BE REGISTER',
+                            text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                            titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: { modifier: { page: 'all', search: 'none' } }
+                        }
+                    ],
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "TOBEREG";
+                            d.FileStatus = "A";
+                            d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                        }
+                    },
+                    "columns": [
+                        { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'CourtRegistrationName', name: 'CourtRegistrationName', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'ReceptionDate', name: 'ReceptionDate', autoWidth: true }],
+                    "order": [[1, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [0] },
+                        { type: 'natural', targets: 1 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                    },
+                    initComplete: function () {
+                        console.log("DataTable TO BE REGISTER CASES Initiated !!");
+                        CalculateTableTotal("TOBEREG");
+
+                        $("#IndexTOBEREG_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableToBeRegister.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableToBeRegister.search("").draw();
+                                }
+                                return;
+                            });
+                    }
+                });
+
+                if (typeof tableStopRegistration != 'undefined')
+                    tableStopRegistration.destroy();
+
+                tableStopRegistration = $('#IndexSTOPREG').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "orderMulti": false,
+                    "destroy": true,
+                    "ordering": true,
+                    "pageLength": 5,
+                    //dom: 'Blfrtip',
+                    dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Case Registration - STOP REGISTRATION',
+                            text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                            titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: { modifier: { page: 'all', search: 'none' } }
+                        }
+                    ],
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                    "ajax": {
+                        "url": GetIndexDataURL,
+                        "type": "POST",
+                        "datatype": "json",
+                        data: function (d) {
+                            d.DataTableName = "STOPREG";
+                            d.FileStatus = "A";
+                            d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                        }
+                    },
+                    "columns": [
+                        { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                        { data: 'CourtRegistrationName', name: 'CourtRegistrationName', autoWidth: true },
+                        { data: 'ElectronicNo', name: 'ElectronicNo', autoWidth: true },
+                        { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                        { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                        { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                        { data: 'ReasonOfStopRegistration', name: 'ReasonOfStopRegistration', autoWidth: true },
+                        { data: 'CourtMessage', name: 'CourtMessage', autoWidth: true },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                if (type === 'display') {
+                                    return '<a class="btn btn-info btn-sm" title="Edit Case Registration" href="/CaseRegistration/Edit/' + row.CaseRegistrationId + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm" title="Cancel Case Registration" href="/CaseRegistration/Delete/' + row.CaseRegistrationId + '"><i class="fas fa-trash"></i></a>';
+                                }
+                                return data;
+                            },
+                            className: "project-actions text-right"
+                        }],
+                    "order": [[3, "desc"]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'aTargets': [0, -1] },
+                        { type: 'natural', targets: 3 }
+                    ],
+                    "createdRow": function (row, data, dataIndex) {
+                        var rowColor = "";
+                    },
+                    initComplete: function () {
+                        console.log("DataTable STOP REGISTRATIONI Initiated !!");
+                        CalculateTableTotal("STOPREG");
+
+                        $("#IndexSTOPREG_filter.dataTables_filter input")
+                            .unbind() // Unbind previous default bindings
+                            .bind("keyup", function (e) { // Bind our desired behavior
+                                //console.log(e.keyCode);
+                                // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                if (e.keyCode == 13) {
+                                    // Call the API search function
+                                    tableStopRegistration.search(this.value).draw();
+                                }
+                                // Ensure we clear the search if they backspace far enough
+                                if (this.value == "") {
+                                    tableStopRegistration.search("").draw();
+                                }
+                                return;
+                            });
+                    }
+                });
+
+            }
+
+            function ReloadTable(table) {
+
+                if (table == "tableSupreme") {
+                    if (typeof tableSupreme != 'undefined')
+                        tableSupreme.destroy();
+
+                    tableSupreme = $('#IndexSUPREME').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 5,
+                        //dom: 'Blfrtip',
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Case Registration - SUPREME',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "SUPREME";
+                                d.FileStatus = $('#ddlFilterSupreme').val();
+                                d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                            { data: 'JudgementDate', name: 'JudgementDate', autoWidth: true },
+                            { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true },
+                            { data: 'ActionDate', name: 'ActionDate', autoWidth: true },
+                            { data: 'OnHoldReason', name: 'OnHoldReason', autoWidth: true },
+                            { data: 'CourtMessage', name: 'CourtMessage', autoWidth: true },
+                            { data: 'ElectronicNo', name: 'ElectronicNo', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        return '<a class="btn btn-info btn-sm" title="Edit Case Registration" href="/CaseRegistration/Edit/' + row.CaseRegistrationId + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm" title="Cancel Case Registration" href="/CaseRegistration/Delete/' + row.CaseRegistrationId + '"><i class="fas fa-trash"></i></a>';
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        'aoColumnDefs': [
+                            { 'bSortable': false, 'aTargets': [0, -1] },
+                            { type: 'natural', targets: 1 }
+                        ],
+                        "createdRow": function (row, data, dataIndex) {
+                            var rowColor = "";
+                        },
+                        initComplete: function () {
+                            console.log("DataTable SUPREME Initiated !!");
+                            CalculateTableTotal("SUPREME");
+
+                            $("#IndexSUPREME_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        tableSupreme.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        tableSupreme.search("").draw();
+                                    }
+                                    return;
+                                });
+
+                        }
+                    });
+                }
+
+                if (table == "tableAppeal") {
+
+                    if (typeof tableAppeal != 'undefined')
+                        tableAppeal.destroy();
+
+                    tableAppeal = $('#IndexAPPEAL').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 5,
+                        //dom: 'Blfrtip',
+                        dom: "<'row'<'col-sm-4'l><'col-sm-7 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Case Registration - APPEAL',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "APPEAL";
+                                d.FileStatus = $('#ddlFilterAppeal').val();
+                                d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'CourtRegistrationName', name: 'CourtRegistrationName', autoWidth: true },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                            { data: 'JudgementDate', name: 'JudgementDate', autoWidth: true },
+                            { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true },
+                            { data: 'ActionDate', name: 'ActionDate', autoWidth: true },
+                            { data: 'OnHoldReason', name: 'OnHoldReason', autoWidth: true },
+                            { data: 'CourtMessage', name: 'CourtMessage', autoWidth: true },
+                            { data: 'ElectronicNo', name: 'ElectronicNo', autoWidth: true },
+                            { data: 'CourtFee', name: 'CourtFee', autoWidth: true },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        return '<a class="btn btn-info btn-sm" title="Edit Case Registration" href="/CaseRegistration/Edit/' + row.CaseRegistrationId + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm" title="Cancel Case Registration" href="/CaseRegistration/Delete/' + row.CaseRegistrationId + '"><i class="fas fa-trash"></i></a>';
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        'aoColumnDefs': [
+                            { 'bSortable': false, 'aTargets': [0, -1] },
+                            { type: 'natural', targets: 1 }
+                        ],
+                        "createdRow": function (row, data, dataIndex) {
+                            var rowColor = "";
+                        },
+                        initComplete: function () {
+                            console.log("DataTable APPEAL CASES Initiated !!");
+                            CalculateTableTotal("APPEAL");
+
+                            $("#IndexAPPEAL_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        tableAppeal.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        tableAppeal.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+                }
+
+                if (table == "tableNewCases") {
+
+                    if (typeof tableNewCases != 'undefined')
+                        tableNewCases.destroy();
+
+                    tableNewCases = $('#IndexNEWCASES').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "filter": true,
+                        "orderMulti": false,
+                        "destroy": true,
+                        "ordering": true,
+                        "pageLength": 5,
+                        //dom: 'Blfrtip',
+                        dom: "<'row'<'col-sm-4'l><'col-sm-3 CourtFees'><'col-sm-4 text-right'f><'col-sm-1 text-right'B>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        buttons: [
+                            {
+                                extend: 'excel',
+                                title: 'Case Registration - NEW CASES',
+                                text: '<i class="fa fa-table fainfo" aria-hidden="true" > </i> Print',
+                                titleAttr: 'Export Excel',
+                                "oSelectorOpts": { filter: 'applied', order: 'current' },
+                                exportOptions: { modifier: { page: 'all', search: 'none' } }
+                            }
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'ALL']],
+                        "ajax": {
+                            "url": GetIndexDataURL,
+                            "type": "POST",
+                            "datatype": "json",
+                            data: function (d) {
+                                d.DataTableName = "NEWCASE";
+                                d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                                d.FileStatus = $('#ddlFilterNewCases').val();
+                            }
+                        },
+                        "columns": [
+                            { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
+                            { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                            { data: 'CourtRegistrationName', name: 'CourtRegistrationName', autoWidth: true },
+                            { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                            { data: 'Defendant', name: 'Defendant', autoWidth: true },
+                            { data: 'FileStatusName', name: 'FileStatusName', autoWidth: true, "className": "Filter_A" },
+                            { data: 'AdminFile', name: 'AdminFile', autoWidth: true, "className": "Filter_2" },
+                            { data: 'SendDate', name: 'SendDate', autoWidth: true, "className": "Filter_1" },
+                            { data: 'SentCounter', name: 'SentCounter', autoWidth: true, "className": "Filter_1" },
+                            { data: 'FirstReminderDate', name: 'FirstReminderDate', autoWidth: true, "className": "Filter_1" },
+                            { data: 'ReminderNo', name: 'ReminderNo', autoWidth: true, "className": "Filter_1" },
+                            { data: 'ReminderCounter', name: 'ReminderCounter', autoWidth: true, "className": "Filter_1" },
+                            { data: 'OnHoldReason', name: 'OnHoldReason', autoWidth: true, "className": "Filter_3" },
+                            { data: 'ElectronicNo', name: 'ElectronicNo', autoWidth: true, "className": "Filter_6" },
+                            { data: 'ActionCounter', name: 'ActionCounter', autoWidth: true, "className": "Filter_A236" },
+                            { data: 'CourtMessage', name: 'CourtMessage', autoWidth: true, "className": "Filter_6" },
+                            { data: 'CourtRequestCounter', name: 'CourtRequestCounter', autoWidth: true, "className": "Filter_6" },
+                            { data: 'OfficeProcedure', name: 'OfficeProcedure', autoWidth: true, "className": "Filter_6" },
+                            { data: 'CourtFee', name: 'CourtFee', autoWidth: true, "className": "Filter_7" },
+                            { data: 'PaymentCounter', name: 'PaymentCounter', autoWidth: true, "className": "Filter_7" },
+                            { data: 'AssignedTo', name: 'AssignedTo', autoWidth: true, "className": "Filter_7" },
+                            { data: 'AssignedCounter', name: 'AssignedCounter', autoWidth: true, "className": "Filter_7" },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    if (type === 'display') {
+                                        return '<a class="btn btn-info btn-sm" title="Edit Case Registration" href="/CaseRegistration/Edit/' + row.CaseRegistrationId + '"><i class="fas fa-pencil-alt"></i></a> <a class="btn btn-danger btn-sm" title="Cancel Case Registration" href="/CaseRegistration/Delete/' + row.CaseRegistrationId + '"><i class="fas fa-trash"></i></a>';
+                                    }
+                                    return data;
+                                },
+                                className: "project-actions text-right"
+                            }],
+                        "order": [[1, "desc"]],
+                        'aoColumnDefs': [
+                            { 'bSortable': false, 'aTargets': [0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, -1] },
+                            { type: 'natural', targets: 1 }
+                        ],
+                        "createdRow": function (row, data, dataIndex) {
+                            //console.log(data.CreatedOn);
+                            //console.log(data.UpdatedOn);
+                            //console.log(data.CreatedDaysPassed);
+                            //console.log(data.UpdatedDaysPassed);
+                            var rowColor = "";
+                            if (data.CreatedDaysPassed >= 15 && data.CreatedDaysPassed <= 30) {
+                                rowColor = "CaseRegDelay15Days";
+                            }
+                            else if (data.CreatedDaysPassed > 30) {
+                                rowColor = "CaseRegDelay30Days";
+
+                            }
+                            $(row).addClass(rowColor);
+                        },
+                        initComplete: function () {
+                            console.log("DataTable NEW CASES Initiated !!");
+                            CalculateTableTotal("NEWCASE");
+                            CalculateCourtFee();
+                            ApplyFilterToTable(tableNewCases, $("#ddlFilterNewCases"));
+                            $("#IndexNEWCASES_filter.dataTables_filter input")
+                                .unbind() // Unbind previous default bindings
+                                .bind("keyup", function (e) { // Bind our desired behavior
+                                    //console.log(e.keyCode);
+                                    // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                                    if (e.keyCode == 13) {
+                                        // Call the API search function
+                                        tableNewCases.search(this.value).draw();
+                                    }
+                                    // Ensure we clear the search if they backspace far enough
+                                    if (this.value == "") {
+                                        tableNewCases.search("").draw();
+                                    }
+                                    return;
+                                });
+                        }
+                    });
+
+                }
+            }
+
+            function CalculateTableTotal(P_TABLENAME) {
+                var ControlToAppendTotoal;
+                url = TableTotalURL;
+                _LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+
+                _parameters = { DataFor: P_TABLENAME, LocationId: _LocationId };
+
+                if (P_TABLENAME == "URGENT")
+                    ControlToAppendTotoal = $("#URGENT_Total");
+                else if (P_TABLENAME == "SUPREME")
+                    ControlToAppendTotoal = $("#SUPREME_Total");
+                else if (P_TABLENAME == "APPEAL")
+                    ControlToAppendTotoal = $("#APPEAL_Total");
+                else if (P_TABLENAME == "NEWCASE")
+                    ControlToAppendTotoal = $("#NEWCASES_Total");
+                else if (P_TABLENAME == "TOBEREG")
+                    ControlToAppendTotoal = $("#TOBEREG_Total");
+                else if (P_TABLENAME == "STOPREG")
+                    ControlToAppendTotoal = $("#STOPREG_Total");
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: url,
+                    success: function (Result) {
+                        if (Result.Message == "Success") {
+                            ControlToAppendTotoal.text(Result.TableTotal);
+
+                            if (P_TABLENAME == "TOBEREG")
+                                $("#TTL_TBR").text(Result.TableTotal);
+
+                            if (P_TABLENAME == "NEWCASE")
+                                $("#TTL_NEWCASES").text(Result.TableTotal);
+                        }
+                        else {
+                            ControlToAppendTotoal.text("");
+
+                            if (P_TABLENAME == "TOBEREG")
+                                $("#TTL_TBR").text("");
+
+                            if (P_TABLENAME == "NEWCASE")
+                                $("#TTL_NEWCASES").text("");
+
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+
+            }
+
+            function CalculateCourtFee() {
+                if ($("#ddlFilterNewCases").val() == "7") {
+                    var sum = $('#IndexNEWCASES').DataTable().column(18).data().sum();
+                    var htmlTobeAppend = '<span style="background-color: #fbe5d6 !important; color:black !important;" class="btn-lg btn-flat bg-maroon disabled">COURT FEES</span>&nbsp;<span style="background-color: #fbe5d6 !important; color:black !important;" class="btn-lg btn-flat bg-maroon disabled">' + sum + '</span>';
+                    $("div.CourtFees").html(htmlTobeAppend);
+                }
+            }
+
+            function ApplyFilterToTable(table, ddl) {
+
+                var TableID = table.table().node().id;
+                var ddlID = ddl.attr('id');
+
+                console.log("ApplyFilterToTable :: " + TableID + " Dropdown :: " + ddlID);
+
+                if (table.data().count()) {
+
+                    var ClassToShow = ".Filter_" + $(ddl).val();
+
+                    table.columns('.Filter_A').visible(false);
+                    table.columns('.Filter_1').visible(false);
+                    table.columns('.Filter_2').visible(false);
+                    table.columns('.Filter_3').visible(false);
+                    table.columns('.Filter_A236').visible(false);
+                    table.columns('.Filter_6').visible(false);
+                    table.columns('.Filter_7').visible(false);
+
+
+                    table.columns(ClassToShow).visible(true);
+
+                    if ($(ddl).val() == "A" || $(ddl).val() == "2" || $(ddl).val() == "3" || $(ddl).val() == "6")
+                        table.columns('.Filter_A236').visible(true);
+                }
+                else
+                    console.log("Table :: " + TableID + " Has no Data");
+
+            }
+
+            $('input[type=radio][name=rdoLocation]').change(function () {
+                LoadDataTables();
+            });
+
+            $('.select2bs4').change(function () {
+
+                switch ($(this).attr("id")) {
+                    case "ddlFilterSupreme":
+                        if (typeof tableSupreme != 'undefined')
+                            ReloadTable("tableSupreme");
+                        break;
+                    case "ddlFilterAppeal":
+                        if (typeof tableAppeal != 'undefined')
+                            ReloadTable("tableAppeal");
+                        break;
+                    case "ddlFilterNewCases":
+                        if (typeof tableNewCases != 'undefined')
+                            ReloadTable("tableNewCases");
+                        break;
+                }
+
+            });
+
+        });
+    </script>
+}

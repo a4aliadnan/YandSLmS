@@ -1,0 +1,133 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('#SessionLevel').on("change", function () {
+            console.log(this.id);
+            console.log($(this).val());
+
+            _PartialViewName = "";
+            SelectedSessionLevel = parseInt($(this).val());
+
+            if (SelectedSessionLevel >= 3 && SelectedSessionLevel <= 5)
+                _PartialViewName = "_SessionRollRegisterPAS";
+            else if (SelectedSessionLevel == 6)
+                _PartialViewName = "_SessionRollRegisterENF";
+            else {
+                //Swal.fire({
+                //    type: "error",
+                //    title: 'ERROR...',
+                //    html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+                //});
+                return false;
+            }
+
+            P_CaseId = parseInt($("#CaseId").val());
+            P_SessionRollId = parseInt($("#SessionRollId").val());
+            //$("#PartialViewName").val(_PartialViewName);
+            var _Mode = "C";
+
+            var PartialContainer = $("#DetailPartialView");
+            _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId, CaseLevel: $(this).val() };
+
+            GetTab(PartialContainer, GetSessionRollURL, _parameters);
+        });
+
+        $('#SessionFileStatus').on("change", function () {
+            _PartialViewName = "";
+
+            console.log(this.id);
+            console.log($(this).val());
+
+            if (parseInt($(this).val()) == 3)
+                _PartialViewName = "_OnHoldCaseControls";
+            else if (parseInt($(this).val()) == 1)
+                _PartialViewName = "_RunningCaseControls";
+            else if (parseInt($(this).val()) == 2) {
+                ModalTitle = "MODIFY JUDGEMENT";
+                console.log($.trim($('#EditPopupViewContainer').html()).length);
+                console.log($.trim($('#DIV_UPDATE_DETAIL').html()).length);
+
+                if ($.trim($('#EditPopupViewContainer').html()).length) {
+                    _PartialViewName = "_SessionJudgementDIV";
+
+                    $("#EditPopupModalTitle").text(ModalTitle);
+
+                    P_CaseId = parseInt($("#CaseId").val());
+                    P_SessionRollId = parseInt($("#SessionRollId").val());
+                    //$("#PartialViewName").val(_PartialViewName);
+                    var _Mode = "C";
+
+                    var PartialContainer = $("#EditPopupViewContainer");
+                    _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+                    GetTab(PartialContainer, GetSessionRollURL, _parameters);
+
+                    console.log("Running Form in POPUP END");
+                }
+
+                if ($.trim($('#DIV_UPDATE_DETAIL').html()).length) {
+                    console.log("Running Form in DIV_UPDATE_DETAIL");
+                    $("#_SessionJudgementDIV").click();
+                }
+
+            }
+            else {
+                //Swal.fire({
+                //    type: "error",
+                //    title: 'ERROR...',
+                //    html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+                //});
+                return false;
+            }
+
+            if (parseInt($(this).val()) == 1 || parseInt($(this).val()) == 3) {
+                P_CaseId = parseInt($("#CaseId").val());
+                P_SessionRollId = parseInt($("#SessionRollId").val());
+                //$("#PartialViewName").val(_PartialViewName);
+                var _Mode = "C";
+
+                var PartialContainer = $("#FileStatusDetail");
+                _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId, CaseLevel: $(this).val() };
+
+                GetTab(PartialContainer, GetSessionRollURL, _parameters);
+            }
+        });
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@Html.HiddenFor(model => model.SessionRollId)
+@Html.HiddenFor(model => model.CaseId)
+@Html.HiddenFor(model => model.PartialViewName)
+
+<div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+    <div class="row">
+        <div class="col-sm-12 text-center"><h3>SESSION COMPLETED</h3></div>
+    </div>
+</div>
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SessionLevel">CURRENT CASE LEVEL</label>
+                @Html.DropDownList("SessionLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="SessionFileStatus">FILE STATUS حالة الملف</label>
+                @Html.DropDownList("SessionFileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div id="FileStatusDetail" class="col-sm-6"></div>
+    </div>
+    <div id="DetailPartialView"></div>
+</div>

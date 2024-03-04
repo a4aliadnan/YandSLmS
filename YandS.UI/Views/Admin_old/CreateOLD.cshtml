@@ -1,0 +1,566 @@
+﻿@model YandS.UI.Models.CourtCases
+
+@{
+    ViewBag.Title = "Y & S Associates - Create Case";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>REGISTRATION WINDOW</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Court Case</li>
+                        <li class="breadcrumb-item active"><a href="#">New Court Cases</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "return onPreSubmit(this);" }))
+        {
+            <div class="card card-success">
+
+                <div class="card-header">
+                    <h3 class="card-title">ADD COURT CASE</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.ODBLoanCode, new { @Value = "0" })
+                    @Html.HiddenFor(model => model.CaseStatus, new { @Value = "1" })
+                    @Html.HiddenFor(model => model.SelectedBeforeCourt)
+                    @Html.HiddenFor(model => model.IsCommission, new { @Value = false })
+                    @Html.HiddenFor(model => model.IsPrivateFee, new { @Value = false })
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="card card-success card-outline card-outline-tabs">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" id="CourtCase-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="CaseInformaton-tab" data-toggle="pill" href="#tabs-CaseInformaton" role="tab" aria-controls="tabs-CaseInformaton" aria-selected="true">CASE REGISTRATION</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="BeforeCourt-tab" data-toggle="pill" href="#tabs-BeforeCourt" role="tab" aria-controls="tabs-BeforeCourt" aria-selected="false">BEFORE COURT INFORMATION</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="CourtCase-tabContent">
+                                    <div class="tab-pane fade show active" id="tabs-CaseInformaton" role="tabpanel" aria-labelledby="CaseInformaton-tab">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.OfficeFileNo)
+                                                    @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.ClientCode)
+                                                        <div class="input-group mb-3">
+                                                            @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "3" })
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-info AddNewMaster" id="241">
+                                                                    Add
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        @Html.ValidationMessageFor(model => model.ClientCode, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label id="divDefClient" class="AppHidden" for="Defendant">Plaintiff Name</label>
+                                                    <label id="divDefendant" class="" for="Defendant">Defendant Name</label>
+                                                    @Html.EditorFor(model => model.Defendant, new { htmlAttributes = new { @class = "form-control", @tabindex = "6" } })
+                                                    @Html.ValidationMessageFor(model => model.Defendant, "", new { @class = "text-danger" })
+
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.AccountContractNo)
+                                                        <div class="input-group mb-3">
+                                                            @Html.EditorFor(model => model.AccountContractNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "9" } })
+                                                            <div class="input-group-append">
+                                                                <button type="button" id="btn-AccountContractNo" class="btn btn-warning" onclick="generate_modal_body('AccountContractNo')">Check</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CaseTypeCode)
+                                                    @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "12" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ReceiveLevelCode)
+                                                    @Html.DropDownList("ReceiveLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "15" })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ReceptionDate)
+                                                    @Html.EditorFor(model => model.ReceptionDate, new { htmlAttributes = new { @class = "form-control datepicker", @tabindex = "1" } })
+                                                    @Html.ValidationMessageFor(model => model.ReceptionDate, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.ClientCaseType)
+                                                        <div class="input-group mb-3">
+                                                            @Html.DropDownList("ClientCaseType", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "4" })
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-info AddNewMaster" id="285">
+                                                                    Add
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-sm-8">
+                                                            @Html.LabelFor(model => model.IdRegistrationNo)
+                                                            <div class="input-group mb-3">
+                                                                @Html.EditorFor(model => model.IdRegistrationNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "7" } })
+                                                                <div class="input-group-append">
+                                                                    <button type="button" id="btn-IdRegistrationNo" class="btn btn-warning" onclick="generate_modal_body('IdRegistrationNo')">Check</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            @Html.LabelFor(model => model.OmaniExp)
+                                                            <div class="input-group">
+                                                                @Html.DropDownList("OmaniExp", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "7" })
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.ClientFileNo)
+                                                        <div class="input-group mb-3">
+                                                            @Html.EditorFor(model => model.ClientFileNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "10" } })
+                                                            <div class="input-group-append">
+                                                                <button type="button" id="btn-ClientFileNo" class="btn btn-warning" onclick="generate_modal_body('ClientFileNo')">Check</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ParentCourtId)
+                                                    @Html.DropDownList("ParentCourtId", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "13" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.ODBBankBranch)
+                                                        <div class="input-group mb-3">
+                                                            @Html.DropDownList("ODBBankBranch", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "16" })
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-info AddNewMaster" id="18">
+                                                                    Add
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.LegalNoticeDate)
+                                                    @Html.EditorFor(model => model.LegalNoticeDate, new { htmlAttributes = new { @class = "form-control datepicker", @tabindex = "2" } })
+                                                    @Html.ValidationMessageFor(model => model.LegalNoticeDate, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.AgainstCode)
+                                                    @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.CRRegistrationNo)
+                                                        <div class="input-group mb-3">
+                                                            @Html.EditorFor(model => model.CRRegistrationNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "8" } })
+                                                            <div class="input-group-append">
+                                                                <button type="button" id="btn-CRRegistrationNo" class="btn btn-warning" onclick="generate_modal_body('CRRegistrationNo')">Check</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.ClaimAmount)
+                                                            @Html.EditorFor(model => model.ClaimAmount, new { htmlAttributes = new { @class = "form-control", @tabindex = "11" } })
+                                                        </div>
+                                                        @*<div class="col-sm-4">
+                    <div style="padding-top:35px;" class="form-group clearfix">
+                        <div class="icheck-primary d-inline">
+                            @Html.CheckBoxFor(model => model.IsCommission)
+                            @Html.LabelFor(model => model.IsCommission)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div style="padding-top:35px;" class="form-group clearfix">
+                        <div class="icheck-primary d-inline">
+                            @Html.CheckBoxFor(model => model.IsPrivateFee)
+                            @Html.LabelFor(model => model.IsPrivateFee)
+                        </div>
+                    </div>
+                </div>*@
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CaseLevelCode)
+                                                    @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "14" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        @Html.LabelFor(model => model.LoanManager)
+                                                        <div class="input-group mb-3">
+                                                            @Html.DropDownList("LoanManager", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "17" })
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-info AddNewMaster" id="428">
+                                                                    Add
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="row p-1">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SpecialInstructions)
+                                                        @Html.TextAreaFor(model => model.SpecialInstructions, 3, 200, new { @class = "form-control", @placeholder = "Please Enter Special Instructions", @tabindex = "17" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="tabs-BeforeCourt" role="tabpanel" aria-labelledby="BeforeCourt-tab">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group clearfix">
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="radioPrimary1" value="1" name="r1">
+                                                        <label for="radioPrimary1">
+                                                            POLICE NO
+                                                        </label>
+                                                    </div>
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="radioPrimary2" value="2" name="r1">
+                                                        <label for="radioPrimary2">
+                                                            PUBLIC PROSECUTION NO
+                                                        </label>
+                                                    </div>
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="radioPrimary3" value="3" name="r1">
+                                                        <label for="radioPrimary3">
+                                                            PAPC NO
+                                                        </label>
+                                                    </div>
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="radio" id="radioPrimary4" value="4" name="r1">
+                                                        <label for="radioPrimary4">
+                                                            LABOR CONFLIC NO
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PoliceNo)
+                                                    @Html.EditorFor(model => model.PoliceNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "18" } })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PublicProsecutionNo)
+                                                    @Html.EditorFor(model => model.PublicProsecutionNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "20" } })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PAPCNo)
+                                                    @Html.EditorFor(model => model.PAPCNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "22" } })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.LaborConflicNo)
+                                                    @Html.EditorFor(model => model.LaborConflicNo, new { htmlAttributes = new { @class = "form-control", @tabindex = "24" } })
+                                                </div>
+
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PoliceStation)
+                                                    @Html.DropDownList("PoliceStation", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "19" })
+                                                    @Html.ValidationMessageFor(model => model.PoliceStation, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PublicPlace)
+                                                    @Html.DropDownList("PublicPlace", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "21" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PAPCPlace)
+                                                    @Html.DropDownList("PAPCPlace", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "23" })
+                                                </div>
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.LaborConflicPlace)
+                                                    @Html.DropDownList("LaborConflicPlace", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "25" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.YandSNotes)
+                                            @Html.TextAreaFor(model => model.YandSNotes, 4, 200, new { @class = "form-control", @placeholder = "Please Enter Notes", @tabindex = "17" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button> |
+                        <a class="btn btn-primary" href="@Url.Action("Index", "CourtCases")"><i class="fas fa-home"></i> Back to Case List</a>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </section>
+    <!-- /.content -->
+    <div class="modal fade" id="modal-ViewDefendent">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title">CHECK DETAIL</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                        <table id="tblDefaulterDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Office File No</th>
+                                    <th>Account Contract No</th>
+                                    <th>Client File No</th>
+                                    <th>Defendant</th>
+                                    <th>Case Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId"/>
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description"/>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var GetDefaulterDetailURL = '@Url.Action("GetDefaulterDetail", "CourtCases", new { area = string.Empty })';
+        var DefendentTable;
+        var DDLToAppend;
+
+        function ProcessAddClient() {
+            if ($("#MstDesc").val() != "") {
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: CreateMasterTableDetailURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            var newOption = new Option(Result.name, Result.id, true, true);
+                            DDLToAppend.append(newOption).trigger('change');
+                            $('#modal-AddMasterValue').modal('hide');
+
+                        }
+                        else {
+                            $('#modal-AddMasterValue').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });            }
+        }
+        function generate_modal_body(ModalToGenerateId) {
+            //var ModalToGenerateId = this.id.split('-')[1] ;
+            var ModalToGenerate = $("#" + ModalToGenerateId).val();
+
+            if (ModalToGenerate != "") {
+                console.log(ModalToGenerate);
+
+                if (typeof DefendentTable != 'undefined')
+                    DefendentTable.destroy();
+
+                DefendentTable = $('#tblDefaulterDetail').DataTable({
+                    lengthChange: false,
+                    ajax: {
+                        url: GetDefaulterDetailURL,
+                        "dataSrc": "",
+                        type: 'POST',
+                        data: function (d) {
+                            d.P_DataParameter = ModalToGenerate;
+                            d.P_DataFor = ModalToGenerateId;
+                        }
+                    },
+                    "columns": [
+                        { data: 'OfficeFileNo' },
+                        { data: 'AccountContractNo' },
+                        { data: 'ClientFileNo' },
+                        { data: 'Defendant' },
+                        { data: 'CaseStatusName' }
+                    ],
+                    initComplete: function () {
+                        $('#modal-ViewDefendent').modal('show');
+                    }
+                });
+
+            }
+            else {
+                // Failed show errors
+                console.log("Failed ModalToGenerate is null");
+                //$('#modal-ViewDefendent').modal('hide');
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter ' + ModalToGenerateId
+                });
+            }
+        }
+        function onPreSubmit(item) {
+            $("#SelectedBeforeCourt").val($('input[name=r1]:checked').val());
+        }
+
+        $(document).ready(function () {
+            console.log("Create Case Document Page");
+            bsCustomFileInput.init();
+            $("#ReceptionDate").datepicker({
+                format: "dd/mm/yyyy"
+            });
+            $("#ReceptionDate").datepicker("setDate", new Date());
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "241") {
+                    ModalTitle = "Add Client";
+                    DDLToAppend = $("#ClientCode");
+                }
+                else if (this.id == "285") {
+                    ModalTitle = "Add Client Case Type";
+                    DDLToAppend = $("#ClientCaseType");
+                }
+                else if (this.id == "16") {
+                    ModalTitle = "Add ODB Loan";
+                    DDLToAppend = $("#ODBLoanCode");
+                }
+                else if (this.id == "18") {
+                    ModalTitle = "Add ODB Bank Branch";
+                    DDLToAppend = $("#ODBBankBranch");
+                }
+                else if (this.id == "428") {
+                    ModalTitle = "Add Loan Manager";
+                    DDLToAppend = $("#LoanManager");
+                }
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+               
+            });
+
+            $('#ClaimAmount').on("blur", function () {
+                if (parseInt(this.value) >= 100000) {
+                    Swal.fire({
+                        type: "info",
+                        title: 'Enter Special Instruction',
+                        html: 'Make sure to Enter Special Instruction or Commission for amount ' + this.value
+                    });
+                }
+                   
+            });
+
+            $('#AgainstCode').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                if ($(this).val() == "3") {
+                    $("#divDefClient").removeClass("AppHidden");
+                    $("#divDefendant").removeClass("AppHidden").addClass("AppHidden");
+                }
+                else {
+                    $("#divDefClient").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divDefendant").removeClass("AppHidden");
+                }
+            });
+        });
+    </script>
+}

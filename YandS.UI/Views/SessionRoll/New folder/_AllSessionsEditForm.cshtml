@@ -1,0 +1,902 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+    var ValidationMessage;
+    var NotValid;
+
+    function onPreSubmit(item) {
+        console.log($("#HFCaseId").val());
+        ValidationMessage = "";
+        NotValid = false;
+
+        NotValid = ValidateMain();
+
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+        NotValid = ValidateSessionResult();
+
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+        if ($("#DIV_FOLLOW").hasClass("collapsed-card")) {
+        }
+        else {
+            NotValid = ValidateFollow();
+        }
+
+
+        if ($('input[name="radioJudgement"]:checked').val() == "P")
+            NotValid = ValidatePrimary();
+        else if ($('input[name="radioJudgement"]:checked').val() == "A")
+            NotValid = ValidateAppeal();
+        else if ($('input[name="radioJudgement"]:checked').val() == "E")
+            NotValid = ValidateEnforcement();
+
+
+        if ($("#DIV_FORM_PRINTING").hasClass("collapsed-card")) {
+        }
+        else {
+            NotValid = ValidateFormPrinting();
+        }
+
+        if (NotValid) {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: ValidationMessage
+            });
+            return false;
+        }
+
+    }
+
+    function ValidateMain() {
+
+        if ($("#SessionLevel").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SESSION LEVEL" : ValidationMessage + "<br />" + "PLEASE SELECT SESSION LEVEL";
+            NotValid = true;
+        }
+
+        if ($("#CountLocationId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT SELECT COURT" : ValidationMessage + "<br />" + "PLEASE SELECT COURT";
+
+            NotValid = true;
+        }
+
+        if ($("#CaseType").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CASE TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT CASE TYPE";
+            NotValid = true;
+        }
+
+        if ($("#LawyerId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT LAWYER" : ValidationMessage + "<br />" + "PLEASE SELECT LAWYER";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+
+    }
+
+    function ValidateSessionResult() {
+
+        if ($("#CurrentHearingDate").val() == "" && $("#NextHearingDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER UPDATE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER UPDATE DATE";
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER NEXT HEARING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER NEXT HEARING DATE";
+            NotValid = true;
+        }
+
+        if ($("#CurrentHearingDate").val() == "" && $("#NextHearingDate").val() != "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER UPDATE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER UPDATE DATE";
+            NotValid = true;
+        }
+
+        if ($("#CurrentHearingDate").val() != "" && $("#NextHearingDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER NEXT HEARING DATE" : ValidationMessage + "<br />" + "PLEASE ENTER NEXT HEARING DATE";
+            NotValid = true;
+        }
+
+
+        if ($("#CurrentHearingDate").val() != "" && $("#NextHearingDate").val() != "") {
+            if (process($("#CurrentHearingDate").val()) > process($("#NextHearingDate").val())) {
+                ValidationMessage = ValidationMessage == "" ? "NEXT HEARING DATE MUST BE GREATER THEN UPDATE DATE" : ValidationMessage + "<br />" + "NEXT HEARING DATE MUST BE GREATER THEN UPDATE DATE";
+                NotValid = true;
+            }
+        }
+
+        if ($("#CourtDecision").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER COURT DECISION" : ValidationMessage + "<br />" + "PLEASE ENTER COURT DECISION";
+            NotValid = true;
+        }
+
+        return NotValid;
+
+    }
+
+    function ValidateFollow() {
+        if ($("#Requirements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REQUIREMENTS" : ValidationMessage + "<br />" + "PLEASE ENTER REQUIREMENTS";
+            NotValid = true;
+        }
+
+        if ($("#BeforeDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER BEFORE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER BEFORE DATE";
+            NotValid = true;
+        }
+
+        if ($("#FollowerId").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FOLLOWER" : ValidationMessage + "<br />" + "PLEASE SELECT FOLLOWER";
+            NotValid = true;
+        }
+
+        if ($("#FollowNotes").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FOLLOW NOTES" : ValidationMessage + "<br />" + "PLEASE ENTER FOLLOW NOTES";
+            NotValid = true;
+        }
+
+
+        return NotValid;
+    }
+
+    function ValidatePrimary() {
+        if ($("#PrimaryJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JUDGEMENTS DATE";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY SENTENCE";
+            NotValid = true;
+        }
+
+        console.log($('input[name="PrimaryIsFavorable"]:checked').val());
+
+        if ($('input[name="PrimaryIsFavorable"]:checked').val() == undefined) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT PRIMARY JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT PRIMARY JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryJDReceiveDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY JD RECEIVE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JD RECEIVE DATE";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryFinalJDAmount").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY FINAL JD AMOUNT";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryFinalJudgedInterests").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY JUDGED INTERESTS";
+            NotValid = true;
+        }
+
+        if ($("#PrimaryAllJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER PRIMARY ALL JUDGEMENTS" : ValidationMessage + "<br />" + "PLEASE ENTER PRIMARY ALL JUDGEMENTS";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+
+    function ValidateAppeal() {
+        if ($("#AppealJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL JUDGEMENTS DATE";
+            NotValid = true;
+        }
+
+        if ($("#AppealJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL SENTENCE";
+            NotValid = true;
+        }
+
+        console.log($('input[name="AppealIsFavorable"]:checked').val());
+
+        if ($('input[name="AppealIsFavorable"]:checked').val() == undefined) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT APPEAL JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT APPEAL JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+
+        if ($("#AppealJDReceiveDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL JD RECEIVE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL JD RECEIVE DATE";
+            NotValid = true;
+        }
+
+        if ($("#AppealFinalJDAmount").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL FINAL JD AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL FINAL JD AMOUNT";
+            NotValid = true;
+        }
+
+        if ($("#AppealFinalJudgedInterests").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL FINAL JUDGED INTERESTS" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL JUDGED INTERESTS";
+            NotValid = true;
+        }
+
+        if ($("#AppealAllJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER APPEAL ALL JUDGEMENTS" : ValidationMessage + "<br />" + "PLEASE ENTER APPEAL ALL JUDGEMENTS";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+
+    function ValidateEnforcement() {
+        if ($("#EnforcementJudgementsDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT JUDGEMENTS DATE" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT JUDGEMENTS DATE";
+            NotValid = true;
+        }
+
+        if ($("#EnforcementJudgements").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT SENTENCE" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT SENTENCE";
+            NotValid = true;
+        }
+
+        console.log($('input[name="EnforcementIsFavorable"]:checked').val());
+
+        if ($('input[name="EnforcementIsFavorable"]:checked').val() == undefined) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ENFORCEMENT JUDGEMENT FAVORABLE" : ValidationMessage + "<br />" + "PLEASE SELECT ENFORCEMENT JUDGEMENT FAVORABLE";
+            NotValid = true;
+        }
+
+        if ($("#EnforcementJDReceiveDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER ENFORCEMENT JD RECEIVE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER ENFORCEMENT JD RECEIVE DATE";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+
+    function ValidateFormPrinting() {
+        if ($("#LastDate").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER LAST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER LAST DATE";
+            NotValid = true;
+        }
+
+        if ($("#WorkRequired").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER WORK REQUIRED" : ValidationMessage + "<br />" + "PLEASE ENTER WORK REQUIRED";
+            NotValid = true;
+        }
+
+        if ($("#SessionNotes").val() == "") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SESSION NOTES" : ValidationMessage + "<br />" + "PLEASE ENTER SESSION NOTES";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+
+    function process(date) {
+        var parts = date.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $('.btn-tool').on("click", function () {
+
+            if (this.id == "btnPVCreate") {
+                if ($(this).hasClass("circleButtonClose")) {
+                    $(this).removeClass("circleButtonClose").addClass("circleButtonPV");
+
+                    var _PartialViewName = "_PayVoucherCreate";
+                    var PartialContainer = $("#PVCreateForm");
+                    _parameters = { Mode: "C", PartialViewName: _PartialViewName, CaseId: 0, SessionRollId: 0 };
+
+                    GetTab(PartialContainer, GetSessionRollURL, _parameters);
+                    $('#modal-PVForm').modal('show');
+                }
+                else {
+                    $("#PVCreateForm").empty();
+                    $("#DIV_EXPENSES").addClass("collapsed-card");
+                    $(this).removeClass("circleButtonPV").addClass("circleButtonClose");
+                }
+
+            }
+            else {
+                if ($(this).hasClass("circleButtonClose"))
+                    $(this).removeClass("circleButtonClose").addClass("circleButtonOpen");
+                else
+                    $(this).removeClass("circleButtonOpen").addClass("circleButtonClose");
+            }
+        });
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "860") {
+                ModalTitle = "ADD LAWYER";
+                DDLToAppend = $("#LawyerId");
+            }
+            else if (this.id == "861") {
+                ModalTitle = "ADD FOLLOWER";
+                DDLToAppend = $("#FollowerId");
+            }
+            else if (this.id == "7") {
+                ModalTitle = "Add Payment Head";
+                DDLToAppend = $("#Payment_Head");
+            }
+            else if (this.id == "214") {
+                ModalTitle = "Add Pay To";
+                DDLToAppend = $("#Payment_To");
+            }
+
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+        $('input[type=radio][name=radioJudgement]').change(function () {
+            $("#DIV_PRIMARY").removeClass("AppHidden").addClass("AppHidden");
+            $("#DIV_APPEAL").removeClass("AppHidden").addClass("AppHidden");
+            $("#DIV_ENFORCEMENT").removeClass("AppHidden").addClass("AppHidden");
+
+
+            if ($('input[name="radioJudgement"]:checked').val() == "P")
+                $("#DIV_PRIMARY").removeClass("AppHidden");
+            else if ($('input[name="radioJudgement"]:checked').val() == "A")
+                $("#DIV_APPEAL").removeClass("AppHidden");
+            else if ($('input[name="radioJudgement"]:checked').val() == "E")
+                $("#DIV_ENFORCEMENT").removeClass("AppHidden");
+        });
+        $("#modal-PVForm").on("hidden.bs.modal", function () {
+            if ($('#btnPVCreate').hasClass("circleButtonPV")) {
+                $("#PVCreateForm").empty();
+                $('#btnPVCreate').removeClass("circleButtonPV").addClass("circleButtonClose");
+            }
+        });
+        $('#btnEnfReset').on("click", function () {
+            $("#DIV_FOLLOW input,textarea").each(function () {
+                this.value = "";
+            });
+
+            $("#FollowerId").val("0").trigger('change');
+            $("#DIVFollowFormButton").removeClass("AppHidden").addClass("AppHidden");
+
+        });
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateMain();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            NotValid = ValidateSessionResult();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            if ($("#DIV_FOLLOW").hasClass("collapsed-card")) {
+            }
+            else {
+                NotValid = ValidateFollow();
+            }
+
+
+            if ($('input[name="radioJudgement"]:checked').val() == "P")
+                NotValid = ValidatePrimary();
+            else if ($('input[name="radioJudgement"]:checked').val() == "A")
+                NotValid = ValidateAppeal();
+            else if ($('input[name="radioJudgement"]:checked').val() == "E")
+                NotValid = ValidateEnforcement();
+
+
+            if ($("#DIV_FORM_PRINTING").hasClass("collapsed-card")) {
+            }
+            else {
+                NotValid = ValidateFormPrinting();
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            var data = new FormData(jQuery('#frm_SessionRollEditForm')[0]);
+            //console.log(data);
+            $.ajax({
+                type: "POST",
+                url: SubmitFormURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.errorMessage) {
+                        console.log("result.errorMessage");
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ERROR...',
+                            html: result.errorMessage
+                        });
+
+                        return false;
+                    }
+
+                    if (result.redirectTo) {
+                        var RedirectURL = "/CaseRegistration/IndexMain/" + result.id;
+                        window.location = RedirectURL;
+                    }
+                    else {
+                        console.log("else");
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Done!',
+                            html: "Data Save Successfully"
+                        });
+                        ReloadTable();
+                        $("#AllSessionsEditForm").html(result);
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        });
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+@using (Html.BeginForm("Index", "SessionRoll", FormMethod.Post, new { id = "frm_SessionRollEditForm", onsubmit = "return onPreSubmit(this);" }))
+{
+    @Html.HiddenFor(model => model.SessionRollId)
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.HiddenFor(model => model.SessionClientId)
+    @Html.HiddenFor(model => model.SessionRollDefendentName)
+
+    @Html.AntiForgeryToken()
+    <div class="AppHidden">
+        <a id="btn_ToCaseRegister" href="/CaseRegistration/IndexMain/@ViewBag.CaseRegistrationId"></a>
+    </div>
+
+    <div style="padding-top:1rem;padding-bottom:1rem">
+        <div class="card">
+            <div style="padding-bottom:0px;padding-top:10px;" class="card-header AllSessionCaseInfoBar">
+                <div class="row">
+                    <div class="col-lg-6"><h3><span id="spanClientName">@Html.DisplayFor(model => model.ClientName)</span><span class="YandSTitleSpacing2">-</span><span id="spanDefendant">@Html.DisplayFor(model => model.Defendant)</span></h3></div><div class="col-lg-6" dir="rtl"><h3 style="float:right">@Html.DisplayFor(model => model.SessionRollClientName)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.SessionRollDefendentName)</h3></div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12"><h3><span id="spanOfficeFileNo">@Html.DisplayFor(model => model.OfficeFileNo)</span><span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.AccountContractNo)<span class="YandSTitleSpacing2">-</span>@Html.DisplayFor(model => model.ClientFileNo)</h3></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="AdminFile">CURRENT CASE LEVEL</label>
+                            @Html.EditorFor(model => model.CurrentCaseLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="SessionLevel">SESSION LEVEL درجة التقاضي</label>
+                            @Html.DropDownList("SessionLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="CountLocationId">COURT المحكمة</label>
+                            @Html.DropDownList("CountLocationId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="CaseType">CADE TYPE القاعة</label>
+                            @Html.DropDownList("CaseType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                            @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="LawyerId">LAWYER المحامي</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("LawyerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="860">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</label>
+                            @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                            <div class="form-group">
+                                @Html.TextAreaFor(model => model.CourtDecision, 5, 200, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="SessionRemarks">REMARKS توجيهات للمحامي</label>
+                            <div class="form-group">
+                                @Html.TextAreaFor(model => model.SessionRemarks, 3, 200, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DIV_FOLLOW" class="card collapsed-card">
+            <div style="padding-bottom:0px !important;" class="card-header AllSessionFollowBar">
+                <div class="row">
+                    <div class="card-tools col-sm-1">
+                        <button style="float:left;" type="button" id="btnEnfReset" class="btn btn-sm btn-danger"><i class="fas fa-edit"> </i> CLEAR</button>
+                    </div>
+                    <div class="col-sm-10 text-center">
+                        <h3>FOR FOLLOW مطلوب متابعة الإجراء </h3>
+                    </div>
+                    <div style="padding-top:10px;" class="card-tools col-sm-1">
+                        <button style="float:right;" type="button" class="btn btn-tool circleButtonClose" data-card-widget="collapse"><i class="fas fa-circle fa-2x"></i> </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="Requirements">Requirement المطلوب</label>
+                            @Html.TextAreaFor(model => model.Requirements, 5, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="BeforeDate">BEFORE DATE قبل تاريخ</label>
+                            @Html.EditorFor(model => model.BeforeDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <label for="FollowerId">FOLLOWER المكلف بالمتابعة</label>
+                                <div class="input-group mb-3">
+                                    @Html.DropDownList("FollowerId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-info AddNewMaster" id="861">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="FollowNotes">FOLLOW NOTE ملاحظات</label>
+                            <div class="form-group">
+                                @Html.TextAreaFor(model => model.FollowNotes, 3, 200, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DIVFollowFormButton" class="@ViewBag.PrintFollowFormButton">
+                <div class="card-footer text-right">
+                    <a title="PRINT FOLLOW FORM" id="PrintFollowFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintFollowForm">PRINT</a>
+                </div>
+            </div>
+        </div>
+        <div id="DIV_JUDGMENTS" class="card">
+            <div style="padding-bottom:0px !important;" class="card-header AllSessionPrimaryBar">
+                <div class="row">
+                    <div class="col-sm-12 text-center"><h3>JUDGMENTS الأحكام</h3></div>
+                </div>
+            </div>
+            <div style="padding-top:15px;" class="row">
+                <div class="col-sm-1">
+
+                </div>
+                <div class="col-sm-10 text-center">
+                    <div class="form-group clearfix">
+                        <div style="float:left" class="icheck-danger d-inline">
+                            <input type="radio" id="radioJudgement1" value="P" name="radioJudgement" @ViewBag.radioJudgement>
+                            <label for="radioJudgement1"> PRIMARY الإبتدائي </label>
+                        </div>
+                        <div class="icheck-danger d-inline">
+                            <input type="radio" id="radioJudgement2" value="A" name="radioJudgement">
+                            <label for="radioJudgement2"> APPEAL الإستئناف </label>
+                        </div>
+                        <div style="float:right" class="icheck-danger d-inline">
+                            <input type="radio" id="radioJudgement3" value="E" name="radioJudgement">
+                            <label for="radioJudgement3"> ENFORCEMENT التنفيذ </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-sm-1">
+
+                </div>
+
+            </div>
+            <div id="DIV_PRIMARY" class="card-body AppHidden">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="PrimaryJudgementsDate">PRIMARY JUDGMENT DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.PrimaryJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="PrimaryJudgements">SENTECE  منطوق الحكم</label>
+                            @Html.TextAreaFor(model => model.PrimaryJudgements, 3, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="">FAVORABLE مطابقة الحكم</label>
+                        <div style="color: black !important;padding-top:10px;" class="text-left">
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PrimaryIsFavorable, "Y", new { id = "PrimaryIsFavorable1" })
+                                <label for="PrimaryIsFavorable1">YES</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.PrimaryIsFavorable, "N", new { id = "PrimaryIsFavorable2" })
+                                <label for="PrimaryIsFavorable2">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="PrimaryJDReceiveDate">PRIMARY JD RECEIVE</label>
+                            @Html.EditorFor(model => model.PrimaryJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="PrimaryFinalJDAmount">FINAL JD AMOUNT</label>
+                            @Html.EditorFor(model => model.PrimaryFinalJDAmount, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="PrimaryFinalJudgedInterests">FINAL JUDGED INTERESTS</label>
+                            @Html.EditorFor(model => model.PrimaryFinalJudgedInterests, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <label for="PrimaryAllJudgements">ALL JUDGEMENT جميع الأحكام</label>
+                            @Html.TextAreaFor(model => model.PrimaryAllJudgements, 3, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DIV_APPEAL" class="card-body AppHidden">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="AppealJudgementsDate">APPEAL JUDGMENT DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.AppealJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="AppealJudgements">SENTECE  منطوق الحكم</label>
+                            @Html.TextAreaFor(model => model.AppealJudgements, 3, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="">FAVORABLE مطابقة الحكم</label>
+                        <div style="color: black !important;padding-top:10px;" class="text-left">
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.AppealIsFavorable, "Y", new { id = "AppealIsFavorable1" })
+                                <label for="AppealIsFavorable1">YES</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.AppealIsFavorable, "N", new { id = "AppealIsFavorable2" })
+                                <label for="AppealIsFavorable2">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="AppealJDReceiveDate">APPEAL JD RECEIVE</label>
+                            @Html.EditorFor(model => model.AppealJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="AppealFinalJDAmount">FINAL JD AMOUNT</label>
+                            @Html.EditorFor(model => model.AppealFinalJDAmount, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="AppealFinalJudgedInterests">FINAL JUDGED INTERESTS</label>
+                            @Html.EditorFor(model => model.AppealFinalJudgedInterests, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <label for="AppealAllJudgements">ALL JUDGEMENT جميع الأحكام</label>
+                            @Html.TextAreaFor(model => model.AppealAllJudgements, 3, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="DIV_ENFORCEMENT" class="card-body AppHidden">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="EnforcementJudgementsDate">ENFORCEMENT JD DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.EnforcementJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="EnforcementJudgements">SENTECE  منطوق الحكم</label>
+                            @Html.TextAreaFor(model => model.EnforcementJudgements, 3, 200, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="">FAVORABLE مطابقة الحكم</label>
+                        <div style="color: black !important;padding-top:10px;" class="text-left">
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.EnforcementIsFavorable, "Y", new { id = "EnforcementIsFavorable1" })
+                                <label for="EnforcementIsFavorable1">YES</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                @Html.RadioButtonFor(m => m.EnforcementIsFavorable, "N", new { id = "EnforcementIsFavorable2" })
+                                <label for="EnforcementIsFavorable2">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="EnforcementJDReceiveDate">ENFORCEMENT JD RECEIVE</label>
+                            @Html.EditorFor(model => model.EnforcementJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="DIV_EXPENSES" class="card collapsed-card">
+            <div style="padding-bottom:0px !important;" class="card-header AllSessionExpenseBar">
+                <div class="row">
+                    <div class="col-sm-11 text-center">
+                        <h3 style="margin-right:-131px">EXPENSES</h3>
+                    </div>
+                    <div style="padding-top:10px;" class="card-tools col-sm-1">
+                        <button id="btnPVCreate" style="float:right;" type="button" class="btn btn-tool circleButtonClose" data-card-widget="collapse"><i class="fas fa-circle fa-2x"></i> </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DIV_FORM_PRINTING" class="card collapsed-card">
+            <div style="padding-bottom:0px !important;" class="card-header AllSessionPrintingBar">
+                <div class="row">
+                    <div class="col-sm-11 text-center">
+                        <h3 style="margin-right:-131px">FORM PRINTING</h3>
+                    </div>
+                    <div style="padding-top:10px;" class="card-tools col-sm-1">
+                        <button style="float:right;" type="button" class="btn btn-tool circleButtonClose" data-card-widget="collapse"><i class="fas fa-circle fa-2x"></i> </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label for="LastDate">LAST DATE إنجاز العمل قبل تاريخ</label>
+                            @Html.EditorFor(model => model.LastDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="WorkRequired">WORK REQUIRED المطلوب</label>
+                            @Html.EditorFor(model => model.WorkRequired, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label for="SessionNotes">SESSION NOTES</label>
+                            @Html.EditorFor(model => model.SessionNotes, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+                <div class="card-footer text-right">
+                    <a title="PRINT FORM" id="PrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintForm/?id=@Model.SessionRollId&formName=_PrintWorkForm">PRINT</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-center">
+            <button id="btnSubmitForm" type="button" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+}
+<div class="modal fade" id="modal-PVForm">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-gradient-light">
+            <div class="modal-header">
+                <h4 class="modal-title"><span>ADD PAYMENT VOUCHER</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="PVCreateForm"></div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,94 @@
+﻿<script type="text/javascript">
+    var SubmitFormURL = '@Url.Action("submitTranslation", "CommonTask", new { area = string.Empty })';
+
+    $(document).ready(function () {
+        $('textarea').autoResize();
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateTranslation();
+
+            console.log(NotValid);
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+
+            var data = new FormData(jQuery('#frm_Transelation')[0]);
+
+            $.ajax({
+                type: "POST",
+                url: SubmitFormURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.Category == "OK") {
+                        ResetHiddenItems();
+                        LoadPrintRequirementForm("SaveResult");
+                    }
+                    else {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ERROR...',
+                            html: result.Message
+                        });
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        });
+    });
+</script>
+@model YandS.UI.Models.DecisionTranslationVM
+@using (Html.BeginForm("submitTranslation", "CommonTask", FormMethod.Post, new { id = "frm_Transelation" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.TranslationId)
+    @Html.HiddenFor(model => model.CaseId)
+    <div class="card">
+        <div class="card-header CorporateActive">
+            <div class="text-center">
+                <span class="h3">TRANSELATION</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="padding-top:10px;padding-bottom:10px;" class="col-sm-12">
+                <div class="row">
+                    @*<div class="col">
+                        <div class="form-group">
+                            <label for="CourtDecisionTranslated">TRANSELATION</label>
+                            <div class="form-group">
+                                @Html.TextAreaFor(model => model.CourtDecisionTranslated, 1, 200, new { @class = "form-control", @dir = "auto" })
+                            </div>
+                        </div>
+                    </div>*@
+                    <div class="col">
+                        <input type="hidden" id="hidCourtDecision" value="@ViewBag.hidCourtDecision" />
+                        <div class="form-group">
+                            <label for="CourtDecision">UPDATES تحديث</label>
+                            <div class="form-group">
+                                @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control", @dir = "auto" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="card-footer text-center col-sm-12">
+                <button id="btnSubmitForm" type="button" class="btn btn-lg btn-cool-blues btn-rounded"><span class="btn-text-med">SAVE</span></button>&nbsp;&nbsp;
+            </div>
+        </div>
+    </div>
+}

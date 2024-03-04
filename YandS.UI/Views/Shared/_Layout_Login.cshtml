@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Y & S Associates - Login</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../Content/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="../../Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="../../Content/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../../Content/Bootstrap-Validator/dist/css/bootstrapValidator.css">
+    <link rel="stylesheet" href="../../Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        
+
+        <div class="login-logo">
+            <div class="text-center">
+                @*<img class="img-fluid" src="~/Content/Images/LogoS-removebg3.png" alt="Y & S Associates">*@
+            </div>
+            @*<a href="#"><b>Y & S </b>Associates</a>*@
+        </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                @RenderBody()
+            </div>
+            <!-- /.login-card-body -->
+        </div>
+    </div>
+    <!-- /.login-box -->
+    <!-- jQuery -->
+    <script src="../../Content/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="../../Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../Content/Bootstrap-Validator/dist/js/bootstrapValidator.js"></script>
+    <script src="../../Content/dist/js/adminlte.min.js"></script>
+    <script>
+        $(function () {
+            $('Form').bootstrapValidator({
+                //        live: 'disabled',
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    UserName: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please Enter Login ID'
+                            }
+                        }
+                    },
+                    Password: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The password is required and cannot be empty'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

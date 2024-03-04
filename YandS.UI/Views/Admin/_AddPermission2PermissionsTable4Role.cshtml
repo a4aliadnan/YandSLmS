@@ -1,0 +1,51 @@
+﻿@model YandS.UI.Models.ApplicationRole
+<script type="text/javascript">
+    $(document).ready(function () {     
+        $('#AddPermission').click(function () {               
+            var _permissionId = $('#PermissionId').val();            
+            var _roleId = $('#Role_Id').val();
+
+
+            if (_permissionId == '') {
+                return false;
+            }
+
+            var _parameters = { permissionId: _permissionId, id: _roleId };
+            $.ajax({
+                url: "/Admin/AddPermission2RoleReturnPartialView",
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#PermissionsTable').html(data);
+                    $('#PermissionId').val("");
+                }
+            });
+        });
+
+        $('#AddAllPermissions').click(function () {
+            var _roleId = $('#Role_Id').val();
+            var _parameters = { id: _roleId };
+            $.ajax({
+                url: "/Admin/AddAllPermissions2RoleReturnPartialView",
+                type: "GET",
+                data: _parameters,
+                success: function (data, textStatus, jqXHR) {
+                    $('#PermissionsTable').html(data);
+                    $('#PermissionId').val("");
+                }
+            });
+        });    
+    });
+</script>
+@Html.Hidden("Role_Id", Model.Id)
+<fieldset style="padding: 1em; font: 100%; color: Black; border-color: Black; border-style: solid;
+    border-width: thin; border-color: Silver; width: 740px">
+    <legend style="width:auto; border-style:none"><strong>Add Permission To Role</strong></legend>
+    <br />
+    <label>
+        Permission:
+    </label>    
+    @Html.DropDownList("PermissionId", null, string.Empty, new { style = "width:350px" })
+    <input class="btn btn-default" type="button" id="AddPermission" value="Add Permission" />
+    <input class="btn btn-default" type="button" id="AddAllPermissions" value="Add All Permissions" />
+</fieldset>

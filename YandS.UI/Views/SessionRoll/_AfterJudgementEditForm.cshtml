@@ -1,0 +1,360 @@
+﻿<script type="text/javascript">
+    var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+
+    function ClearElements(ControlNames, ControlTypes, DefaultSelectVal, DivID) {
+
+        if (ControlNames.indexOf(",") !== -1) {
+            var Namesarray = ControlNames.split(",");
+            var Typesarray = ControlTypes.split(",");
+            var DefaultSelectValarray = DefaultSelectVal.split(",");
+
+            for (i = 0; i < Namesarray.length; i++) {
+                if (Typesarray[i] == "select2")
+                    $("#" + Namesarray[i]).val(DefaultSelectValarray[i]).trigger('change');
+                else
+                    $("#" + Namesarray[i]).val(DefaultSelectValarray[i]);
+            }
+        }
+        else {
+            if (ControlTypes == "select2")
+                $("#" + ControlNames).val(DefaultSelectVal).trigger('change');
+            else
+                $("#" + ControlNames).val(DefaultSelectVal);
+        }
+        $("#" + DivID).removeClass("AppHidden").addClass("AppHidden");
+
+    }
+
+    function LoadFileStatusPV(FileStatusId) {
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#FileStatusDetail");
+        var RetainActivebtnName = ActiveButton;
+
+        $('.clsJudIssued').removeClass("AppHidden");
+        $('#DIV_CommonTask').removeClass("AppHidden");
+
+        switch (FileStatusId) {
+            case OfficeFileStatus.PleaseSelect:
+                $("#FileStatusDetail").empty();
+                ActiveButton = RetainActivebtnName;
+                return false;
+                break;
+            case OfficeFileStatus.RunningCase:
+            case OfficeFileStatus.Dispute:
+            case OfficeFileStatus.MeetJudge:
+            case OfficeFileStatus.AuctionSession:
+                _PartialViewName = "_SessionRunningDIV";
+                ActiveButton = "btn_AllSessions";
+                break;
+            case OfficeFileStatus.ToKnowSessionDate:
+            case OfficeFileStatus.DifferentPanel:
+                _PartialViewName = "_SessionOnHoldDIV";
+                ActiveButton = "btn_SessionOnHold";
+                break;
+            case OfficeFileStatus.JudgIssued:
+                _PartialViewName = "_SessionJudgementDIV";
+                ActiveButton = "btn_SessionJudgement";
+                $('.clsJudIssued').removeClass("AppHidden").addClass("AppHidden");
+                $('#DIV_CommonTask').removeClass("AppHidden").addClass("AppHidden");
+                break;
+        }
+
+        DetailViewName = _PartialViewName;
+        $("#PartialViewName").val(DetailViewName);
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = parseInt($("#SessionRollId").val());
+        var _Mode = "C";
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+
+    function ValidateMain() {
+
+        if ($("#SessionFileStatus").val() == OfficeFileStatus.PleaseSelect) {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT FILE STATUS";
+            NotValid = true;
+        }
+
+        return NotValid;
+    }
+
+    function ShowSessionNoteBanner() {
+        if (!$.trim($("#SessionNote_Remark").val())) {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
+            $("#spnNotesBanner").text("");
+        }
+        else {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden");
+            $("#spnNotesBanner").text($.trim($("#SessionNote_Remark").val()));
+            $('textarea').autoResize();
+        }
+    }
+
+    $(document).ready(function () {
+        console.log("After Judgement Edit Form");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $(".AddNewMaster").prop("disabled", true);
+        }
+
+
+        $('.AddNewMaster').on("click", function () {
+            console.log(this.id);
+            console.log($(this).val());
+            var ModalTitle = "";
+            $("#MstParentId").val(this.id);
+
+            if (this.id == "7") {
+                ModalTitle = "Add Payment Head";
+                DDLToAppend = $("#Payment_Head");
+            }
+            else if (this.id == "214") {
+                ModalTitle = "Add Pay To";
+                DDLToAppend = $("#Payment_To");
+            }
+            else if (this.id == "1408") {
+                ModalTitle = "ADD LAWYER";
+                DDLToAppend = $("#LawyerId");
+            }
+            else if (this.id == "859") {
+                ModalTitle = "ADD CASE TYPE";
+                DDLToAppend = $("#CaseType");
+            }
+            $("#ModalTitle").text(ModalTitle);
+
+            $('#modal-AddMasterValue').modal('show');
+
+        });
+
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            NotValid = ValidateMain();
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+
+            console.log($("#hidCourtDecisionChange").val());
+            console.log($("#CurrentHearingDate").val());
+            console.log($("#hidCurrentHearingDate").val());
+            ShowPreSubmit();
+           
+        });
+        
+        $('#DIV_FORM_HIDDEN_ITEMS').removeClass("AppHidden").addClass("AppHidden");
+
+        console.log("ShowSessionNotes");
+        console.log($('#SessionRollId').val());
+        ShowSessionNotes($('#SessionRollId').val())
+    });
+</script>
+@using (Html.BeginForm("Index", "SessionRoll", FormMethod.Post, new { id = "frm_SessionRollEditForm", enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+{
+    @model YandS.UI.Models.SessionsRollVM
+
+    {
+        ViewBag.OFB_ClientName = Model.ClientName;
+        ViewBag.OFB_Defendant = Model.Defendant;
+        ViewBag.OFB_OfficeFileNo = Model.OfficeFileNo;
+        ViewBag.OFB_SessionRollClientName = Model.SessionRollClientName;
+        ViewBag.OFB_SessionRollDefendentName = Model.SessionRollDefendentName;
+        ViewBag.OFB_AccountContractNo = Model.AccountContractNo;
+        ViewBag.OFB_ClientFileNo = Model.ClientFileNo;
+
+    }
+
+<div id="DIV_FORM_HIDDEN_ITEMS" class="">
+    @Html.EditorFor(model => model.SessionRollId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.CaseId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.OfficeFileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionClientId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionRollDefendentName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.SessionLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.CountLocationId, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.UpdatedOn, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.AgainstCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.DisputeLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+    @Html.EditorFor(model => model.JudgementLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+</div>
+    @Html.AntiForgeryToken()
+<div class="AppHidden">
+    <a id="btn_ToCaseRegister" href="/CaseRegistration/IndexMain/@ViewBag.CaseRegistrationId"></a>
+    <input type="hidden" value="@Model.OfficeFileNo" id="PV_OFFICE_FILE_NO" />
+    <input type="hidden" value="@ViewBag._PrintRequirementFormName" id="txtPrintRequirementFormName" />
+    <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
+    @Html.HiddenFor(model => model.IsDelete)
+    @Html.HiddenFor(model => model.PartialViewName)
+
+</div>
+    <div class="card">
+        <div class="card-body">
+            @Html.Partial("_OfficeFileInfoBanner")
+            <div style="padding-top:10px" class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label style="color:brown" for="SessionFileStatus">FILE STATUS حالة الملف</label>
+                        @Html.DropDownList("SessionFileStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+                @if (Model.JudgementLevel == "1")
+                {
+                    @Html.HiddenFor(model => model.AppealJudgementsDate)
+                    @Html.HiddenFor(model => model.AppealJDReceiveDate)
+                    @Html.HiddenFor(model => model.SupremeJudgementsDate)
+                    @Html.HiddenFor(model => model.SupremeJDReceiveDate)
+                    @Html.HiddenFor(model => model.EnforcementJudgementsDate)
+                    @Html.HiddenFor(model => model.EnforcementJDReceiveDate)
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="PrimaryJudgementsDate">PRIMARY JUDGMENT DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.PrimaryJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="PrimaryJDReceiveDate">PRI.JUG.RECEIVE تاريخ استلام الحكم الابتدائي</label>
+                            @Html.EditorFor(model => model.PrimaryJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">FAVORABLE مطابقة الحكم</label>
+                            @Html.DropDownList("PrimaryIsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                }
+                else if (Model.JudgementLevel == "2")
+                {
+                    @Html.HiddenFor(model => model.PrimaryJudgementsDate)
+                    @Html.HiddenFor(model => model.PrimaryJDReceiveDate)
+                    @Html.HiddenFor(model => model.SupremeJudgementsDate)
+                    @Html.HiddenFor(model => model.SupremeJDReceiveDate)
+                    @Html.HiddenFor(model => model.EnforcementJudgementsDate)
+                    @Html.HiddenFor(model => model.EnforcementJDReceiveDate)
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="AppealJudgementsDate">APPEAL JUDGMENT DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.AppealJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="AppealJDReceiveDate">APP.JUG.RECEIVE تاريخ استلام الحكم الاستئناف</label>
+                            @Html.EditorFor(model => model.AppealJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">FAVORABLE مطابقة الحكم</label>
+                            @Html.DropDownList("AppealIsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                }
+                else if (Model.JudgementLevel == "3")
+                {
+                    @Html.HiddenFor(model => model.PrimaryJDReceiveDate)
+                    @Html.HiddenFor(model => model.PrimaryJDReceiveDate)
+                    @Html.HiddenFor(model => model.AppealJudgementsDate)
+                    @Html.HiddenFor(model => model.AppealJDReceiveDate)
+                    @Html.HiddenFor(model => model.EnforcementJudgementsDate)
+                    @Html.HiddenFor(model => model.EnforcementJDReceiveDate)
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="SupremeJudgementsDate">SUPREME JUDGMENT DATE تاريخ الحكم</label>
+                            @Html.EditorFor(model => model.SupremeJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 AppHidden">
+                        <div class="form-group">
+                            <label for="SupremeJDReceiveDate">SUP.JUG.RECEIVE تاريخ استلام الحكم العليا</label>
+                            @Html.EditorFor(model => model.SupremeJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                }
+                else if (Model.JudgementLevel == "4")
+                {
+                    @Html.HiddenFor(model => model.PrimaryJDReceiveDate)
+                    @Html.HiddenFor(model => model.PrimaryJDReceiveDate)
+                    @Html.HiddenFor(model => model.AppealJudgementsDate)
+                    @Html.HiddenFor(model => model.AppealJDReceiveDate)
+                    @Html.HiddenFor(model => model.SupremeJudgementsDate)
+                    @Html.HiddenFor(model => model.SupremeJDReceiveDate)
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="EnforcementJudgementsDate"><span id="labelDisputeDate"></span></label>
+                            @Html.EditorFor(model => model.EnforcementJudgementsDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="EnforcementJDReceiveDate"><span id="labelJDReceiveDate"></span></label>
+                            @Html.EditorFor(model => model.EnforcementJDReceiveDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">FAVORABLE مطابقة الحكم</label>
+                            @Html.DropDownList("EnforcementIsFavorable", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <button id="btnSubmitForm" type="button" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+}

@@ -1,0 +1,51 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+    });
+</script>
+@model YandS.UI.Models.ClientAccessVM
+@Html.HiddenFor(model => model.ClientId)
+<div class="card card-info">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="SessionLevel">CLIENT</label>
+                    @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="DisplayName">User Name</label>
+                    @Html.EditorFor(model => model.DisplayName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="DisplayName">User Email</label>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="UserName">Login Name</label>
+                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="DisplayName">PassWord</label>
+                    @Html.EditorFor(model => model.PassWord, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="DisplayName">Confirm PassWord</label>
+                    @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

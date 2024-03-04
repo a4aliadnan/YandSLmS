@@ -1,0 +1,99 @@
+﻿@model IEnumerable<YandS.UI.Models.CaseInvoice>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CourtCases.OfficeFileNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Created.Firstname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Modified.Firstname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourtType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InvoiceStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TransferType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TransferNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TransferDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdatedOn)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CourtCases.c)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Created.Firstname)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Modified.Firstname)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvoiceDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvoiceNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CourtType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvoiceStatus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransferType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransferNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransferDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedOn)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdatedOn)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.InvoiceId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.InvoiceId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.InvoiceId })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,82 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('#btnArrestReset').on("click", function () {
+            $("#divArrest input").each(function () {
+                this.value = "";
+            });
+            $("#PoliceStationid").val("").trigger('change');
+        });
+
+        if ($('#Arrested').val() == "")
+            $(".clsArrestedDate").removeClass("AppHidden").addClass("AppHidden");
+        else
+            $(".clsArrestedDate").removeClass("AppHidden");
+
+        $('#Arrested').change(function () {
+            $(".clsArrestedDate").removeClass("AppHidden").addClass("AppHidden");
+            if ($(this).val() == "")
+                $(".clsArrestedDate").removeClass("AppHidden").addClass("AppHidden");
+            else
+                $(".clsArrestedDate").removeClass("AppHidden");
+        });
+    });
+</script>
+<div class="card card-info card-outline">
+    <div class="card-header">
+        <div class="card-tools">
+            <button type="button" id="btnArrestReset" class="btn btn-danger"><i class="fas fa-edit"> </i> CLEAR</button>
+        </div>
+    </div>
+    <div id="divArrest" class="card-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ArrestOrderNo)
+                    @Html.EditorFor(model => model.ArrestOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ArrestOrderIssueDate)
+                    @Html.EditorFor(model => model.ArrestOrderIssueDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PoliceStationid)
+                    @Html.DropDownList("PoliceStationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Arrested)
+                    @Html.DropDownList("Arrested", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group clsArrestedDate AppHidden">
+                    @Html.LabelFor(model => model.ArrestedDate)
+                    @Html.EditorFor(model => model.ArrestedDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-4">
+               
+            </div>
+        </div>
+    </div>
+</div>

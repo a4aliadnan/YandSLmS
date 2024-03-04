@@ -1,0 +1,790 @@
+﻿@model YandS.UI.Models.FileClosureEnteryVM
+@{
+    ViewBag.Title = "Y & S Associates - Case File Closure";
+}
+<style>
+    .ArabicInfoBanner {
+        background-color: #e2f0d9 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+    .FinalClosureBanner {
+        background-color: #4c216d !important;
+        color: #ffd966 !important;
+        font-weight: bold;
+    }
+</style>
+<script type="text/javascript">
+    var P_CaseId = 0;
+    var _parameters = {};
+
+    var LoadCaseStatusURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+    var ValidateUserURL = '@Url.Action("ValidateUserPassword", "CommonTask", new { area = string.Empty })';
+
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+
+    function LoadPartialView(data, container) {
+        console.log(container);
+        container.empty();
+        container.append("Loading...");
+        container.html(data);
+    }
+    function ValidateUser() {
+        var $Password = $('#Password').val();
+        console.log($Password);
+
+        if ($Password != "") {
+            $(".clsValidLogin").removeClass("AppHidden").addClass("AppHidden");
+            var form = $('#__AjaxAntiForgeryForm');
+            var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+          
+            $.ajax({
+                url: ValidateUserURL,
+                type: 'POST',
+                cache: false,
+                data: {
+                    __RequestVerificationToken: token,
+                    Password: $Password
+                },
+                statusCode: {
+                    401: function (response) {
+                        alert(response);
+                    }
+                },
+                success: function (result) {
+                    if (result.Category == "OK") {
+                        $(".clsValidLogin").removeClass("AppHidden");
+
+                        if ($('#StatusCode').val() == "1") {
+                            $("#DivCloseDetail").removeClass("AppHidden").addClass("AppHidden");
+                        }
+                        else {
+                            $("#DivCloseDetail").removeClass("AppHidden");
+                            $('textarea').autoResize();
+                        }
+                    }
+                    else {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: result.Message
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Swal.fire("Error Validating!", "Please try again" + thrownError + "" + xhr.textStatus, "error");
+                }
+            });
+            
+        }
+        else {
+            Swal.fire({
+                type: "error",
+                title: 'ERROR...',
+                html: "Please Enter Password!!!!"
+            });
+        }
+    }
+
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        FILE CLOSURE
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">COURT CASE</li>
+                        <li class="breadcrumb-item active"><a href="#">FILE CLOSURE</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm("FileClosure", "CourtCases", FormMethod.Post, new { id = "frm_FileClose", enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+        {
+            <div class="card card-info">
+                <div class="card-header">
+                    <div class="text-center">
+                        <h4>@ViewBag.OfficeFileNo<span class="YandSTitleSpacing">-</span>@ViewBag.ClientName<span class="YandSTitleSpacing">-</span>@ViewBag.Defendant</h4>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.CaseId)
+                        @Html.HiddenFor(model => model.ClosureLevel)
+                        @Html.HiddenFor(model => model.CurrentCaseLevel)
+                        @Html.HiddenFor(model => model.ClientClassificationCode)
+                        @Html.HiddenFor(model => model.ClientCode)
+                        @Html.HiddenFor(model => model.btnSave)
+
+                        <div class="card card-secondary">
+                            <div class="card card-secondary">
+                                <div class="card-header FinalClosureBanner">
+                                    <div class="text-center">
+                                        <span class="h3">FINAL CLOSURE REQUEST طلب الغلق الكلي</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <div class="row">
+                                                    @Html.LabelFor(model => model.Password)
+                                                    <div class="input-group">
+                                                        @Html.PasswordFor(model => model.Password, htmlAttributes: new { @class = "form-control" })
+                                                        <div class="input-group-append">
+                                                            <button type="button" onclick="ValidateUser()" class="btn btn-warning" id="btnValidateUser">VERIFY</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div id="DIV_StatusCode" class="form-group clsValidLogin AppHidden">
+                                                <label class="" for="StatusCode">CASE STATUS</label>
+                                                @Html.DropDownList("StatusCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group clsValidLogin AppHidden">
+                                                <label class="" for="CurrentCaseLevel">CLOSURE LEVEL</label>
+                                                <span class="form-control" disabled="disabled">@ViewBag.ClosureLevel</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="DivCloseDetail" style="padding-top:10px" class="AppHidden">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ReasonCode)
+                                                    @Html.DropDownList("ReasonCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.StatusDate)
+                                                    @Html.EditorFor(model => model.StatusDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-sm-10" style="padding-top:30px;">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" id="upload" name="upload">
+                                                                <label class="custom-file-label" for="upload">ارفاق الايميل</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-2" style="padding-top:30px;">
+                                                            <div id="ViewClosingEmail" class="input-group-append mb-6 @ViewBag.ViewClosingEmail">
+                                                                <a target="_blank" class="btn btn-block btn-outline-info" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/ClosingEmail/@ViewBag.ClosingEmailDoc">VIEW</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ClosingNotesDate)
+                                                    @Html.EditorFor(model => model.ClosingNotesDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ClosingNotes)
+                                                    <div class="form-group">
+                                                        @Html.TextAreaFor(model => model.ClosingNotes, 1, 200, new { @class = "form-control", @dir = "auto" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <button type="button" id="btnFinalClosureSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+                                </div>
+                            </div>
+                            <div class="card card-secondary AppHidden clsAccountProcedure">
+                                <div class="card-header FinalClosureBanner">
+                                    <div class="text-center">
+                                        <span class="h3">ACCOUNTS DEPT PROCEEDURE إجراءات قسم المحاسبة</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <div class="row">
+                                                    @Html.LabelFor(model => model.FileAllocation)
+                                                    <div class="input-group mb-3">
+                                                        @Html.DropDownList("FileAllocation", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-info AddNewMaster" id="501">
+                                                                ADD
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="" for="StatusCode">FINAL INVOICE ON HOLD</label>
+                                                @Html.DropDownList("FinalOnvoiceOnHold", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div id="DIV_SUGGESTED_DATE" class="form-group AppHidden">
+                                                @Html.LabelFor(model => model.SuggestedDate)
+                                                @Html.EditorFor(model => model.SuggestedDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="" for="StatusCode">JUDGMENT RECOVERY (RED STAMP) استرداد الصيغة وغلق الملف</label>
+                                                @Html.DropDownList("JudRecRedStamp", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <button type="button" id="btnFileClosureSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+                                    <button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="window.open('@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = Model.CurrentCaseLevel,ClosureDate = Model.StatusDate,screen = "FileClosure" })');return false;"><i class="fas fa-file-invoice-dollar"></i> PRINT CLOSURE FORM</button>
+                                    <a title="PRINT FORM" id="RequirementPrintFormButton" class="btn btn-success" target="_blank" href="/SessionRoll/PrintRequirementForm/?id=@Model.CaseId&formName=_PrintRequirementForm">PRINT</a>
+
+                                </div>
+                            </div>
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <div class="text-center">
+                                        <span class="h3">INVOICES</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div id="divInvoiceTable" class="col-sm-12">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-primary">
+                                <div class="card-header ArabicInfoBanner">
+                                    <div class="text-center">
+                                        <span class="h3">FINANCE FILE CLOSURE</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.FinanceFileClosureDate)
+                                                @Html.EditorFor(model => model.FinanceFileClosureDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <button type="button" id="btnFinanceClosureSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer text-center">
+                    <button title="Back to Case List" class="btn btn-secondary" onclick="location.href='@Url.Action("Index","CourtCases")';return false;" id=@Model.CaseId> <i class="fas fa-home"></i> BACK TO LIST</button>
+                    <button id=@Model.CaseId title="Primary Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "1" })';return false;"> <i class="fas fa-globe-europe"></i> TO PRIMARY</button>
+                    <button id=@Model.CaseId title="Apeal Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "2" })';return false;"> <i class="fas fa-globe-europe"></i> TO APPEAL</button>
+                    <button id=@Model.CaseId title="Supreme Court Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageCourtDetail", "CourtCases", new { CaseId = Model.CaseId, Courtid = "3" })';return false;"> <i class="fas fa-globe-europe"></i> TO SUPREME</button>
+                    <button id=@Model.CaseId title="Enforcement Management" class="btn btn-secondary" onclick="location.href='@Url.Action("ManageEnforcementDetail", "CourtCases", new { CaseId = Model.CaseId })';return false;"> <i class="fas fa-globe-europe"></i> TO ENFORCEMENT</button>
+                    <button id=@Model.CaseId title="Create Invoice" class="btn btn-secondary" onclick="location.href='@Url.Action("InvoiceCreate", "Finance", new { id = Model.CaseId })';return false;"> <i class="fas fa-file-invoice-dollar"></i> ADD INVOICE</button>
+                    <button id=@Model.CaseId title="Create Case" class="btn btn-secondary" onclick="location.href='@Url.Action("Create", "CourtCases")';return false;"> <i class="fas fa-plus-circle"></i> CREATE CASE</button>
+
+                </div>
+
+            </div>
+        }
+    </section>
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+    <!-- /.content -->
+    <div class="modal fade" id="modal-AddMasterValue">
+        <div class="modal-dialog">
+            <div class="modal-content bg-gradient-light">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ModalTitle">Add Client</span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="MstParentId" class="form-control" value="@ViewBag.MstParentId" />
+                    <input type="text" id="MstDesc" class="form-control" placeholder="Enter New Description" />
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ProcessAddClient()" class="btn btn-outline-dark">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        var P_CaseId = 0;
+        var _parameters = {};
+
+        var CreateMasterTableDetailURL = '@Url.Action("CreateMasterTableDetail", "CommonTask", new { area = string.Empty })';
+        var LoadCaseStatusURL = '@Url.Action("GetTab", "CourtCases", new { area = string.Empty })';
+        var DefendentTable;
+        var DDLToAppend;
+        var NotValid;
+        var ValidationMessage;
+        function process(date) {
+            var parts = date.split("/");
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+
+        function ProcessAddClient() {
+            if ($("#MstDesc").val() != "") {
+                console.log(parseInt($("#MstParentId").val()));
+                console.log($("#MstDesc").val());
+                var _MstDesc = $("#MstDesc").val();
+                var _MstParentId = parseInt($("#MstParentId").val());
+
+                _parameters = { Mst_Desc: _MstDesc, MstParentId: _MstParentId };
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(_parameters),
+                    url: CreateMasterTableDetailURL,
+                    success: function (Result) {
+
+                        if (Result.Message == "Success") {
+                            var newOption = new Option(Result.name, Result.id, true, true);
+                            DDLToAppend.append(newOption).trigger('change');
+                            $('#modal-AddMasterValue').modal('hide');
+
+                        }
+                        else {
+                            $('#modal-AddMasterValue').modal('hide');
+                            Swal.fire({
+                                type: "error",
+                                title: 'Error...',
+                                html: Result.ErrorMessage
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                // Failed show errors
+                console.log("Failed errors");
+                Swal.fire({
+                    type: "error",
+                    title: 'Error...',
+                    html: 'Please Enter Description of List'
+                });            }
+        }
+        function onPreSubmit(item) {
+            var Message = "";
+
+            if ($("#btnSave").val() == "btnLitigationSave") {
+                if ($("#LitigationFileClosureDate").val() == "") {
+                    Message = Message == "" ? "PLEASE ENTER LITIGATION FILE CLOSURE DATE" : Message + "<br />" + "PLEASE ENTER LITIGATION FILE CLOSURE DATE";
+                }
+            }
+            else if ($("#btnSave").val() == "btnFileClosureSave") {
+                if ($("#StatusCode").val() == "0") {
+                    Message = Message == "" ? "PLEASE SELECT STATUS" : Message + "<br />" + "PLEASE SELECT STATUS";
+                }
+                else if ($("#StatusCode").val() == "2") {
+                    if ($("#ReasonCode").val() == "0") {
+                        Message = Message == "" ? "PLEASE SELECT REASON" : Message + "<br />" + "PLEASE SELECT REASON";
+                    }
+
+
+                    if ($("#FileAllocation").val() == "0") {
+                        Message = Message == "" ? "PLEASE SELECT FILE ALLOCATION" : Message + "<br />" + "PLEASE SELECT FILE ALLOCATION";
+
+                    }
+
+                    if ($("#StatusDate").val() == "") {
+                        Message = Message == "" ? "PLEASE ENTER FINAL CLOSURE DATE" : Message + "<br />" + "PLEASE ENTER FINAL CLOSURE DATE";
+                    }
+                }
+
+            }
+            else if ($("#btnSave").val() == "btnFinanceClosureSave") {
+                if ($("#FinanceFileClosureDate").val() == "") {
+                    Message = Message == "" ? "PLEASE ENTER FINANCE FILE CLOSURE DATE" : Message + "<br />" + "PLEASE ENTER FINANCE FILE CLOSURE DATE";
+                }
+            }
+
+
+            if (Message == "") {
+
+            }
+            else {
+                Swal.fire({
+                    type: "error",
+                    title: 'MISSING FIELDS !!',
+                    html: Message.toUpperCase()
+                });
+                return false;
+            }
+        }
+
+        $(document).ready(function () {
+            console.log("File Closure Page");
+            $.fn.autoResize = function () {
+                let r = e => {
+                    e.style.height = '';
+                    e.style.height = e.scrollHeight + 'px'
+                };
+                return this.each((i, e) => {
+                    e.style.overflow = 'hidden';
+                    r(e);
+                    $(e).bind('input', e => {
+                        r(e.target);
+                    })
+                })
+            };
+            bsCustomFileInput.init();
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            });
+
+
+            $('.AddNewMaster').on("click", function () {
+                console.log(this.id);
+                console.log($(this).val());
+                var ModalTitle = "";
+                $("#MstParentId").val(this.id);
+
+                if (this.id == "499") {
+                    ModalTitle = "Add Current Case Level";
+                    DDLToAppend = $("#CurrentCaseLevel");
+                }
+                else if (this.id == "395") {
+                    ModalTitle = "Add Closing Reason";
+                    DDLToAppend = $("#ReasonCode");
+                }
+                else if (this.id == "285") {
+                    ModalTitle = "ADD ODB Loan Type";
+                    DDLToAppend = $("#ClientCaseType");
+                }
+                else if (this.id == "16") {
+                    ModalTitle = "ADD ODB Loan";
+                    DDLToAppend = $("#ODBLoanCode");
+                }
+                else if (this.id == "18") {
+                    ModalTitle = "ADD ODB Bank Branch";
+                    DDLToAppend = $("#ODBBankBranch");
+                }
+                else if (this.id == "428") {
+                    ModalTitle = "ADD Loan Manager";
+                    DDLToAppend = $("#LoanManager");
+                }
+                else if (this.id == "532") {
+                    ModalTitle = "ADD Case Subject";
+                    DDLToAppend = $("#CaseSubject");
+                }
+
+                $("#ModalTitle").text(ModalTitle);
+
+                $('#modal-AddMasterValue').modal('show');
+
+            });
+
+            $('.btnSave').on("click", function () {
+                $('#btnSave').val(this.id);
+                ValidationMessage = "";
+                NotValid = false;
+
+
+                if ($("#btnSave").val() == "btnLitigationSave") {
+                    if ($("#LitigationFileClosureDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER LITIGATION FILE CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER LITIGATION FILE CLOSURE DATE";
+                        NotValid = true;
+                    }
+                    else {
+
+                        var today = new Date();
+
+                        var dd = String(today.getDate()).padStart(2, '0');
+                        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = today.getFullYear();
+
+                        today = dd + '/' + mm + '/' + yyyy;
+
+                        console.log(today);
+                        console.log($("#LitigationFileClosureDate").val());
+
+                        if (process($("#LitigationFileClosureDate").val()) > process(today)) {
+                            ValidationMessage = ValidationMessage == "" ? "LITIGATION FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "LITIGATION FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                            NotValid = true;
+                        }
+                    }
+                }
+                else if ($("#btnSave").val() == "btnFinanceClosureSave") {
+                    if ($("#FinanceFileClosureDate").val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FINANCE FILE CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER FINANCE FILE CLOSURE DATE";
+                        NotValid = true;
+                    }
+                    else {
+
+                        var today = new Date();
+
+                        var dd = String(today.getDate()).padStart(2, '0');
+                        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = today.getFullYear();
+
+                        today = dd + '/' + mm + '/' + yyyy;
+
+                        console.log(today);
+                        console.log($("#FinanceFileClosureDate").val());
+
+                        if (process($("#FinanceFileClosureDate").val()) > process(today)) {
+                            ValidationMessage = ValidationMessage == "" ? "FINANCE FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "FINANCE FILE CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                            NotValid = true;
+                        }
+                    }
+                }
+                else if ($("#btnSave").val() == "btnFileClosureSave") {
+
+                    if ($("#StatusCode").val() == "0") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT STATUS" : ValidationMessage + "<br />" + "PLEASE SELECT STATUS";
+                        NotValid = true;
+                    }
+                    else if ($("#StatusCode").val() == "2") {
+                        if ($("#ReasonCode").val() == "0") {
+                            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT REASON" : ValidationMessage + "<br />" + "PLEASE SELECT REASON";
+                            NotValid = true;
+                        }
+
+
+                        if ($("#FileAllocation").val() == "0") {
+                            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE ALLOCATION" : ValidationMessage + "<br />" + "PLEASE SELECT FILE ALLOCATION";
+                            NotValid = true;
+                        }
+
+                        if ($("#StatusDate").val() == "") {
+                            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER FINAL CLOSURE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER FINAL CLOSURE DATE";
+                            NotValid = true;
+                        }
+                        else {
+
+                            var today = new Date();
+
+                            var dd = String(today.getDate()).padStart(2, '0');
+                            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                            var yyyy = today.getFullYear();
+
+                            today = dd + '/' + mm + '/' + yyyy;
+
+                            console.log(today);
+                            console.log($("#StatusDate").val());
+
+                            if (process($("#StatusDate").val()) > process(today)) {
+                                ValidationMessage = ValidationMessage == "" ? "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "FINAL CLOSURE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                                NotValid = true;
+                            }
+                        }
+
+                        if ($("#FinalOnvoiceOnHold").val() == "1") {
+
+                            if ($("#SuggestedDate").val() == "") {
+                                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER SUGGESTED DATE" : ValidationMessage + "<br />" + "PLEASE ENTER SUGGESTED DATE";
+                                NotValid = true;
+                            }
+                            else {
+
+                                var today = new Date();
+
+                                var dd = String(today.getDate()).padStart(2, '0');
+                                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                                var yyyy = today.getFullYear();
+
+                                today = dd + '/' + mm + '/' + yyyy;
+
+                                console.log(today);
+                                console.log($("#SuggestedDate").val());
+
+                                if (process(today) >= process($("#SuggestedDate").val())) {
+                                    ValidationMessage = ValidationMessage == "" ? "SUGGESTED DATE CANNOT BE LESS THEN CURRENT DATE" : ValidationMessage + "<br />" + "SUGGESTED DATE CANNOT BE LESS THEN CURRENT DATE";
+                                    NotValid = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+                else
+                    $('#frm_FileClose')[0].submit();
+
+            });
+
+            P_CaseId = parseInt($("#CaseId").val());
+
+            $('#StatusCode').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                if ($('#StatusCode').val() == "1") {
+                    $("#DivCloseDetail").removeClass("AppHidden").addClass("AppHidden");
+                }
+                else {
+                    $("#DivCloseDetail").removeClass("AppHidden");
+
+                    
+                    $('#ReasonCode').val("0").trigger('change');
+                    $('#StatusDate').val("");
+                    $('#ClosingNotes').val("");
+                    $('#ClosingNotesDate').val("");
+                    $('textarea').autoResize();
+                }
+            });
+
+            $('#AgainstCode').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+            });
+
+            $('#ClosureLevel').on("change", function () {
+                if ($('#StatusCode').val() == "1") {
+                }
+                else {
+                    return false;
+                }
+            });
+
+            $("#Div-StatusDetail").empty();
+
+            _parameters = { ClassificationId: "_InvoiceFileClosingTable", Mode: "C" };
+
+            GetTab($("#divInvoiceTable"), LoadCaseStatusURL, _parameters);
+
+            if ($('#ClientClassificationCode').val() == "1") {
+
+                if ($('#ClientCode').val() == "10") {
+                    $(".ClientODB").removeClass("AppHidden");
+                }
+            }
+            else if ($('#ClientClassificationCode').val() == "2") {
+
+                if ($('#ClientCode').val() == "170" || $('#ClientCode').val() == "23") {
+                    $(".ClientODB").removeClass("AppHidden");
+                }
+            }
+
+            if (!$('#DIV_StatusCode').hasClass("AppHidden")) {
+                if ($('#StatusCode').val() == "1") {
+                    $("#DivCloseDetail").removeClass("AppHidden").addClass("AppHidden");
+                }
+                else {
+                    $("#DivCloseDetail").removeClass("AppHidden");
+                    $('textarea').autoResize();
+                }
+            }
+
+            if ($('#FinalOnvoiceOnHold').val() == "") {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+            }
+            else {
+                $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+            }
+
+            $('#FinalOnvoiceOnHold').on("change", function () {
+                console.log(this.id);
+                console.log($(this).val());
+
+                if ($('#FinalOnvoiceOnHold').val() == "") {
+                    $("#DIV_SUGGESTED_DATE").removeClass("AppHidden").addClass("AppHidden");
+                }
+                else {
+                    $("#DIV_SUGGESTED_DATE").removeClass("AppHidden");
+                }
+            });
+
+            $(".clsValidLogin").removeClass("AppHidden").addClass("AppHidden");
+
+            var AllowedUsers = ["1", "2", "3", "5", "6", "9"];
+            $(".clsAccountProcedure").removeClass("AppHidden");
+            if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+                $(".clsAccountProcedure").removeClass("AppHidden").addClass("AppHidden");
+            }
+
+
+            var input = document.getElementById("Password");
+
+            // Execute a function when the user presses a key on the keyboard
+            input.addEventListener("keypress", function (event) {
+                // If the user presses the "Enter" key on the keyboard
+                if (event.key === "Enter") {
+                    // Cancel the default action, if needed
+                    event.preventDefault();
+                    // Trigger the button element with a click
+                    document.getElementById("btnValidateUser").click();
+                }
+            });
+
+            $('textarea').autoResize();
+        });
+    </script>
+
+}

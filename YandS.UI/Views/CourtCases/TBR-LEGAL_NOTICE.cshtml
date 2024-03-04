@@ -1,0 +1,65 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        bsCustomFileInput.init();
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+    });
+</script>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+            @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label for="ReceptionDate">SENT DATE</label>
+            @Html.EditorFor(model => model.SendDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col">
+        <div class="col-sm-12">
+            <div style="padding-top: 29px;" class="row">
+                @Html.HiddenFor(model => model.OmanPostNo)
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="upload" name="upload">
+                            <label class="custom-file-label" for="upload"> Attach</label>
+                        </div>
+                    </div>
+                    <div id="View_OmanPostNoDocs" class="input-group-append @ViewBag.View_OmanPostDoc">
+                        <a target="_blank" class="btn btn-outline-warning" title="VIEW OMAN POST ATTACHED DOCUMENT" href="~/Uploads/OmanPost/@ViewBag.OmanPostDoc">VIEW</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label for="ReceptionDate">REMINDER DATE</label>
+            @Html.EditorFor(model => model.FirstReminderDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+
+</div>

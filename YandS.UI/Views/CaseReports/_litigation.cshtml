@@ -1,0 +1,276 @@
+﻿<script type="text/javascript">
+
+    $(document).ready(function () {
+        console.log("_beforeCourt Partial View Document Ready ");
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+        var IsDecimal = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
+        $.fn.regexMask = function (mask) {
+            $(this).keypress(function (event) {
+                if (!event.charCode) return true;
+                var part1 = this.value.substring(0, this.selectionStart);
+                var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                    return false;
+            });
+        };
+        $(".clsDecimal").regexMask(IsDecimal);
+
+        $("#ReceptionDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            var ReceptionminDate = new Date(selected.date.valueOf());
+            $('#ReceptionDateTo').datepicker('setStartDate', ReceptionminDate);
+        });
+
+
+        $("#ReceptionDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            var ReceptionmaxDate = new Date(selected.date.valueOf());
+            $('#ReceptionDateFrom').datepicker('setEndDate', ReceptionmaxDate);
+        });
+
+        $("#RegistrationDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            var RegistrationminDate = new Date(selected.date.valueOf());
+            $('#RegistrationDateTo').datepicker('setStartDate', RegistrationminDate);
+        });
+
+
+        $("#RegistrationDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            var RegistrationmaxDate = new Date(selected.date.valueOf());
+            $('#RegistrationDateFrom').datepicker('setEndDate', RegistrationmaxDate);
+        });
+
+        $("#JudgmentDateFrom").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+        }).on('changeDate', function (selected) {
+            var JudgmentminDate = new Date(selected.date.valueOf());
+            $('#JudgmentDateTo').datepicker('setStartDate', JudgmentminDate);
+        });
+
+
+        $("#JudgmentDateTo").datepicker({
+            autoclose: true
+        }).on('changeDate', function (selected) {
+            var JudgmentmaxDate = new Date(selected.date.valueOf());
+            $('#JudgmentDateFrom').datepicker('setEndDate', JudgmentmaxDate);
+            });
+
+
+        //var _PartialViewName = "_CaseReportTable";
+        //_parameters = { PartialViewName: _PartialViewName };
+
+        //GetPartialView($("#PartialViewContainer"), GetPartialViewURL, _parameters);
+
+
+        //document.getElementById("btnGenerateRep").addEventListener("click", function () {
+        //    form.submit();
+        //});
+
+        $('.btnGenerateReport').on("click", function () {
+            $('#ClickedButtonName').val(this.id);
+            var form = document.getElementById("frm_CourtCasesReports");
+            form.submit();
+        });
+    });
+</script>
+@model YandS.DAL.RepCaseParameterForm
+<div class="card">
+    <div style="padding-top:10px" class="beforeCourtActive">
+        <div class="col-sm-12 text-center"><h3>LITIGATION REPORT</h3></div>
+    </div>
+    <div class="card-body">
+        <div class="card">
+            <div style="padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                <div class="text-center"><h3>BASIC INFO</h3></div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Location)
+                            @Html.DropDownList("Location", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseStatus)
+                            @Html.DropDownList("CaseStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientCode)
+                            @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AgainstCode)
+                            @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseLevelCode)
+                            @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CaseTypeCode)
+                            @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>RECIPTION DATE</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ReceptionDateFrom)
+                                            @Html.EditorFor(model => model.ReceptionDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ReceptionDateTo)
+                                            @Html.EditorFor(model => model.ReceptionDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>REGISTRATION DATE</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.RegistrationDateFrom)
+                                            @Html.EditorFor(model => model.RegistrationDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.RegistrationDateTo)
+                                            @Html.EditorFor(model => model.RegistrationDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>CLAIM AMOUNT</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ClaimAmountFrom)
+                                            @Html.EditorFor(model => model.ClaimAmountFrom, new { htmlAttributes = new { @class = "form-control clsDecimal" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ClaimAmountTo)
+                                            @Html.EditorFor(model => model.ClaimAmountTo, new { htmlAttributes = new { @class = "form-control clsDecimal" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div style="padding-bottom:0px !important;padding-top:10px;background-color: #f2f2f2 !important; color: #c00000 !important;">
+                        <div class="row">
+                            <div class="col-sm-12 text-center"><h3>JUDGMENT DATE</h3></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.JudgmentDateFrom)
+                                            @Html.EditorFor(model => model.JudgmentDateFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.JudgmentDateTo)
+                                            @Html.EditorFor(model => model.JudgmentDateTo, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- /.card-body -->
+    <div class="card-footer">
+        <button type="button" id="btnENRep" class="btn btn-warning btnGenerateReport"><i class="fas fa-file-archive"></i> ENGLISH REPORT</button>
+        <button type="button" id="btnARRep" class="btn btn-info btnGenerateReport"><i class="fas fa-file-archive"></i> ARABIC REPORT</button>
+        <button type="button" id="btnNBORep" class="btn btn-outline-info btnGenerateReport"><i class="fas fa-file-archive"></i> NBO REPORT</button>
+        <button type="button" id="btnUFRep" class="btn btn-warning btnGenerateReport"><i class="fas fa-file-archive"></i> UNITED FINANCE REPORT</button>
+        <button type="button" id="btnBDRep" class="btn btn-info btnGenerateReport"><i class="fas fa-file-archive"></i> BANK DHOFAR REPORT</button>
+    </div>
+</div>

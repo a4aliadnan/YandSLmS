@@ -1,0 +1,263 @@
+﻿<script type="text/javascript">
+    function ShowInvesmentBanner() {
+        if ($('#DepartmentType').val() == "2")
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden");
+        else
+            $("#DIV_INVESTMENT_BANNER").removeClass("AppHidden").addClass("AppHidden");
+    }
+    function LoadJudgementLevelPV(JudgementLevelId) {
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#DIV_JudgementLevelAFJD");
+        $("#DIV_JudgementLevelAFJD").empty();
+        $("#DIV_JudgementNotFavAFJD").empty();
+
+        switch (JudgementLevelId) {
+            case "0":
+                $('#DIV_CommonTask').removeClass("AppHidden").addClass("AppHidden");
+                $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+                return false;
+                break;
+            case "1":
+                _PartialViewName = "_SessionJudgementPrimary";
+                break;
+            case "2":
+                _PartialViewName = "_SessionJudgementAppeal";
+                break;
+            case "3":
+                _PartialViewName = "_SessionJudgementSupremeModal";
+                break;
+            case "4":
+                _PartialViewName = "_SessionJudgementEnforcement";
+                break;
+        }
+
+        DetailViewName = _PartialViewName;
+        $("#PartialViewName").val(DetailViewName);
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = 0 ;
+        var _Mode = "C";
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function processFileStatusChange(FileStatusId) {
+        console.log("function processFileStatusChange(" + FileStatusId + ")");
+        $("#ActionDate").datepicker("setDate", new Date());
+        $("#DIV_ACTION_DATE").removeClass("AppHidden");
+        $("#DIV_UPDATE").removeClass("AppHidden");
+        $("#DIV_OnHoldReason").removeClass("AppHidden").addClass("AppHidden");
+        switch (FileStatusId) {
+            case "0":
+                $("#DIV_ACTION_DATE").removeClass("AppHidden").addClass("AppHidden");
+                $("#DIV_UPDATE").removeClass("AppHidden").addClass("AppHidden");
+                break;
+            case "4":
+                $("#DIV_OnHoldReason").removeClass("AppHidden");
+                break;
+        }
+
+        $('textarea').autoResize();
+    }
+    function LoadCaseRegistrationPV(ActionLevel) {
+
+        console.log("function LoadCaseRegistrationPV(" + ActionLevel + ")");
+        _parameters = "";
+        _PartialViewName = "";
+        PartialContainer = $("#DIV_JudgementNotFavAFJD");
+
+        switch (ActionLevel) {
+            case "0":
+                $("#DIV_JudgementNotFavAFJD").empty();
+                return false;
+                break;
+            case "2":
+                _PartialViewName = "_TBRAppeal";
+                break;
+            case "3":
+                _PartialViewName = "_TBRSupreme";
+                break;
+        }
+
+        DetailViewName = _PartialViewName;
+        $("#PartialViewName").val(DetailViewName);
+        P_CaseId = parseInt($("#CaseId").val());
+        P_SessionRollId = 0;
+        var _Mode = "C";
+
+        _parameters = { Mode: _Mode, PartialViewName: _PartialViewName, CaseId: P_CaseId, SessionRollId: P_SessionRollId };
+
+        GetTab(PartialContainer, GetSessionRollURL, _parameters);
+    }
+    function ShowSessionNoteBanner() {
+        if (!$.trim($("#SessionNote_Remark").val())) {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
+            $("#spnNotesBanner").text("");
+        }
+        else {
+            $("#DIV_NOTES_BANNER").removeClass("AppHidden");
+            $("#spnNotesBanner").text($.trim($("#SessionNote_Remark").val()));
+            $('textarea').autoResize();
+        }
+    }
+    var SubmitFormURL = '@Url.Action("Index", "SessionRoll", new { area = string.Empty })';
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+        if (parseInt($('#JudgementLevel').val()) > 0)
+            LoadJudgementLevelPV($('#JudgementLevel').val());
+
+        function ClearUnCheckInput(clsName) {
+            $('.' + clsName).each(function () {
+                $(this).val('');
+            });
+        }
+        $('#btnSubmitForm').on("click", function () {
+            ValidationMessage = "";
+            NotValid = false;
+
+            console.log(DetailViewName);
+
+            if (DetailViewName == "_SessionJudgementPrimary" || DetailViewName == "_TBRAppeal") {
+                NotValid = ValidatePrimaryJudgement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (DetailViewName == "_SessionJudgementAppeal" || DetailViewName == "_TBRSupreme") {
+                NotValid = ValidateAppealJudgement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (DetailViewName == "_SessionJudgementSupremeModal") {
+                NotValid = ValidateSupremeJudgement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+            else if (DetailViewName == "_SessionJudgementEnforcement") {
+                NotValid = ValidateEnforcementJudgement();
+
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
+            var data = new FormData(jQuery('#frm_AfterJDAddForm')[0]);
+            //console.log(data);
+            $.ajax({
+                type: "POST",
+                url: SubmitFormURL,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.errorMessage) {
+                        console.log("result.errorMessage");
+                        Swal.fire({
+                            type: 'error',
+                            title: 'ERROR...',
+                            html: result.errorMessage
+                        });
+
+                        return false;
+                    }
+
+                    Swal.fire({
+                        type: 'success',
+                        title: 'SUCCESS...',
+                        html: 'Data Save Successfully'
+                    });
+
+                    $("#DIV_CreateNewAfterJudgement").empty();
+                    CancelSession();
+                    table.ajax.reload(function (json) {
+                        var info = table.page.info();
+                        $('#TTL').text(info.recordsTotal);
+                    });
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+
+    });
+</script>
+@using (Html.BeginForm("Index", "SessionRoll", FormMethod.Post, new { id = "frm_AfterJDAddForm", enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+{
+    @Html.AntiForgeryToken()
+    @model YandS.UI.Models.SessionsRollVM
+    @Html.HiddenFor(model => model.CaseId)
+    @Html.HiddenFor(model => model.PartialViewName)
+    @Html.HiddenFor(model => model.SavePV_Data)
+    @Html.HiddenFor(model => model.CountLocationId)
+    @Html.HiddenFor(model => model.SessionLevel)
+    @Html.HiddenFor(model => model.JudgementLevel)
+    @Html.HiddenFor(model => model.DepartmentType, new { @Value = "1" })
+    <div class="card">
+        <div class="card-body">
+            <div style="padding-top:10px" class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="CurrentCaseLevel">CURRENT CASE LEVEL المرحلة</label>
+                        @Html.EditorFor(model => model.CurrentCaseLevel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="CourtRefNo">CASE NO. رقم القضية</label>
+                        @Html.EditorFor(model => model.CourtRefNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="CountLocationName">COURT المحكمة</label>
+                        @Html.EditorFor(model => model.CountLocationName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div id="DIV_JudgementLevelAFJD"></div>
+            <div id="DIV_JudgementNotFavAFJD"></div>
+        </div>
+        <div class="card-footer text-center">
+            <button id="btnSubmitForm" type="button" class="btn btn-secondary"><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+
+}

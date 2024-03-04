@@ -1,0 +1,311 @@
+﻿@model YandS.UI.Models.PayVoucher
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Voucher</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Finance</li>
+                        <li class="breadcrumb-item">Payment Voucher</li>
+                        <li class="breadcrumb-item active"><a href="#">Create Voucher</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onPreSubmit(this);" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Payment Voucher Creation</h3>
+                    <div class="float-right">
+                        Voucher Date : @ViewBag.VoucherDate
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Payment_Type)
+                        @Html.HiddenFor(model => model.Payment_Mode)
+                        @Html.HiddenFor(model => model.Status, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.VoucherStatus, new { @Value = "0" })
+                        @Html.HiddenFor(model => model.Voucher_Date)
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.Payment_Mode, "1", new { id = "Payment_Mode1", @checked = true })
+                                                    <label for="Payment_Mode1">Cheque</label>
+                                                </div>
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.Payment_Mode, "2", new { id = "Payment_Mode2" })
+                                                    <label for="Payment_Mode2">Cash</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Debit_Account)
+                                    @Html.DropDownListFor(m => m.Debit_Account, Model.ListLinkBankAccount.Select(x => new SelectListItem { Text = x.Mst_Desc, Value = x.Mst_Value.ToString() }), "Please Select", new { @class = "form-control select2bs4" })
+                                    @Html.ValidationMessageFor(model => model.Debit_Account, "", new { @class = "text-danger" })
+                                </div>
+                                <div id="divCourtType" class="col-12 AppHidden">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CourtType)
+                                                @Html.DropDownList("CourtType", null, htmlAttributes: new { @class = "form-control select2bs4 DisplayCourtName" })
+                                                @Html.ValidationMessageFor(model => model.CourtType, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.LocationCode)
+                                                @Html.DropDownList("LocationCode", null, htmlAttributes: new { @class = "form-control select2bs4 DisplayCourtName" })
+                                                @Html.ValidationMessageFor(model => model.LocationCode, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label for="UploadedFile">Employee Document</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="upload" name="upload" data-val="true" data-val-required="Supporting Documents are required.">
+                                            <label class="custom-file-label" for="upload">Choose Document</label>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.VoucherType, "2", new { @class = "ToggleControl", id = "VoucherType2", @checked = true })
+                                                    <label for="VoucherType2">Non-Refundable</label>
+                                                </div>
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.VoucherType, "1", new { @class = "ToggleControl", id = "VoucherType1" })
+                                                    <label for="VoucherType1">Refundable</label>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.Payment_Type, "1", new { @class = "ToggleControl", id = "Payment_Type1", @checked = true })
+                                                    <label for="Payment_Type1">Normal</label>
+                                                </div>
+                                                <div class="icheck-primary d-inline">
+                                                    @Html.RadioButtonFor(m => m.Payment_Type, "2", new { @class = "ToggleControl", id = "Payment_Type2" })
+                                                    <label for="Payment_Type2">Bank Transfer</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divCredit_Account" class="form-group AppHidden">
+                                    @Html.LabelFor(model => model.Credit_Account)
+                                    @Html.DropDownListFor(m => m.Credit_Account, Model.ListLinkBankAccountCR.Select(x => new SelectListItem { Text = x.Mst_Desc, Value = x.Mst_Value.ToString() }), new { @class = "form-control select2bs4", @Value = 0 })
+                                    @Html.ValidationMessageFor(model => model.Credit_Account, "", new { @class = "text-danger" })
+                                </div>
+                                <div id="divPayment_Head" class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Payment_Head)
+                                                @Html.DropDownList("Payment_Head", null, htmlAttributes: new { @class = "form-control select2bs4" })
+
+                                                @Html.ValidationMessageFor(model => model.Payment_Head, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Payment_To)
+                                                @Html.DropDownList("Payment_To", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                                                @Html.ValidationMessageFor(model => model.Payment_To, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="divCourtTypeName" class="form-group AppHidden">
+                                    <label for="CourtLocationName">Court Name</label>
+                                    <span id="CourtLocationName" class="form-control" readonly></span>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remarks)
+                                    @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                    @Html.ActionLink("Back to Main", "Index")
+                </div>
+            </div>
+
+        }
+    </section>
+    <!-- /.content -->
+</div>
+
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $.validator.addMethod('date',
+                function (value, element) {
+                    $.culture = Globalize.culture("en-AU");
+                    var date = Globalize.parseDate(value, "dd/MM/yyyy", "en-AU");
+                    return this.optional(element) ||
+                        !/Invalid|NaN/.test(new Date(date).toString());
+                });
+        });
+        function onPreSubmit(item) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            /* Set Hidden Radio Values*/
+            $("#Payment_Type").val($('input[name="Payment_Type"]:checked').val());
+            $("#Payment_Mode").val($('input[name="Payment_Mode"]:checked').val());
+            $("#VoucherType").val($('input[name="VoucherType"]:checked').val());
+            console.log($("#Amount").val());
+            if ($("#Amount").val() == "") {
+                Toast.fire({
+                    type: 'error',
+                    title: 'Please enter Valid Amount.'
+                });
+                return false;
+
+            }
+        }
+        $(document).ready(function () {
+            console.log("Payment Voucher Create");
+            bsCustomFileInput.init();
+            //$("#Voucher_Date").val("");
+            $("#Amount").val("");
+
+            $('.ToggleControl').on("change", function () {
+                console.log("Radio Change Activated");
+                console.log(this.id);
+                console.log($(this).val());
+
+                var PaymentType = $('input[name="Payment_Type"]:checked').val();
+                var VoucherType = $('input[name="VoucherType"]:checked').val();
+
+                if (PaymentType == "1" && VoucherType == "2") {
+                    console.log('if (PaymentType == "1" && VoucherType == "2") ');
+                    console.log("PaymentType ::: = " + PaymentType);
+                    console.log("VoucherType ::: = " + VoucherType);
+
+                    $("#divCredit_Account").removeClass("AppHidden").addClass("AppHidden");
+                    $("#Credit_Account").val("0").trigger('change');
+                    $("#divCourtType").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divCourtTypeName").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divPayment_Head").removeClass("AppHidden");
+
+                    $("#CourtType").val("0").trigger('change');
+                    $("#LocationCode").val("0").trigger('change');
+                    $("#CourtLocationName").text("");
+
+                }
+                else if (PaymentType == "1" && VoucherType == "1") {
+                    console.log('else if (PaymentType == "1" && VoucherType == "1") ');
+                    console.log("PaymentType ::: = " + PaymentType);
+                    console.log("VoucherType ::: = " + VoucherType);
+
+                    $("#divCredit_Account").removeClass("AppHidden").addClass("AppHidden");
+                    $("#Credit_Account").val("0").trigger('change');
+                    $("#divCourtType").removeClass("AppHidden");
+                    $("#divCourtTypeName").removeClass("AppHidden");
+                    $("#divPayment_Head").removeClass("AppHidden");
+                }
+                else if (PaymentType == "2" && (VoucherType == "1" || VoucherType == "2")) {
+                    console.log('else if (PaymentType == "2" && (VoucherType == "1" || VoucherType == "2") ');
+                    console.log("PaymentType ::: = " + PaymentType);
+                    console.log("VoucherType ::: = " + VoucherType);
+
+                    $("#divCredit_Account").removeClass("AppHidden");
+                    $("#divPayment_Head").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divCourtType").removeClass("AppHidden").addClass("AppHidden");
+                    $("#divCourtTypeName").removeClass("AppHidden").addClass("AppHidden");
+                    $("#Payment_Head").val("0").trigger('change');
+                    $("#Payment_To").val("0").trigger('change');
+                    $("#CourtType").val("0").trigger('change');
+                    $("#LocationCode").val("0").trigger('change');
+                    $("#CourtLocationName").text("");
+                }
+            });
+
+            $('.DisplayCourtName').on("change", function () {
+                console.log("DisplayCourtName Change Activated");
+                console.log(this.id);
+                console.log($(this).val());
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                var CName = $("#CourtType option:selected").text();
+                var strCourtType = $("#CourtType option:selected").val();
+                var strLoc = $("#LocationCode option:selected").val();
+                var LocName = $("#LocationCode option:selected").text();
+
+                if ($("#CourtType option:selected").val() != "0" && $("#LocationCode option:selected").val() != "0")
+                    $("#CourtLocationName").text(CName + " - " + LocName);
+                else
+                    $("#CourtLocationName").text("");
+
+
+                if (strCourtType == "3" && strLoc != "1" && strLoc != "0") {
+                    Toast.fire({
+                        type: 'error',
+                        title: 'Invalid location for Supreme Court'
+                    });
+                    return false;
+                }
+            });
+
+            
+        });
+    </script>
+}

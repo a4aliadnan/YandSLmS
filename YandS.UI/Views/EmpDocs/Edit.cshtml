@@ -1,0 +1,92 @@
+﻿@model YandS.UI.Models.EmpDoc
+
+@{
+    ViewBag.Title = "Edit";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Employee Documents</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Employee</li>
+                        <li class="breadcrumb-item active"><a href="#">Modify Employee Documents</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">Modify Documents for : @ViewBag.EmployeeName</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <div class="card-body">
+
+
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.EmployeId)
+                    @Html.HiddenFor(model => model.DocId)
+                    @Html.HiddenFor(model => model.OriginalFileName)
+                    @Html.HiddenFor(model => model.FileName)
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DocTypeId)
+                                    @Html.DropDownListFor(m => m.DocTypeId, Model.ListDocType.Select(x => new SelectListItem { Text = x.Mst_Desc, Value = x.Mst_Value.ToString() }), new { @class = "form-control select2bs4", required = "required", title = "Please Select Document Type" })
+                                    @Html.ValidationMessageFor(model => model.DocTypeId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="UploadedFile">Employee Document</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="upload" name="upload" data-val="true" data-val-required="Please choose Employee Document by clicking Browse button">
+                                            <label class="custom-file-label" for="upload">Choose Employee Document</label>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-info"><i class="fas fa-save"></i> Save</button> |
+                    <a class="btn btn-primary" href="@Url.Action("Index", "Employees")"><i class="fas fa-home"></i> Back to Employees</a> |
+                    <a class="btn btn-outline-primary" href="@Url.Action("Index", "EmpDocs", new { id = Model.EmployeId })"><i class="fas fa-file-pdf"></i> Back to Employee Docs</a>
+                </div>
+
+            </div>
+        }
+    </section>
+    <!-- /.content -->
+</div>
+
+@section pagespecific {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Modify Employee Document Page");
+            bsCustomFileInput.init();
+        });
+    </script>
+}

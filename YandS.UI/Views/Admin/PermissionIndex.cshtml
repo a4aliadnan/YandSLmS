@@ -1,0 +1,23 @@
+﻿@model IEnumerable<YandS.UI.Models.PERMISSION>
+@{
+    ViewBag.Title = "Rights";
+    Layout = "~/Views/Shared/_LayoutRBAC.cshtml";
+
+}
+
+<fieldset>
+    <legend>
+        <h3 style="font-weight:bold; font-size:x-large">
+            Permissions
+        </h3>
+    </legend>
+    @Html.Partial("_ListPermissionsTable", Model)
+    <br />
+    <div>
+        <input class="btn btn-default" type="button" value="Create Permission" onclick="location.href='@Url.Action("PermissionCreate", "Admin")'" />
+        <input class="btn btn-default" type="button" id="importPermissions2" name="importPermissions2" value="Import Permissions" onclick="location.href='@Url.Action("PermissionsImport", "Admin")'" />
+        <br />
+    </div>
+</fieldset>
+<br />
+@Html.ActionLink("Go to Roles", "RoleIndex", "Admin")

@@ -1,0 +1,115 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#hidNextHearingDate").val($("#NextHearingDate").val());
+        $("#hidCurrentHearingDate").val($("#CurrentHearingDate").val());
+
+        $('#CourtDecision').bind('input propertychange', function () {
+            $("#hidCourtDecisionChange").val("N");
+
+            if (this.value.length) {
+                $("#hidCourtDecisionChange").val("Y");
+            }
+        });
+
+        $("#CurrentHearingDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).on('changeDate', function (selected) {
+            if ($("#hidCurrentHearingDate").val() == $("#CurrentHearingDate").val()) {
+
+            }
+            else {
+                if ($('#TransportationFee').val() == "1") {
+                    $("#TransportationSource").val("0").trigger('change');
+                }
+            }
+        });
+
+    });
+</script>
+<div id="DIV_UPDATE">
+    @Html.HiddenFor(model => model.TransportationFee)
+    @Html.HiddenFor(model => model.UpdatePV_Type)
+    @Html.HiddenFor(model => model.PartialViewName)
+    <div class="col-sm-12">
+        <div style="padding-bottom:0px !important;padding-top:10px;background-color: #336c85 !important; color: white !important; border-color:yellow !important; border:3px solid;">
+            <div class="row">
+                <div class="col-sm-12 text-center"><span style="font-size:x-large; padding-left:10px; float:left">@ViewBag.UpdateBoxUser</span><h3>UPDATE التحديث</h3></div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="CurrentHearingDate">UPDATE DATE تاريخ التحديث</label>
+                        @Html.EditorFor(model => model.CurrentHearingDate, new { htmlAttributes = new { @class = "form-control datepicker updateBoxUpdated" } })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="CourtDecision">COURT DECISION قرار المحكمة</label>
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.CourtDecision, 1, 200, new { @class = "form-control updateBoxUpdated", @dir = "auto" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2 AppHidden cls_SessionVisible">
+                    <div class="form-group">
+                        <label for="NextHearingDate"><span id="span_NextHearingDate">NEXT HEARING DATE موعد الجلسة القادمة</span></label>
+                        @Html.EditorFor(model => model.NextHearingDate, new { htmlAttributes = new { @class = "form-control datepicker updateBoxUpdated" } })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="SessionRemarks">LAWYER SCHEDULE توجيهات إلى المحامي</label>
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.SessionRemarks, 1, 200, new { @class = "form-control", @dir = "auto" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ClientReply)
+                        @Html.DropDownList("ClientReply", null, htmlAttributes: new { @class = "form-control select2bs4 updateBoxUpdated" })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group" id="txtRequirement">
+                        <label for="Requirements">REQUIREMENT المطلوب من الموكل</label>
+                        <div class="form-group">
+                            @Html.TextAreaFor(model => model.Requirements, 1, 200, new { @class = "form-control updateBoxUpdated", @dir = "auto" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group" id="txtFirstEmailDate">
+                        @Html.LabelFor(model => model.FirstEmailDate)
+                        @Html.EditorFor(model => model.FirstEmailDate, new { htmlAttributes = new { @class = "form-control datepicker updateBoxUpdated" } })
+                    </div>
+                </div>
+                <div id="DIV_TRSOURCE" class="col-sm-2">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TransportationSource)
+                        @Html.DropDownList("TransportationSource", null, htmlAttributes: new { @class = "form-control select2bs4 updateBoxUpdated" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

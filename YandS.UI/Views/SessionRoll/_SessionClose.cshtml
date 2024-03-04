@@ -1,0 +1,51 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+    });
+</script>
+@model YandS.UI.Models.SessionsRollVM
+<div style="padding-bottom:0px !important;padding-top:10px;background-color: #e6e6e6 !important; color: black !important;">
+    <div class="row">
+        <div class="col-sm-12 text-center"><h3>CLOSURE</h3></div>
+    </div>
+</div>
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="ClosureDate">CLOSURE DATE</label>
+                @Html.EditorFor(model => model.ClosureDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label for="NextCaseLevel">NEXT CASE LEVEL</label>
+                <div class="form-group">
+                    @Html.DropDownList("NextCaseLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="NextCaseLevelCode">NEXT CASE LEVEL CODE</label>
+                <div class="form-group">
+                    @Html.EditorFor(model => model.NextCaseLevelCode, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="DIVPrintFormButton" class="@ViewBag.PrintFormButton">
+    <div class="card-footer text-right">
+        <button id=@Model.CaseId title="Form Closure" class="btn btn-secondary" onclick="window.open('@Url.Action("ClosureFormView", "CourtCases", new { CaseId = Model.CaseId, Courtid = Model.CaseLevelCode,ClosureDate = Model.ClosureDate })');return false;"><i class="fas fa-file-invoice-dollar"></i> PRINT CLOSURE FORM</button>
+    </div>
+</div>
+<input type="hidden" id="hid_SessionRollId" value="@ViewBag.hid_SessionRollId" />

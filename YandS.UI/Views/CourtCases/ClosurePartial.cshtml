@@ -1,0 +1,260 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("ClosurePartial PartialView");
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $.fn.autoResize = function () {
+            let r = e => {
+                e.style.height = '';
+                e.style.height = e.scrollHeight + 'px'
+            };
+            return this.each((i, e) => {
+                e.style.overflow = 'hidden';
+                r(e);
+                $(e).bind('input', e => {
+                    r(e.target);
+                })
+            })
+        };
+
+        var inputAccount = document.getElementById("FileClosureDetail_AccountPassword");
+
+        // Execute a function when the user presses a key on the keyboard
+        inputAccount.addEventListener("keypress", function (eventAccount) {
+            // If the user presses the "Enter" key on the keyboard
+            if (eventAccount.key === "Enter") {
+                // Cancel the default action, if needed
+                eventAccount.preventDefault();
+                // Trigger the button element with a click
+                document.getElementById("btnValidateAccountUser").click();
+            }
+        });
+
+        $('textarea').autoResize();
+
+        $('.btnSave').on("click", function () {
+            console.log(".btnSave CLICK");
+            $('#FileClosureDetail_btnSave').val(this.id);
+            ValidationMessage = "";
+            NotValid = false;
+
+            if ($("#FileClosureDetail_btnSave").val() == "btnClosurePartialSave") {
+                if ($("#FileClosureDetail_ClosurePartDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER CLOUSER PART DATE" : ValidationMessage + "<br />" + "PLEASE ENTER CLOUSER PART DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_ClosurePartDate").val());
+
+                    if (process($("#FileClosureDetail_ClosurePartDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "CLOUSER PART DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "CLOUSER PART DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+
+                if ($("#FileClosureDetail_FileTypeClosure").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT FILE TYPE CLOSURE" : ValidationMessage + "<br />" + "PLEASE SELECT FILE TYPE CLOSURE";
+                    NotValid = true;
+                }
+
+            }
+            else if ($("#FileClosureDetail_btnSave").val() == "btnClosurePartialAccountsDepSave") {
+                if ($("#FileClosureDetail_AccountAuditDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER AUDIT DATE" : ValidationMessage + "<br />" + "PLEASE ENTER AUDIT DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_AccountAuditDate").val());
+
+                    if (process($("#FileClosureDetail_AccountAuditDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "AUDIT DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "AUDIT DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+
+                if ($("#FileClosureDetail_AccountAudit").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CHECK FILE" : ValidationMessage + "<br />" + "PLEASE SELECT CHECK FILE";
+                    NotValid = true;
+                }
+
+            }
+            else if ($("#FileClosureDetail_btnSave").val() == "btnClosureArchiveSave") {
+                if ($("#FileClosureDetail_StoreDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER STORE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER STORE DATE";
+                    NotValid = true;
+                }
+                else {
+
+                    var today = new Date();
+
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+
+                    today = dd + '/' + mm + '/' + yyyy;
+
+                    console.log(today);
+                    console.log($("#FileClosureDetail_StoreDate").val());
+
+                    if (process($("#FileClosureDetail_StoreDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "STORE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "STORE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
+                }
+
+                if ($("#FileClosureDetail_FileArchieved").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT CHECK ARCHIVED" : ValidationMessage + "<br />" + "PLEASE SELECT CHECK ARCHIVED";
+                    NotValid = true;
+                }
+
+                if ($("#FileClosureDetail_FileAllocation").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ARCHIVED LOCATION" : ValidationMessage + "<br />" + "PLEASE SELECT ARCHIVED LOCATION";
+                    NotValid = true;
+                }
+            }
+
+            if (NotValid) {
+                Swal.fire({
+                    type: "error",
+                    title: 'ERROR...',
+                    html: ValidationMessage
+                });
+                return false;
+            }
+            else {
+                submitClosureForm();
+                $(this).closest("div").addClass("disableDIV");
+            }
+        });
+
+        if ($("#divClosurePartial").hasClass("disableDIV")) {
+            $(".clsValidLogin").removeClass("AppHidden");
+        }
+
+        if ($("#divClosureAccount").hasClass("disableDIV")) {
+            $(".clsValidAccountLogin").removeClass("AppHidden");
+        }
+    });
+</script>
+@Html.HiddenFor(model => model.FileClosureDetail.PartDetailId)
+@Html.HiddenFor(model => model.PartialViewName)
+<div class="card @ViewBag.ClosureInProgress">
+    <div class="card-header FinalClosureBanner">
+        <div class="row">
+            <div class="col-sm-1 AppHidden"></div>
+            <div class="col-sm-12 text-center"><h3>PART OF FILE CLOSURE غلق جزء من الملف</h3></div>
+            <div class="col-sm-1 AppHidden"><span style="float:right"><a title="PRINT FORM" id="ClosurePartialFormButton" class="btn btn-lg btn-ToBeRegBanner-print" target="_blank" href="/CommonTask/ClosureFormView/?CaseId=@Model.CaseId&screen=ClosurePartialForm">PRINT FORM</a></span></div>
+        </div>
+    </div>
+    <div id="divClosurePartial" class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.ClosurePartDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.ClosurePartDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.FileTypeClosure)
+                    @Html.DropDownList("FileTypeClosure", null, htmlAttributes: new { id = "FileClosureDetail_FileTypeClosure", Name = "FileClosureDetail.FileTypeClosure", @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.PartNo)
+                    @Html.EditorFor(model => model.FileClosureDetail.PartNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.ClosingNotesDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.ClosingNotesDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FileClosureDetail.ClosingNotes)
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.FileClosureDetail.ClosingNotes, 1, 200, new { @class = "form-control", @dir = "auto" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnClosurePartialSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+
+</div>
+<div id="divClosureAccount" class="card @ViewBag.AccountInProgress clsAccountProcedure">
+    <div class="card-header FinalClosureBanner">
+        <div class="text-center"><h3>ACCOUNTS DEPT PROCEEDURE إجراءات قسم المحاسبة</h3></div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="col-sm-12">
+                    <div class="row">
+                        @Html.LabelFor(model => model.FileClosureDetail.AccountPassword)
+                        <div class="input-group">
+                            @Html.PasswordFor(model => model.FileClosureDetail.AccountPassword, htmlAttributes: new { @class = "form-control" })
+                            <div class="input-group-append">
+                                <button type="button" onclick="ValidateUser(document.getElementById('FileClosureDetail_AccountPassword').value,'clsValidAccountLogin')" class="btn btn-warning" id="btnValidateAccountUser">VERIFY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group clsValidAccountLogin AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.AccountAuditDate)
+                    @Html.EditorFor(model => model.FileClosureDetail.AccountAuditDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group clsValidAccountLogin AppHidden">
+                    @Html.LabelFor(model => model.FileClosureDetail.AccountAudit)
+                    @Html.DropDownList("AccountAudit", null, htmlAttributes: new { id = "FileClosureDetail_AccountAudit", Name = "FileClosureDetail.AccountAudit", @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center clsValidAccountLogin AppHidden">
+        <button type="button" id="btnClosurePartialAccountsDepSave" class="btn btn-secondary btnSave"><i class="fas fa-save"></i> SAVE</button>
+    </div>
+</div>

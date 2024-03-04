@@ -1,0 +1,421 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_ClientAccess.cshtml";
+}
+<style>
+    #d_footer {
+        position: fixed;
+        bottom: 0;
+    }
+
+    .VMiddle {
+        vertical-align: middle !important;
+    }
+
+    .clientGeneral {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientGeneral:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientGeneralActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientTobeReg {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientTobeReg:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientTobeRegActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientPrimary {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientPrimary:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientPrimaryActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientAppeal {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientAppeal:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientAppealActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientSupreme {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientSupreme:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientSupremeActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientEnforcement {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientEnforcement:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientEnforcementActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientAgainstClient {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientAgainstClient:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientAgainstClientActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientAwaitedResponse {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientAwaitedResponse:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientAwaitedResponseActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientSuspended {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientSuspended:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientSuspendedActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientClosedFiles {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientClosedFiles:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientClosedFilesActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientUnpaidInvoice {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientUnpaidInvoice:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientUnpaidInvoiceActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientPOA {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientPOA:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientPOAActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientContact {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientContact:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientContactActive {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .clientTop20 {
+        background-color: #57257d !important;
+        color: white !important;
+    }
+
+        .clientTop20:hover {
+            background-color: #002060 !important;
+            color: white !important;
+        }
+
+    .clientTop20Active {
+        background-color: #002060 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #e9f0e8;
+    }
+    .dt-center {
+        text-align: center;
+    }
+
+    .emphasized {
+        font-style: italic;
+        font-weight: bold;
+    }
+</style>
+<script>
+    var GetIndexDataURL = '@Url.Action("AjaxIndexData", "Home", new { area = string.Empty })';
+    var GetPartialViewURL = '@Url.Action("GetTab", "Home", new { area = string.Empty })';
+    var _parameters = "";
+    var GetTab = function (divToLoad, p_url, p_parameters) {
+        divToLoad.empty();
+        divToLoad.append("Loading...");
+
+        $.ajax({
+            url: p_url,
+            type: "GET",
+            data: p_parameters,
+            success: function (data, textStatus, jqXHR) {
+                LoadPartialView(data, divToLoad);
+            }
+        });
+    };
+    function LoadPartialView(data, container) {
+        container.html(data);
+
+        if (container.attr("id") == "modal-UPSERT-ViewContainer") {
+            $('#modal-UPSERT').modal('show');
+            $("#modal-UPSERT-Formoverlay").removeClass("overlay");
+            $("#modal-UPSERT-Formoverlay").removeClass("AppHidden").addClass("AppHidden");
+
+        }
+        else {
+            $('html, body').animate({
+                scrollTop: container.offset().top
+            }, 200);
+        }
+
+    }
+    $(document).ready(function () {
+        console.log("Client Home Page Loaded!!!!");
+        scroller.init();
+        _PartialViewName = "clientGeneral";
+        PartialContainer = $("#PartialViewContainer");
+        _parameters = { PartialViewName: _PartialViewName };
+        GetTab(PartialContainer, GetPartialViewURL, _parameters);
+
+        $('.clientNavButton').click(function () {
+            $("#PartialViewContainer").empty();
+            $(".clientNavButton").each(function () {
+                var btnActiveClass = $(this).attr("id").split('_')[1] + "Active";
+                $(this).removeClass(btnActiveClass);
+            });
+
+            var btnClickedId = $(this).attr("id");
+            var btnClickedClass = $(this).attr("id").split('_')[1];
+            var btnClickedActiveClass = $(this).attr("id").split('_')[1] + "Active";
+
+            $(this).addClass(btnClickedActiveClass);
+
+            _PartialViewName = btnClickedClass;
+            PartialContainer = $("#PartialViewContainer");
+
+            _parameters = { PartialViewName: _PartialViewName };
+            GetTab(PartialContainer, GetPartialViewURL, _parameters);
+        });
+
+    });
+    function ShowHideClientFileNo() {
+        table.columns('.Filter_A').visible(false);
+        //var ShowClientFileNo = ["00", "000"];
+        //if (table.data().count()) {
+            
+
+        //    if (ShowClientFileNo.indexOf($("#hidClientCode").val()) >= 0) {
+        //        table.columns('.Filter_A').visible(true);
+        //    }
+        //}
+    }
+    function FormatAccount_ClientFileNo(row) {
+        var DataToDisplay = "";
+        if (row.AccountContractNo && row.ClientFileNo) {
+            if (row.AccountContractNo.length > 40) {
+                DataToDisplay = row.AccountContractNo.replace(/\W+/g, " ") + "<br />" + "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+            else {
+                DataToDisplay = row.AccountContractNo + "<br />" + "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+        }
+        else if (row.AccountContractNo && row.ClientFileNo == null) {
+            if (row.AccountContractNo.length > 40) {
+                DataToDisplay = row.AccountContractNo.replace(/\W+/g, " ");
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+            else {
+                DataToDisplay = row.AccountContractNo;
+                return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+            }
+        }
+        else if (row.AccountContractNo == null && row.ClientFileNo) {
+            DataToDisplay = "<span class='emphasized'>" + row.ClientFileNo + "</span>";
+            return "<div class='text-wrap'>" + DataToDisplay + "</div>";
+        }
+
+        return DataToDisplay;
+    }
+</script>
+
+<div class="col-sm-12">
+    <div class="card card-primary card-outline">
+        <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
+        <input type="hidden" id="hidClientCode" value="@SessionHandler.User.ClientCode" />
+        <input type="hidden" id="hidLocationId" value="@SessionHandler.User.LocationCode" />
+
+        <div class="card-header">
+            <h3 class="card-title"><img class="img-fluid" style="width:200px;height:100px" src="~/Content/Images/LogoS-removebg3.png" alt=""></h3>
+            <div class="card-tools">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown user-menu">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                            <img src="../../Content/UserImage/@ViewBag.UserImage" class="user-image img-circle elevation-2" alt="User">
+                            <span class="d-none d-md-inline">@SessionHandler.User.FullName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <li class="user-header bg-lightblue">
+                                <img src="../../Content/UserImage/@ViewBag.UserImage" class="img-circle elevation-2" alt="User">
+                                <p>
+                                    @SessionHandler.User.FullName
+                                </p>
+                            </li>
+                            <li class="user-footer">
+                                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <a href="@Url.Action("ResetPassword", "Account")" class="btn btn-sm btn-lightblue btn-flat">Change Password</a>
+                                    <a href="javascript:document.getElementById('logoutForm').submit()" class="btn  btn-sm btn-danger btn-flat float-right">Sign out</a>
+                                }
+                            </li>
+                        </ul>
+                    </li>
+                    </ul>
+            </div>
+        </div>
+        <div class="card-header">
+            <h3 class="card-title">@SessionHandler.User.ClientName [@SessionHandler.User.FullName]</h3>
+        </div>
+        <div class="card-body">
+            <div style="padding-bottom:10px;" class="row">
+                <div class="col"><button type="button" id="btn_clientGeneral" style="font-size: 1.2rem !important;" class="btn btn-block clientGeneral clientGeneralActive btn-lg clientNavButton">GENERAL</button></div>
+                <div class="col"><button type="button" id="btn_clientTobeReg" style="font-size: 1.2rem !important;" class="btn btn-block clientTobeReg @ViewBag.clientTobeRegActive btn-lg clientNavButton">NEW CASES</button></div>
+                <div class="col"><button type="button" id="btn_clientPrimary" style="font-size: 1.2rem !important;" class="btn btn-block clientPrimary @ViewBag.clientPrimaryActive btn-lg clientNavButton">PRIMARY</button></div>
+                <div class="col"><button type="button" id="btn_clientAppeal" style="font-size: 1.2rem !important;" class="btn btn-block clientAppeal @ViewBag.clientAppealActive btn-lg clientNavButton">APPEAL</button></div>
+                <div class="col"><button type="button" id="btn_clientSupreme" style="font-size: 1.2rem !important;" class="btn btn-block clientSupreme @ViewBag.clientSupremeActive btn-lg clientNavButton">SUPREME</button></div>
+                <div class="col"><button type="button" id="btn_clientEnforcement" style="font-size: 1.2rem !important;" class="btn btn-block clientEnforcement @ViewBag.clientEnforcementActive btn-lg clientNavButton">ENFORCEMENT</button></div>
+                <div class="col"><button type="button" id="btn_clientTop20" style="font-size: 1.2rem !important;" class="btn btn-block clientTop20 @ViewBag.clientTop20 btn-lg clientNavButton">TOP 20</button></div>
+            </div>
+            <div style="padding-bottom:10px;" class="row">
+                <div class="col"><button type="button" id="btn_clientAgainstClient" style="font-size: 1.2rem !important;" class="btn btn-block clientAgainstClient @ViewBag.clientAgainstClientActive btn-lg clientNavButton">AGAINST CLIENT</button></div>
+                <div class="col"><button type="button" id="btn_clientAwaitedResponse" style="font-size: 1.2rem !important;" class="btn btn-block clientAwaitedResponse @ViewBag.clientAwaitedResponseActive btn-lg clientNavButton">AWAITED RESPONSE</button></div>
+                <div class="col"><button type="button" id="btn_clientSuspended" style="font-size: 1.2rem !important;" class="btn btn-block clientSuspended @ViewBag.clientSuspendedActive btn-lg clientNavButton">SUSPENDED</button></div>
+                <div class="col"><button type="button" id="btn_clientUnpaidInvoice" style="font-size: 1.2rem !important;" class="btn btn-block clientUnpaidInvoice @ViewBag.clientUnpaidInvoiceActive btn-lg clientNavButton">UNPAID INVOICE</button></div>
+                <div class="col"><button type="button" id="btn_clientPOA" style="font-size: 1.2rem !important;" class="btn btn-block clientPOA @ViewBag.clientPOAActive btn-lg clientNavButton">POA</button></div>
+                <div class="col"><button type="button" id="btn_clientClosedFiles" style="font-size: 1.2rem !important;" class="btn btn-block clientClosedFiles @ViewBag.clientClosedFilesActive btn-lg clientNavButton">CLOSED FILES</button></div>
+                <div class="col"><button type="button" id="btn_clientContact" style="font-size: 1.2rem !important;" class="btn btn-block clientContact @ViewBag.clientContactActive btn-lg clientNavButton">CONTACT</button></div>
+            </div>
+            <div id="PartialViewContainer">
+
+            </div>
+            
+        </div>
+        <div class="card-footer">
+            <div class="float-right d-none d-sm-block"><b>Version</b> 1.0</div><strong>Copyright © 2020 - @DateTime.Now.Year <a href="@Url.Action("ClientIndex", "Home")">Y & S Associates</a>.</strong> All rights reserved.
+        </div>
+    </div>
+</div>
+

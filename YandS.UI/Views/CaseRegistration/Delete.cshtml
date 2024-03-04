@@ -1,0 +1,69 @@
+﻿@model YandS.UI.Models.CaseRegistration
+
+@{
+    ViewBag.Title = "Y & S Associates - Case Registration Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>CASE REGISTRATION INFORMATION</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">CASE REGISTRATION</li>
+                        <li class="breadcrumb-item active"><a href="#">DELETE CASE REGISTRATION</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-md-6 classCenter">
+            <div class="card card-danger">
+                <div class="card-header">
+                    <h3 class="card-title">CASE REGISTRATION DELETE</h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-danger">Are you sure you want to delete this?</p>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            OFFICE FILE NO.
+                        </dt>
+
+                        <dd>
+                            @ViewBag.OfficeFileNo
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            CLIENT
+                        </dt>
+
+                        <dd>
+                            @ViewBag.ClientName
+                        </dd>
+                    </dl>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-actions no-color">
+                            <button type="submit" class="btn btn-danger"><i class="fas fa-save"></i> Delete</button> |
+                            <a class="btn btn-primary" href="@Url.Action("Index", "CaseRegistration")"><i class="fas fa-home"></i> Back to Main</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>

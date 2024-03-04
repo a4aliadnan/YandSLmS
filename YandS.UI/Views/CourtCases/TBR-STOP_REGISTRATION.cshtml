@@ -1,0 +1,57 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        bsCustomFileInput.init();
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+
+    });
+</script>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+            @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-7">
+        <div class="col-sm-12">
+            <div class="row">
+                <label for="StopRegEmailDate">EMAIL DATE تاريخ وصول الايميل</label>
+                <div class="input-group mb-3">
+                    @Html.EditorFor(model => model.StopRegEmailDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                    <div class="input-group-append">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="upload" name="upload">
+                            <label class="custom-file-label" for="upload"> Attach</label>
+                        </div>
+                    </div>
+                    <div id="View_StopRegEmailsDocs" class="input-group-append @ViewBag.View_StopRegEmailsDoc">
+                        <a target="_blank" class="btn btn-outline-warning" title="VIEW ATTACHED DOCUMENT" href="~/Uploads/StopRegEmails/@ViewBag.StopRegEmailsDoc">VIEW</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.StopRegUserName)
+            @Html.EditorFor(model => model.StopRegUserName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @Value = @ViewBag.StopRegUserName } })
+        </div>
+    </div>
+</div>

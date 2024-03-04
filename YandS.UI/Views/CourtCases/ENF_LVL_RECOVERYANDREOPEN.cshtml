@@ -1,0 +1,56 @@
+﻿@model YandS.UI.Models.ToBeRegisterVM
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        console.log($('#EnforcementlevelId').val());
+        $('#DIV_COR').removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#EnforcementlevelId').val() == OfficeFileStatus.RecoveryRedStamp_Re_Open)
+            $('#DIV_COR').removeClass("AppHidden");
+        else {
+            if ($('#EnforcementlevelId').val() == OfficeFileStatus.RecoveryRedStamp_Close)
+                $('#CauseOfRecoveryId').val("3").trigger('change');
+
+        }
+
+        $('#EnforcementlevelId').on("change", function () {
+            $('#DIV_COR').removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#EnforcementlevelId').val() == OfficeFileStatus.RecoveryRedStamp_Re_Open)
+                $('#DIV_COR').removeClass("AppHidden");
+            else {
+                if ($('#EnforcementlevelId').val() == OfficeFileStatus.RecoveryRedStamp_Close)
+                    $('#CauseOfRecoveryId').val("3").trigger('change');
+
+            }
+        });
+    });
+</script>
+<div id="DIV_COR" class="row AppHidden">
+    <div class="col-sm-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CauseOfRecoveryId)
+            @Html.DropDownList("CauseOfRecoveryId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group AppHidden">
+            @Html.LabelFor(model => model.DateOfInstruction)
+            @Html.EditorFor(model => model.DateOfInstruction, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-4">
+        
+    </div>
+</div>

@@ -1,0 +1,113 @@
+﻿<script type="text/javascript">
+    var table;
+    var dataForTable = "";
+    var SP_NAME = "";
+
+    function LoadInvoiceTable() {
+        if (typeof table != 'undefined')
+            table.destroy();
+
+        dataForTable = "CLOSURE_ACCOUNT";
+        SP_NAME = "GetDetailTable";
+
+        table = $('#HtmlTable').DataTable({
+            lengthChange: false,
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = dataForTable;
+                    d.ProcedureName = SP_NAME;
+                    d.CaseId = $('#CaseId').val();
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'CourtLevelDisp', name: 'CourtLevelDisp', autoWidth: true },
+                { data: 'InvoiceNumber', name: 'InvoiceNumber', autoWidth: true },
+                { data: 'InvoiceDate', name: 'InvoiceDate', autoWidth: true },
+                { data: 'InvoiceStatusName', name: 'InvoiceStatusName', autoWidth: true },
+                { data: 'InvoiceAmount', name: 'InvoiceAmount', autoWidth: true }
+            ],
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                { 'orderable': false, 'targets': [-1] },
+                {
+                    targets: 2, render: function (data) {
+                        if (data) {
+                            return moment(data).format('DD/MM/YYYY');
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+                if (data.InvoiceStatus == "-1") {
+                    rowColor = "CaseInvoiceCancel";
+                }
+                else if (data.InvoiceStatus == "1") {
+                    rowColor = "CaseInvoiceUnPaid";
+                }
+                else if (data.InvoiceStatus == "2") {
+                    rowColor = "CaseInvoicePaid";
+                }
+
+                $(row).addClass(rowColor);
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+        console.log("Closure Invoice Table PartialView");
+        LoadInvoiceTable()
+    });
+</script>
+<div class="card card-primary">
+    <div class="card-header">
+        <div class="text-center">
+            <span class="h3">INVOICES</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div id="divInvoiceTable" class="col-sm-12">
+                <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>CASE LEVEL</th>
+                            <th>INVOICE NUMBER</th>
+                            <th>INVOICE DATE</th>
+                            <th>INVOICE STATUS</th>
+                            <th>INVOICE AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

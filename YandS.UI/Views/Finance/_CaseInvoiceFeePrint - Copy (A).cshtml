@@ -1,0 +1,41 @@
+﻿@model YandS.UI.Models.CaseInvoiceFee
+@{
+    YandS.UI.Models.RBACDbContext db = new YandS.UI.Models.RBACDbContext();
+    var FeeName = db.MasterSetup.Where(w => w.MstParentId == (int)YandS.UI.Models.MASTER_S.FeesType && w.Mst_Value == Model.FeeTypeId).FirstOrDefault().Mst_Desc;
+    var CaseLevelName = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.CaseLevel && m.Mst_Value == Model.CaseLevel).FirstOrDefault().Mst_Desc;
+    string FeeNameDetail = string.Empty;
+    if (Model.FeeTypeCascadeDetail != null)
+    {
+        FeeNameDetail = db.MasterSetup.Where(m => m.MstParentId == (int)YandS.UI.Models.MASTER_S.FeeTypeCascadeDetail && m.Mst_Value == Model.FeeTypeCascadeDetail).FirstOrDefault().Mst_Desc;
+
+    }
+    string DetailNumber = Model.FeeTypeDetail == "" ? "" : " - " + Model.FeeTypeDetail;
+
+    string FeesDescription;
+
+    if (string.IsNullOrEmpty(FeeNameDetail))
+    {
+        FeesDescription = string.Format("{0} - {1}{2}", CaseLevelName, FeeName, DetailNumber);
+
+    }
+    else
+    {
+        FeesDescription = string.Format("{0} - {1} - {2}{3}", CaseLevelName, FeeName, FeeNameDetail, DetailNumber);
+
+    }
+
+    var FeeAmount = Model.FeeAmount.ToString("0.000");
+
+}
+<tr style="mso-yfti-irow:9;height:.4in">
+    <td colspan="4" style="width:363.75pt;border:solid windowtext 1.0pt;border-top:none;mso-border-top-alt:solid windowtext .75pt;mso-border-alt:solid windowtext .75pt;mso-border-left-alt:solid windowtext .25pt;padding:0in 5.4pt 0in 5.4pt;height:.4in" width="485">
+        <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;text-align:center;line-height:normal">
+            <span style="font-size:12.0pt"><o:p>@FeesDescription</o:p></span>
+        </p>
+    </td>
+    <td style="width:102.75pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;mso-border-top-alt:solid windowtext .75pt;mso-border-left-alt:solid windowtext .75pt;mso-border-alt:solid windowtext .75pt;mso-border-right-alt:solid windowtext .25pt;padding:0in 5.4pt 0in 5.4pt;height:.4in" width="137">
+        <p align="center" class="MsoNormal" style="margin-bottom:0in;margin-bottom:.0001pt;text-align:center;line-height:normal">
+            <span style="font-size:12.0pt"><o:p>@FeeAmount OMR</o:p></span>
+        </p>
+    </td>
+</tr>

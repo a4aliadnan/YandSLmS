@@ -1,0 +1,41 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+
+        $('textarea').autoResize();
+    });
+</script>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+            @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+    </div>
+    <div class="col-sm-9">
+        <div class="form-group">
+            <label for="CourtMessage">COURT REQUEST طلبات المحكمة</label>
+            @Html.TextAreaFor(model => model.CourtMessage, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Court Request" })
+        </div>
+    </div>
+</div>
+@Html.Partial("_TBR_COURT_FOLLOW", Model)

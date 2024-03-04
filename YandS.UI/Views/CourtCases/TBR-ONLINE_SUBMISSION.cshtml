@@ -1,0 +1,248 @@
+﻿@model YandS.UI.Models.CaseRegistrationVM
+@Html.HiddenFor(model => model.PartialViewName)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+
+        $("#ActionDate").datepicker("setDate", new Date());
+
+        var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
+        if (AllowedUsers.indexOf($("#hidUserName").val()) == -1) {
+            $("#ActionDate").datepicker('remove');
+            $('#ActionDate').prop('readonly', true);
+        }
+
+        $('textarea').autoResize();
+
+        $("#DIV_RealEstateDetail").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#RealEstateYesNo').val() == "Y") {
+            $("#DIV_RealEstateDetail").removeClass("AppHidden");
+            $('textarea').autoResize();
+        }
+
+        $('#RealEstateYesNo').on("change", function () {
+            $("#DIV_RealEstateDetail").removeClass("AppHidden").addClass("AppHidden");
+
+            if ($('#RealEstateYesNo').val() == "Y") {
+                $("#DIV_RealEstateDetail").removeClass("AppHidden");
+                $('textarea').autoResize();
+            }
+        });
+    });
+</script>
+@if (int.Parse(Model.ActionLevel) == 1)
+{
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label>GOVERNORATE المحافظة</label>
+                @Html.DropDownList("GovernorateId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label>PRIMARY COURT</label>
+                @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ElectronicNo)
+                @Html.EditorFor(model => model.ElectronicNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationDate)
+                @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AgainstCode)
+                @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.OmaniExp)
+                @Html.DropDownList("OmaniExp", null, htmlAttributes: new { @class = "form-control select2bs4", @tabindex = "5" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CourtReg_ClaimAmount)
+                @Html.EditorFor(model => model.CourtReg_ClaimAmount, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DepartmentType)
+                @Html.DropDownList("DepartmentType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RealEstateYesNo)
+                @Html.DropDownList("RealEstateYesNo", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="DIV_RealEstateDetail" class="col-sm-12">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RealEstateDetail)
+                @Html.TextAreaFor(model => model.RealEstateDetail, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Real Estate Detail" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="ClaimSummary">PRIMARY CLAIM SUMMARY طلباتنا في الإبتدائي</label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Claim Summary" })
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("_TBR_COURT_FOLLOW", Model)
+}
+else if (int.Parse(Model.ActionLevel) == 2)
+{
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationDate)
+                @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label>COURT</label>
+                @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ElectronicNo)
+                @Html.EditorFor(model => model.ElectronicNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="ClaimSummary">APPEAL CLAIM SUMMARY طلباتنا في الإستئناف </label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Claim Summary" })
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_TBR_COURT_FOLLOW", Model)
+}
+else if (int.Parse(Model.ActionLevel) == 3)
+{
+    @Html.HiddenFor(model => model.CourtLocationid, new { @Value = "1" })
+    @Html.HiddenFor(model => model.AgainstCode)
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegistrationDate)
+                @Html.EditorFor(model => model.RegistrationDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ElectronicNo)
+                @Html.EditorFor(model => model.ElectronicNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        @if (int.Parse(Model.AgainstCode) == 3)
+        {
+            <div class="col">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StopEnfRequest)
+                    @Html.DropDownList("StopEnfRequest", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="ClaimSummary">SUP. CLAIM SUMMARY طلباتنا في الطعن  </label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Claim Summary" })
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_TBR_COURT_FOLLOW", Model)
+}
+else
+{
+    @Html.HiddenFor(model => model.RegistrationDate)
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label for="ActionDate">ACTION DATE تاريخ بدء الحالة</label>
+                @Html.EditorFor(model => model.ActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label>COURT</label>
+                @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ElectronicNo)
+                @Html.EditorFor(model => model.ElectronicNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="ClaimSummary">ENFC. CLAIM SUMMARY طلباتنا في منازعة التنفيذ</label>
+                @Html.TextAreaFor(model => model.ClaimSummary, 1, 200, new { @class = "form-control", @dir = "auto", @placeholder = "Please Enter Claim Summary" })
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_TBR_COURT_FOLLOW", Model)
+}

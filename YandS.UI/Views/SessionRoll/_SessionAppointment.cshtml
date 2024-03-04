@@ -1,0 +1,244 @@
+﻿<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        if (typeof table != 'undefined')
+            table.destroy();
+        /*
+        table = $('#HtmlTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ordering": true,
+            "pageLength": 99999,
+            "lengthMenu": [[5, 10, 25, 50, 100, 99999], [5, 10, 25, 50, 100, 'ALL']],
+            "ajax": {
+                "url": GetIndexDataURL,
+                "type": "POST",
+                "datatype": "json",
+                data: function (d) {
+                    d.DataTableName = "SUPREME";
+                    d.LocationId = $('#txtUserRole').val() == "VoucherApproval" ? $('input[name="rdoLocation"]:checked').val() : $('#txtLocationId').val();
+                }
+            },
+            "columns": [
+                { data: 'ToBeRegisterDays', name: 'ToBeRegisterDays', autoWidth: false },
+                { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: false },
+                { data: 'ClientName', name: 'ClientName', autoWidth: false },
+                { data: 'DefClientName', name: 'DefClientName', autoWidth: false },
+                { data: 'CourtRefNo', name: 'CourtRefNo', autoWidth: false },
+                { data: 'ClientFileNo', name: 'ClientFileNo', autoWidth: false },
+                { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: false },
+                { data: 'CurrentHearingDate', name: 'CurrentHearingDate', autoWidth: false },
+                { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if (data.CaseStatus == "2") {
+                                if ($("#txtUserRole").val() == "AllowCloseCase") {
+                                    return '<a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE OPEN"><strong>FILE OPEN</strong></a>';
+                                }
+                                else {
+                                    return null;
+                                }
+                            }
+                            else {
+                                if (data.CaseStatus == "1" && data.CaseLevelCode == "7") {
+                                    if ($("#txtUserRole").val() == "AllowCloseCase") {
+                                        return '<a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE OPEN"><strong>FILE OPEN</strong></a>';
+                                    }
+                                    else {
+                                        return null;
+                                    }
+                                }
+                                else
+                                    return '<a class="btn btn-info btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=3" id="' + row.CaseId + '" data-original-title="Supreme Court Management"><i class="fas fa-pencil-alt"></i></a>';
+                                    //return '<a style="color: black !important;" class="btn btn-sm btnLink" title="Modify and Add Case Details" id="E_' + row.CaseId + '" href="javascript:void(0)"><i class="fas fa-edit"></i></a> <a style="background-color: #b8d8a0 !important;color: black !important;" class="btn btn-sm" title="BEFORE COURT INFORMATION" href="/CourtCases/BeforeCourt?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" ><strong>B</strong></a> <a style="background-color: #ffff8b !important;color: black !important;" class="btn btn-sm" title="Primary Court Management" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&Courtid=1"><strong>P</strong></a> <a style="background-color:#f4b183 !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=2" id="' + row.CaseId + '" data-original-title="Apeal Court Management"><strong>A</strong></a> <a style="background-color: #cc99ff !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageCourtDetail?CaseId=' + row.CaseId + '&amp;Courtid=3" id="' + row.CaseId + '" data-original-title="Supreme Court Management"><strong>S</strong></a> <a style="background-color: #69d8ff !important;color: black !important;" class="btn btn-sm btnLink" title="" id="M_' + row.CaseId + '" href="javascript:void(0)" data-original-title="Enforcement Management"><strong>E</strong></a>'; // <a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a>
+                            }
+                            //style="background-color: #8064A2 !important;"btn-secondary
+                            // <a style="background-color: #f2f2f2 !important; color: black !important;" class="btn btn-sm" title="TO BE REGISTER" href="/CourtCases/TobeReg?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" ><strong>T</strong></a>   <a style="background-color: #fff2cc !important;color: black !important;" class="btn btn-sm" title="" href="/CourtCases/ManageEnforcementDetail?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="SESSION ROLE"><strong>R</strong></a>
+                        }
+                        return data;
+                    },
+                    className: "project-actions text-right"
+                }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': "_all" },
+                { "className": "dt-center", "targets": "_all" },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 2
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap'>" + data + "</div>";
+                    },
+                    targets: 3
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 4
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: 5
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        //console.log(data.replace(/\W+/g, " "));
+                        if (data) {
+                            if (data.length > 40)
+                                return "<div class='text-wrap'>" + data.replace(/\W+/g, " ") + "</div>";
+                            else
+                                return "<div class='text-wrap'>" + data + "</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 6
+                },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: 7
+                },
+                {
+                    targets: 8, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                var rowColor = "";
+
+                if (data.ToBeRegisterDays > 90)
+                    rowColor = "tblFirstCondition";
+                else if (data.ToBeRegisterDays <= 90 && data.ToBeRegisterDays > 50)
+                    rowColor = "tblSecondCondition";
+                else if (data.ToBeRegisterDays <= 50 && data.ToBeRegisterDays > 30)
+                    rowColor = "tblThirdCondition";
+
+                $(row).addClass(rowColor);
+            },
+            "drawCallback": function (settings) {
+                //alert('DataTables has redrawn the table');
+                if (SmartFilter) {
+                    SmartFilter = false;
+                    $("#ModificationContainer").empty();
+                }
+            },
+            initComplete: function () {
+                console.log("DataTable Initiated !!");
+
+                var info = table.page.info();
+
+                var MCTRecords = table.ajax.json().MuscatTotal;
+                var SLLRecords = table.ajax.json().SalalahTotal;
+                var recordsTotal = table.ajax.json().recordsTotal;
+
+
+
+                console.log("MUSCAT TOTAL " + MCTRecords);
+                console.log("SALALAH TOTAL " + SLLRecords);
+                //$('#TTL').text(recordsTotal);
+
+                if ($("#txtUserRole").val() == "VoucherApproval") {
+                    $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                    $('#SLLTTL').text("SALALAH : " + SLLRecords);
+                    $('#TTL').text(recordsTotal);
+                }
+                //else {
+                //    if ($('#txtLocationId').val() == "M")
+                //        $('#MCTTTL').text("MUSCAT : " + MCTRecords);
+                //    else
+                //        $('#MCTTTL').text("SALALAH : " + SLLRecords);
+                //}
+
+
+                $(".dataTables_filter input")
+                    .unbind() // Unbind previous default bindings
+                    .bind("keyup", function (e) { // Bind our desired behavior
+                        //console.log(e.keyCode);
+                        // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                        if (e.keyCode == 13) {
+                            // Call the API search function
+                            SmartFilter = true;
+                            table.search(this.value).draw();
+                        }
+                        // Ensure we clear the search if they backspace far enough
+                        if (this.value == "") {
+                            SmartFilter = true;
+                            table.search("").draw();
+                        }
+                        return;
+                    });
+            }
+        });
+
+        $('.table tbody').on('click', '.btnLink', function () {
+            var _Mode = this.id.split('_')[0];
+            var _id = parseInt(this.id.split('_')[1]);
+
+            var data = table.row($(this).parents('tr')).data();
+
+            processbtnLinkClick(_Mode, data);
+            return false;
+        });
+        */
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SupremeActive">
+    <div class="col-sm-2 text-left text-white"><h3><span id="MCTTTL"></span></h3></div>
+    <div class="col-sm-8 text-center"><h3>APPOINTMENT المواعيد</h3></div>
+    <div class="col-sm-2 text-right text-white"><h3><span id="SLLTTL"></span></h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SupremeActive">
+    <div class="col-sm-12 text-center"><h3><span id="TTL"></span></h3></div>
+</div>
+<div class="row">
+    <div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+
+        <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:35px !important;" class="all VMiddle text-center">FILE<br />NO.</th>
+                    <th style="width:130px !important;" class="VMiddle text-center">CLIENT NAME</th>
+                    <th style="width:130px !important;" class="VMiddle text-center">DEF / SUB</th>
+                    <th style="width:35px !important;" class="VMiddle text-center">DATE</th>
+                    <th style="width:35px !important;" class="VMiddle text-center">TIME</th>
+                    <th style="width:35px !important;" class="VMiddle text-center">MODE</th>
+                    <th style="width:65px !important;" class="VMiddle text-center">ADMIN</th>
+                    <th style="width:65px !important;" class="VMiddle text-center">LOCATION</th>
+                    <th style="width:65px !important;" class="VMiddle text-center">WITH</th>
+                    <th style="width:130px !important;" class="VMiddle text-center">REASON</th>
+                    <th class="VMiddle text-center">NOTES</th>
+                    <th style="width:15px !important;" class="all"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

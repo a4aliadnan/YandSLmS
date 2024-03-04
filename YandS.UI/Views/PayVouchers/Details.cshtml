@@ -1,0 +1,138 @@
+﻿@model YandS.UI.Models.PayVoucher
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>PayVoucher</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Created.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Modified.Firstname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Modified.Firstname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Voucher_Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Voucher_Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Payment_Type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Payment_Type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Debit_Account)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Debit_Account)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Payment_Head)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Payment_Head)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Credit_Account)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Credit_Account)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Remarks)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Remarks)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Payment_Mode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Payment_Mode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Cheque_Number)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Cheque_Number)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Received_on)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Received_on)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedOn)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Voucher_No }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,187 @@
+﻿@model IEnumerable<YandS.UI.Models.CourtCases>
+@{
+    ViewBag.Title = "Y & S Associates - Create Invoice List";
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>FINANCE MANAGEMENT</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">FINANCE</li>
+                        <li class="breadcrumb-item active"><a href="#">FINANCE MANAGEMENT</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card card-primary card-outline">
+            @*<div class="card-header">
+                <h3 class="card-title">Case List to Create Invoice</h3>
+            </div>*@
+            <div class="card-body">
+                <table id="IndexTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+
+                            <th class="all">@Html.DisplayNameFor(model => model.OfficeFileNo)</th>
+                            <th>@Html.DisplayNameFor(model => model.ClientCode)</th>
+                            <th>DEFENDANT/PLAINTIFF NAME</th>
+                            <th>@Html.DisplayNameFor(model => model.AgainstCode)</th>
+                            <th>@Html.DisplayNameFor(model => model.ReceptionDate)</th>
+                            <th>@Html.DisplayNameFor(model => model.CaseTypeCode)</th>
+                            <th>CURRENT LEVEL</th>
+                            <th>@Html.DisplayNameFor(model => model.ClientFileNo)</th>
+                            <th>@Html.DisplayNameFor(model => model.AccountContractNo)</th>
+
+                            <th class="all"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+
+@section pagespecific {
+    <script type="text/javascript">
+        var GetIndexDataURL = '@Url.Action("AjaxIndexData", "Finance", new { area = string.Empty })';
+
+        $(document).ready(function () {
+            console.log("Index Finance Create Invoice Page");
+            var table = $('#IndexTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "orderMulti": false,
+                "destroy": true,
+                "ordering": true,
+                "ajax": {
+                    "url": GetIndexDataURL,
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { data: 'OfficeFileNo', name: 'OfficeFileNo', autoWidth: true },
+                    { data: 'ClientName', name: 'ClientName', autoWidth: true },
+                    { data: 'DefClientName', name: 'DefClientName', autoWidth: true },
+                    { data: 'AgainstName', name: 'AgainstName', autoWidth: true },
+                    {
+                        data: 'ReceptionDate', name: 'ReceptionDate', autoWidth: true,
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+
+                            return dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                        }
+                    },
+                    { data: 'CaseTypeName', name: 'CaseTypeName', autoWidth: true },
+                    {
+                        /*data: 'CaseLevelName', name: 'CaseLevelName', autoWidth: true*/
+                        data: null,
+                        render: function (data, type, row) {
+                            if (data.CaseStatus == "2")
+                                return 'CLOSE';
+                            else
+                                return data.CaseLevelName;
+                        }
+                    },
+                    { data: 'ClientFileNo', name: 'ClientFileNo', autoWidth: true },
+                    { data: 'AccountContractNo', name: 'AccountContractNo', autoWidth: true },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                if (data.CaseStatus == "-1")
+                                    return null;
+                                else 
+                                    return '<a class="btn btn-success btn-sm" title="CREATE INVOICE" href="/Finance/InvoiceCreate/' + row.CaseId + '"><i class="fas fa-file-invoice-dollar"></i></a> <a style="background-color: #FF0000 !important;color: white !important;" class="btn btn-sm" title="FINANCE SCREEN" href="/CourtCases/Finance?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FNANCE"><strong>F</strong></a> <a style="background-color: #686868 !important;color: white !important;" class="btn btn-sm" title="" href="/CourtCases/FileClosure?CaseId=' + row.CaseId + '" id="' + row.CaseId + '" data-original-title="FILE CLOSURE"><strong>C</strong></a> <a class="btn btn-danger btn-sm" title="CANCEL CASE" href="/CourtCases/Delete/' + row.CaseId + '"><i class="fas fa-trash"></i></a>'; //<a class="btn btn-warning btn-sm" title="Create Refundable PV" href="/Finance/PayVoucherCreateRefunable/' + row.CaseId + '"><i class="fas fa-file-invoice-dollar"></i></a>
+                            }
+                            return data;
+                        },
+                        className: "project-actions text-right"
+                    }],
+                "order": [[0, "desc"]],
+                'aoColumnDefs': [
+                    { 'bSortable': false, 'aTargets': [-1] },
+                    { "visible": false, "targets": [4] },
+                    { type: 'natural', targets: 0 }
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    var rowColor = "";
+                    if (data.CaseStatus == "-1") {
+                        rowColor = "CaseCancel";
+                    }
+                    else if (data.CaseStatus == "2") {
+                        rowColor = "CaseClose";
+                    }
+                    else  {
+                        if (data.CaseLevelCode == "1" || data.CaseLevelCode == "2") {
+                            rowColor = "CaseToBeRegBeforeCourt";
+
+                        }
+                        else if (data.CaseLevelCode == "3") {
+                            rowColor = "CaseInPrimaryCourt";
+
+                        }
+                        else if (data.CaseLevelCode == "4") {
+                            rowColor = "CaseInApealCourt";
+
+                        }
+                        else if (data.CaseLevelCode == "5") {
+                            rowColor = "CaseInSupremeCourt";
+
+                        }
+                        else if (data.CaseLevelCode == "6") {
+                            rowColor = "CaseInEnforcementCourt";
+
+                        }
+                        else if (data.CaseLevelCode == "7") {
+                            rowColor = "CaseClose";
+                        }
+                    }
+
+                   
+                    $(row).addClass(rowColor);
+                },
+                initComplete: function () {
+                    console.log("DataTable Initiated !!");
+                    var bootstrapTooltip = $.fn.tooltip.noConflict();
+                    $.fn.bstooltip = bootstrapTooltip;
+                    $('.btn').bstooltip();
+
+                    $(".dataTables_filter input")
+                        .unbind() // Unbind previous default bindings
+                        .bind("keyup", function (e) { // Bind our desired behavior
+                            //console.log(e.keyCode);
+                            // this.value.length >= 3 || If the length is 3 or more characters, or the user pressed ENTER, search
+                            if (e.keyCode == 13) {
+                                // Call the API search function
+                                table.search(this.value).draw();
+                            }
+                            // Ensure we clear the search if they backspace far enough
+                            if (this.value == "") {
+                                table.search("").draw();
+                            }
+                            return;
+                        });
+                }
+            });
+
+            
+        });
+    </script>
+}

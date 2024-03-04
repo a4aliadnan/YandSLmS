@@ -1,0 +1,74 @@
+﻿<style>
+    .text-wrap {
+        white-space: normal;
+    }
+
+    .width-800 {
+        width: 940px;
+    }
+</style>
+<script type="text/javascript">
+    var DataTable;
+    $(document).ready(function () {
+        if (typeof DataTable != 'undefined')
+            DataTable.destroy();
+        
+        DataTable = $('#HtmlTable').DataTable({
+            lengthChange: false,
+            scrollY: 500,
+            scrollCollapse: true,
+            "dom": 't',
+            ajax: {
+                url: GetDetailTableURL,
+                "dataSrc": "",
+                type: 'POST',
+                data: function (d) {
+                    d.DataFor = "CASEHIST";
+                    d.SessionRollId = $("#SessionRollId").val();
+                }
+            },
+            "columns": [
+                { data: 'CurrentHearingDate'},
+                { data: 'CourtDecision' }
+            ],
+            "order": [],
+            "columnDefs": [
+                { "targets": [0, 1], "orderable": false },
+                {
+                    targets: 0, render: function (data) { return moment(data).format('DD/MM/YYYY'); }
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return "<div class='text-right text-wrap width-800'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    },
+                    targets: 1
+                },
+            ],
+            initComplete: function () {
+                console.log("DataTable  Initiated !!");
+            }
+        });
+
+        setTimeout(function () {
+            $($.fn.dataTable.tables(true)).DataTable().columns.adjust().draw();
+        }, 200);
+    });
+</script>
+<div style="padding-bottom:0px;padding-top:10px;" class="row SessionRefund34Active">
+    <div class="col-sm-12 text-center"><h3>SESSIONS REPORTS  تقارير الجلسات </h3></div>
+</div>
+<div style="padding-bottom:0px;padding-top:10px;" class="col-sm-12">
+    <table id="HtmlTable" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th class="all VMiddle text-center">UPDATE DATE<br />تاريخ التحديث</th>
+                <th class=" VMiddle text-center">COURT DECISION<br />قرار المحكمة</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
