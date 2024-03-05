@@ -32,12 +32,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Resources\DocumentFormat.OpenXml.dll</HintPath>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\..\lib\YandS.DAL\bin\Debug\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus">
-      <HintPath>..\..\..\Resources\EPPlus.dll</HintPath>
+      <HintPath>..\..\lib\YandS.DAL\bin\Debug\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -52,7 +51,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TemplateEngine.Docx">
-      <HintPath>..\YandS.UI\lib\TemplateEngine.Docx.dll</HintPath>
+      <HintPath>..\..\lib\YandS.DAL\bin\Debug\TemplateEngine.Docx.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
