@@ -476,32 +476,35 @@
                 return false;
             }
             else if ($("#VoucherType").val() == "1") {
-                if ($("#CourtType").val() == "" || $("#CourtType").val() == "0") {
-                    Swal.fire({
-                        type: "error",
-                        title: 'ERROR...',
-                        html: 'PLEASE SELECT CASE LEVEL'
-                    });
-                    return false;
-                }
+                if ($("#Payment_Head").val() == "10007") {
+                    if ($("#CourtType").val() == "" || $("#CourtType").val() == "0") {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: 'PLEASE SELECT CASE LEVEL'
+                        });
+                        return false;
+                    }
 
-                if ($("#OfficeFileNo").val() == "") {
-                    Swal.fire({
-                        type: "error",
-                        title: 'ERROR...',
-                        html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
-                    });
-                    return false;
-                }
+                    if ($("#OfficeFileNo").val() == "") {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: 'PLEASE ENTER VALID OFFICE FILE NUMBER'
+                        });
+                        return false;
+                    }
 
-                if ($("#div-CaseDetail").hasClass("AppHidden")) {
-                    Swal.fire({
-                        type: "error",
-                        title: 'ERROR...',
-                        html: 'PLEASE CLICK ON SEARCH BUTTON TO VALIDATE OFFICE FILE NUMBER'
-                    });
-                    return false;
+                    if ($("#div-CaseDetail").hasClass("AppHidden")) {
+                        Swal.fire({
+                            type: "error",
+                            title: 'ERROR...',
+                            html: 'PLEASE CLICK ON SEARCH BUTTON TO VALIDATE OFFICE FILE NUMBER'
+                        });
+                        return false;
+                    }
                 }
+                
             }
             else if ($("#VoucherType").val() == "2") {
                 $("#CourtType").val("0");
