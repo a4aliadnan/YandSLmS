@@ -75,7 +75,11 @@
             initComplete: function () {
                 console.log("DataTable Initiated !!");
                 var info = table.page.info();
+                var TOTAL_LAWYER_FEE = table.ajax.json().TOTAL_LAWYER_FEE;
+                var TOTAL_LF_VAT = table.ajax.json().TOTAL_LF_VAT;
                 var TOTAL_VAT = table.ajax.json().TOTAL_VAT;
+                $('#TOTAL_LAWYER_FEE').text(TOTAL_LAWYER_FEE);
+                $('#TOTAL_LF_VAT').text(TOTAL_LF_VAT);
                 $('#TOTAL_VAT').text(TOTAL_VAT);
 
                 $(".dataTables_filter input")
@@ -170,9 +174,21 @@
             <button id="btnPrintResult" type="button" class="btn btn-success"><i class="fas fa-file"></i> SHOW</button>
         </div>
         <div class="col-sm-2">
-            <div class="form-group" style="padding-top:10px;">
-                <label for="Amount"></label>
+            <div class="form-group">
+                <label for="TOTAL_LAWYER_FEE">LAWYER FEES</label>
+                <h3><span class="form-control" id="TOTAL_LAWYER_FEE"></span></h3>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="TOTAL_VAT">VAT</label>
                 <h3><span class="form-control" id="TOTAL_VAT"></span></h3>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="TOTAL_LF_VAT">TOTAL</label>
+                <h3><span class="form-control" id="TOTAL_LF_VAT"></span></h3>
             </div>
         </div>
     </div>
