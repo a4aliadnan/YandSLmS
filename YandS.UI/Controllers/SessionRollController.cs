@@ -3894,7 +3894,15 @@ namespace YandS.UI.Controllers
 
                 payVoucher.Voucher_Date = DateTime.UtcNow.AddHours(4);
                 string UserLocation = Helper.GetEmployeeLocation(User.Identity.Name);
-                payVoucher.PVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                string strPVLocation = string.Empty;
+
+                if (payVoucher.CaseId > 0)
+                    strPVLocation = Helper.getPVLocation(payVoucher.CaseId ?? 0);
+                else
+                    strPVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                payVoucher.PVLocation = strPVLocation;
 
                 db.PayVouchers.Add(payVoucher);
                 db.SaveChanges();

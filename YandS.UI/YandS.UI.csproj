@@ -1225,6 +1225,7 @@
     <Content Include="Content\Images\key.png" />
     <Content Include="Content\Images\login.png" />
     <Content Include="Content\Images\LogoS-removebg.png" />
+    <Content Include="Content\Images\LogoS-removebg3.png" />
     <Content Include="Content\Images\noentry.jpg" />
     <Content Include="Content\Images\pen.png" />
     <Content Include="Content\Images\phone.png" />

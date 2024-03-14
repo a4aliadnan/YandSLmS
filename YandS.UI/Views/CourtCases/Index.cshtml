@@ -1644,7 +1644,7 @@
             <div class="card-body">
                 <div id="div_courtCasesMailButton" style="padding-bottom:10px;" class="col-sm-12">
                     <div class="row">
-                        <div class="col">
+                        <div id="DIVCreateCase" class="col">
                             <button type="button" id="btn_CreateCase" style="font-size: 1.2rem !important;" class="btn btn-block CreateCase @ViewBag.CreateCaseActive btn-lg navButton"><span id="spanCreateBtnText">@ViewBag.CreateBtnText</span></button>
                         </div>
                         <div class="col">
@@ -1936,6 +1936,7 @@
             GetTab(PartialContainer, GetClientClassificationURL, _parameters);
 
             $('.navButton').click(function () {
+
                 if ($(this).attr("id") == "btn_Closing") {
                     if ($("#hid_OFB_OfficeFileNo").val() == "") {
 
@@ -2098,6 +2099,15 @@
                     $('#modal-preSubmit').modal('hide');
                 }
             });
+
+            console.log($("#hidUserName").val());
+            var AllowedUsers = ["1", "5", "6"];
+            $("#DIVCreateCase").removeClass("disableDIV").addClass("disableDIV");
+            if (AllowedUsers.indexOf($("#hidUserName").val()) >= 0) {
+                $("#DIVCreateCase").removeClass("disableDIV");
+            }
+
+
         });
     </script>
 }
