@@ -1740,6 +1740,16 @@ namespace YandS.UI.Controllers
                         break;
                     #endregion
 
+                    #region "FOR = ENF-DEFTRANS2"
+                    case "ENF-DEFTRANS2":
+                        ClientCode = request.Params["ClientCode"].ToString();
+                        AgainstCode = request.Params["AgainstCode"].ToString();
+                        DateFrom = request.Params["DateFrom"].ToString() == "" ? DateTime.Now.AddYears(-100) : DateTime.ParseExact(request.Params["DateFrom"].ToString(), "dd/MM/yyyy", null);
+                        DateTo = request.Params["DateTo"].ToString() == "" ? DateTime.Now.AddYears(100) : DateTime.ParseExact(request.Params["DateTo"].ToString(), "dd/MM/yyyy", null);
+
+                        break;
+                    #endregion
+
                 }
 
                 //if (DataFor.In("ENF-CONTRESULT", "ENF-RECFRCOURT", "ENF-SUSPEND"))
@@ -3256,6 +3266,13 @@ namespace YandS.UI.Controllers
                         ViewBag.ENF_SEARCH_GovernorateId = new SelectList(Helper.GetGovernorate(true), "Mst_Value", "Mst_Desc", GovDDLSelectedValue);
                         ViewBag.ENF_SEARCH_ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
                         ViewBag.ENF_SEARCH_EnforcementlevelId = new SelectList(Helper.GetAnnouncementDDLFileStatus(), "Mst_Value", "Mst_Desc", "0");
+                    }
+
+                    if (PartialViewName == "DefendantTransfer")
+                    {
+
+                        ViewBag.ENF_SEARCH_ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
+                        ViewBag.ENF_SEARCH_AgainstCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.CaseAgainst), "Mst_Value", "Mst_Desc");
                     }
                         
 
