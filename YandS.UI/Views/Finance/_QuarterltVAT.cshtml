@@ -61,11 +61,11 @@
                 $('#LAW_VAT_10_TO_12').text(d.LAW_VAT_10_TO_12);
                 $('#LAW_VAT_1_TO_12').text(d.LAW_VAT_1_TO_12);
 
-                $('#LAW_VAT_TTL_1_TO_3').text(d.LAW_VAT_TTL_1_TO_3);
-                $('#LAW_VAT_TTL_4_TO_6').text(d.LAW_VAT_TTL_4_TO_6);
-                $('#LAW_VAT_TTL_7_TO_9').text(d.LAW_VAT_TTL_7_TO_9);
-                $('#LAW_VAT_TTL_10_TO_12').text(d.LAW_VAT_TTL_10_TO_12);
-                $('#LAW_VAT_TTL_1_TO_12').text(d.LAW_VAT_TTL_1_TO_12);
+                $('#LAW_VAT_TTL_1_TO_3').text(parseFloat(d.LAW_VAT_TTL_1_TO_3) > 0 ? d.LAW_VAT_TTL_1_TO_3 : "");
+                $('#LAW_VAT_TTL_4_TO_6').text(parseFloat(d.LAW_VAT_TTL_4_TO_6) > 0 ? d.LAW_VAT_TTL_4_TO_6 : "");
+                $('#LAW_VAT_TTL_7_TO_9').text(parseFloat(d.LAW_VAT_TTL_7_TO_9) > 0 ? d.LAW_VAT_TTL_7_TO_9 : "");
+                $('#LAW_VAT_TTL_10_TO_12').text(parseFloat(d.LAW_VAT_TTL_10_TO_12) > 0 ? d.LAW_VAT_TTL_10_TO_12 : "");
+                $('#LAW_VAT_TTL_1_TO_12').text(parseFloat(d.LAW_VAT_TTL_1_TO_12) > 0 ? d.LAW_VAT_TTL_1_TO_12 : "");
 
                 $('#EXP_VAT_1_TO_3').text(d.EXP_VAT_1_TO_3);
                 $('#EXP_VAT_4_TO_6').text(d.EXP_VAT_4_TO_6);
@@ -73,11 +73,11 @@
                 $('#EXP_VAT_10_TO_12').text(d.EXP_VAT_10_TO_12);
                 $('#EXP_VAT_1_TO_12').text(d.EXP_VAT_1_TO_12);
 
-                $('#REM_VAT_1_TO_3').text(d.REM_VAT_1_TO_3);
-                $('#REM_VAT_4_TO_6').text(d.REM_VAT_4_TO_6);
-                $('#REM_VAT_7_TO_9').text(d.REM_VAT_7_TO_9);
-                $('#REM_VAT_10_TO_12').text(d.REM_VAT_10_TO_12);
-                $('#REM_VAT_1_TO_12').text(d.REM_VAT_1_TO_12);
+                $('#REM_VAT_1_TO_3').text(parseFloat(d.REM_VAT_1_TO_3) > 0 ? d.REM_VAT_1_TO_3 : "");
+                $('#REM_VAT_4_TO_6').text(parseFloat(d.REM_VAT_4_TO_6) > 0 ? d.REM_VAT_4_TO_6 : "");
+                $('#REM_VAT_7_TO_9').text(parseFloat(d.REM_VAT_7_TO_9) > 0 ? d.REM_VAT_7_TO_9 : "");
+                $('#REM_VAT_10_TO_12').text(parseFloat(d.REM_VAT_10_TO_12) > 0 ? d.REM_VAT_10_TO_12 : "");
+                $('#REM_VAT_1_TO_12').text(parseFloat(d.REM_VAT_1_TO_12) > 0 ? d.REM_VAT_1_TO_12 : "");
 
 
                 $("#dtTableRow").removeClass("AppHidden").addClass("AppHidden");
