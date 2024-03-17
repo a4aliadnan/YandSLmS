@@ -49,16 +49,30 @@
 
                 var d = table.row(0).data();
                 console.log(d);
+                $('#LAW_FEE_1_TO_3').text(d.LAW_FEE_1_TO_3);
+                $('#LAW_FEE_4_TO_6').text(d.LAW_FEE_4_TO_6);
+                $('#LAW_FEE_7_TO_9').text(d.LAW_FEE_7_TO_9);
+                $('#LAW_FEE_10_TO_12').text(d.LAW_FEE_10_TO_12);
+                $('#LAW_FEE_1_TO_12').text(d.LAW_FEE_1_TO_12);
+
                 $('#LAW_VAT_1_TO_3').text(d.LAW_VAT_1_TO_3);
                 $('#LAW_VAT_4_TO_6').text(d.LAW_VAT_4_TO_6);
                 $('#LAW_VAT_7_TO_9').text(d.LAW_VAT_7_TO_9);
                 $('#LAW_VAT_10_TO_12').text(d.LAW_VAT_10_TO_12);
                 $('#LAW_VAT_1_TO_12').text(d.LAW_VAT_1_TO_12);
+
+                $('#LAW_VAT_TTL_1_TO_3').text(d.LAW_VAT_TTL_1_TO_3);
+                $('#LAW_VAT_TTL_4_TO_6').text(d.LAW_VAT_TTL_4_TO_6);
+                $('#LAW_VAT_TTL_7_TO_9').text(d.LAW_VAT_TTL_7_TO_9);
+                $('#LAW_VAT_TTL_10_TO_12').text(d.LAW_VAT_TTL_10_TO_12);
+                $('#LAW_VAT_TTL_1_TO_12').text(d.LAW_VAT_TTL_1_TO_12);
+
                 $('#EXP_VAT_1_TO_3').text(d.EXP_VAT_1_TO_3);
                 $('#EXP_VAT_4_TO_6').text(d.EXP_VAT_4_TO_6);
                 $('#EXP_VAT_7_TO_9').text(d.EXP_VAT_7_TO_9);
                 $('#EXP_VAT_10_TO_12').text(d.EXP_VAT_10_TO_12);
                 $('#EXP_VAT_1_TO_12').text(d.EXP_VAT_1_TO_12);
+
                 $('#REM_VAT_1_TO_3').text(d.REM_VAT_1_TO_3);
                 $('#REM_VAT_4_TO_6').text(d.REM_VAT_4_TO_6);
                 $('#REM_VAT_7_TO_9').text(d.REM_VAT_7_TO_9);
@@ -196,21 +210,44 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <h3><span class="form-control" id="LAW_VAT_1_TO_3"disabled></span></h3>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="form-group">
-                                        <h3><span class="form-control" id="EXP_VAT_1_TO_3"disabled></span></h3>
+                                        <label for="LAW_FEE_1_TO_3">LAWYER FEES</label>
+                                        <h3><span class="form-control" id="LAW_FEE_1_TO_3" disabled></span></h3>
                                     </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_1_TO_3">LAWYER FEES VAT</label>
+                                        <h3><span class="form-control" id="LAW_VAT_1_TO_3" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_TTL_1_TO_3">TOTAL</label>
+                                        <h3><span class="form-control" id="LAW_VAT_TTL_1_TO_3" disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="EXP_VAT_1_TO_3">EXPENSE VAT</label>
+                                        <h3><span class="form-control" id="EXP_VAT_1_TO_3" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="col-sm-12">
-                        <h3><span class="form-control" id="REM_VAT_1_TO_3"disabled></span></h3>
+                        <div class="form-group">
+                            <label for="REM_VAT_1_TO_3" style="color:maroon">VAT TO BE PAID</label>
+                            <h3><span class="form-control" id="REM_VAT_1_TO_3" disabled></span></h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -227,21 +264,44 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <h3><span class="form-control" id="LAW_VAT_4_TO_6"disabled></span></h3>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="form-group">
-                                        <h3><span class="form-control" id="EXP_VAT_4_TO_6"disabled></span></h3>
+                                        <label for="LAW_FEE_4_TO_6">LAWYER FEES</label>
+                                        <h3><span class="form-control" id="LAW_FEE_4_TO_6" disabled></span></h3>
                                     </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_4_TO_6">LAWYER FEES VAT</label>
+                                        <h3><span class="form-control" id="LAW_VAT_4_TO_6" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_TTL_4_TO_6">TOTAL</label>
+                                        <h3><span class="form-control" id="LAW_VAT_TTL_4_TO_6" disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="EXP_VAT_4_TO_6">EXPENSE VAT</label>
+                                        <h3><span class="form-control" id="EXP_VAT_4_TO_6" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="col-sm-12">
-                        <h3><span class="form-control" id="REM_VAT_4_TO_6"disabled></span></h3>
+                        <div class="form-group">
+                            <label for="REM_VAT_4_TO_6" style="color:maroon">VAT TO BE PAID</label>
+                            <h3><span class="form-control" id="REM_VAT_4_TO_6" disabled></span></h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,21 +318,44 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <h3><span class="form-control" id="LAW_VAT_7_TO_9"disabled></span></h3>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="form-group">
-                                        <h3><span class="form-control" id="EXP_VAT_7_TO_9"disabled></span></h3>
+                                        <label for="LAW_FEE_7_TO_9">LAWYER FEES</label>
+                                        <h3><span class="form-control" id="LAW_FEE_7_TO_9" disabled></span></h3>
                                     </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_7_TO_9">LAWYER FEES VAT</label>
+                                        <h3><span class="form-control" id="LAW_VAT_7_TO_9" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_TTL_7_TO_9">TOTAL</label>
+                                        <h3><span class="form-control" id="LAW_VAT_TTL_7_TO_9" disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="EXP_VAT_7_TO_9">EXPENSE VAT</label>
+                                        <h3><span class="form-control" id="EXP_VAT_7_TO_9" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="col-sm-12">
-                        <h3><span class="form-control" id="REM_VAT_7_TO_9"disabled></span></h3>
+                        <div class="form-group">
+                            <label for="REM_VAT_7_TO_9" style="color:maroon">VAT TO BE PAID</label>
+                            <h3><span class="form-control" id="REM_VAT_7_TO_9" disabled></span></h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -289,21 +372,44 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <h3><span class="form-control" id="LAW_VAT_10_TO_12"disabled></span></h3>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="form-group">
-                                        <h3><span class="form-control" id="EXP_VAT_10_TO_12"disabled></span></h3>
+                                        <label for="LAW_FEE_10_TO_12">LAWYER FEES</label>
+                                        <h3><span class="form-control" id="LAW_FEE_10_TO_12" disabled></span></h3>
                                     </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_10_TO_12">LAWYER FEES VAT</label>
+                                        <h3><span class="form-control" id="LAW_VAT_10_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_TTL_10_TO_12">TOTAL</label>
+                                        <h3><span class="form-control" id="LAW_VAT_TTL_10_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="EXP_VAT_10_TO_12">EXPENSE VAT</label>
+                                        <h3><span class="form-control" id="EXP_VAT_10_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="col-sm-12">
-                        <h3><span class="form-control" id="REM_VAT_10_TO_12"disabled></span></h3>
+                        <div class="form-group">
+                            <label for="REM_VAT_10_TO_12" style="color:maroon">VAT TO BE PAID</label>
+                            <h3><span class="form-control" id="REM_VAT_10_TO_12" disabled></span></h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -324,21 +430,44 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <h3><span class="form-control" id="LAW_VAT_1_TO_12"disabled></span></h3>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="form-group">
-                                        <h3><span class="form-control" id="EXP_VAT_1_TO_12"disabled></span></h3>
+                                        <label for="LAW_FEE_1_TO_12">LAWYER FEES</label>
+                                        <h3><span class="form-control" id="LAW_FEE_1_TO_12" disabled></span></h3>
                                     </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_1_TO_12">LAWYER FEES VAT</label>
+                                        <h3><span class="form-control" id="LAW_VAT_1_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="LAW_VAT_TTL_1_TO_12">TOTAL</label>
+                                        <h3><span class="form-control" id="LAW_VAT_TTL_1_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="EXP_VAT_1_TO_12">EXPENSE VAT</label>
+                                        <h3><span class="form-control" id="EXP_VAT_1_TO_12" disabled></span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="col-sm-12">
-                        <h3><span class="form-control" id="REM_VAT_1_TO_12"disabled></span></h3>
+                        <div class="form-group">
+                            <label for="REM_VAT_1_TO_12" style="color:maroon">VAT TO BE PAID</label>
+                            <h3><span class="form-control" id="REM_VAT_1_TO_12" disabled></span></h3>
+                        </div>
                     </div>
                 </div>
             </div>
