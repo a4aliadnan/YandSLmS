@@ -256,6 +256,8 @@
         public string CurrentDisputeLevelandType { get; set; } //Dropdown 
         [StringLength(1)]
         public string CourtApproval { get; set; } //Dropdown Location
+        [StringLength(1)]
+        public string ArrestLevel { get; set; } //Dropdown Location
         public CourtCasesEnforcement()
         {
             this.Courtid = "4";
@@ -267,7 +269,8 @@
             this.NextCaseLevel = "";
             this.SessionClientId = "0";
             this.FollowerId = "0";
-            this.ArrestOrderIssued =false;
+            this.ArrestOrderIssued = false;
+            this.ArrestLevel = "0";
         }
         #region NotMapped Names
 

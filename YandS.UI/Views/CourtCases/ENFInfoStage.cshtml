@@ -18,6 +18,20 @@
 
         GetTab(AnnouncementViewContainer, GetClientClassificationURL, _Announcementparameters);
     }
+    function LoadArrestLevelView() {
+        if ($('#ArrestLevel').val() == "2") {
+            var _Announcementparameters = "";
+            var AnnouncementViewName = "CEL-ENF_LVL_ANNOUNCEMENT_DET";
+            var AnnouncementViewContainer = $("#EnforcementLevelContainer");
+
+            _Announcementparameters = { ClassificationId: AnnouncementViewName, Mode: $("#HFCaseId").val() };
+
+            GetTab(AnnouncementViewContainer, GetClientClassificationURL, _Announcementparameters);
+        }
+        else {
+            $("#EnforcementLevelContainer").empty();
+        }
+    }
     function LoadUpdate(Enforcementlevel) {
         var _Updateparameters = "";
 
@@ -178,6 +192,7 @@
         console.log("LoadEnforcementStage");
         console.log(Enforcementlevel);
         $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_ArrestLevel").removeClass("AppHidden").addClass("AppHidden");
         var partialViewPrefix = "CEL-ENF_LVL_";
         var _parameters = "";
 
@@ -245,6 +260,9 @@
                 EnforcementLevelHeaderClass = "GeneralActive";
                 break;
             case OfficeFileStatus.ArrestApplication:
+                $("#div_ArrestLevel").removeClass("AppHidden");
+                return false;
+                break;
             case OfficeFileStatus.ArrestAnnouncement:
                 _PartialViewName = partialViewPrefix + "ANNOUNCEMENT_DET";
                 EnforcementLevelHeading = "ANNOUNCEMENT إعلان المنفذ ضده بالسند التنفيذي"
@@ -791,6 +809,21 @@
     }
     function ValidateEnforcementDispute() {
         NotValid = false;
+        return NotValid;
+    }
+    function ValidateArrestLevel() {
+        if ($("#ArrestLevel").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT LEVEL  مستوى المرحلة" : ValidationMessage + "<br />" + "PLEASE SELECT LEVEL  مستوى المرحلة";
+            NotValid = true;
+        }
+        else {
+            if ($("#ArrestLevel").val() == "2") {
+                if ($("#AnnouncementTypeId").val() == "0") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT ANNOUNCEMENT TYPE" : ValidationMessage + "<br />" + "PLEASE SELECT ANNOUNCEMENT TYPE";
+                    NotValid = true;
+                }
+            }
+        }
         return NotValid;
     }
     function ValidateCreatePV() {
@@ -1363,6 +1396,18 @@
             NotValid = false;
             $('#PartialViewName').val("ENFInfoStage");
 
+            if ($('#EnforcementlevelId').val() == OfficeFileStatus.ArrestApplication) {
+                NotValid = ValidateArrestLevel();
+                if (NotValid) {
+                    Swal.fire({
+                        type: "error",
+                        title: 'ERROR...',
+                        html: ValidationMessage
+                    });
+                    return false;
+                }
+            }
+
             if (!$('.cls_ENFDetail').hasClass("AppHidden")) {
                 NotValid = ValidateBasicEnforcement();
 
@@ -1460,6 +1505,11 @@
 
         });
 
+        if ($('#EnforcementlevelId').val() == OfficeFileStatus.ArrestApplication) {
+            $("#div_ArrestLevel").removeClass("AppHidden");
+            LoadArrestLevelView();
+        }
+
         $('#EnforcementlevelId').on("change", function () {
             console.log($('#EnforcementlevelId').val());
 
@@ -1476,6 +1526,10 @@
 
             if ($("#hidIsAgainstClient").val() == "N")
                 LoadEnforcementStage($('#EnforcementlevelId').val());
+        });
+
+        $('#ArrestLevel').on("change", function () {
+            LoadArrestLevelView();
         });
 
         if ($('#DEF_DateOfContact').val() !== "") {
@@ -1745,19 +1799,25 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col">
                     <div class="form-group">
                         @Html.LabelFor(model => model.EnforcementlevelId)
                         @Html.DropDownList("EnforcementlevelId", null, htmlAttributes: new { @class = "form-control select2bs4" })
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div id="div_ArrestLevel" class="col AppHidden">
+                    <div class="form-group">
+                        <label>LEVEL مستوى المرحلة</label>
+                        @Html.DropDownList("ArrestLevel", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                    </div>
+                </div>
+                <div class="col">
                     <div class="form-group">
                         @Html.LabelFor(model => model.EnforcementActionDate)
                         @Html.EditorFor(model => model.EnforcementActionDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col">
                     <div class="form-group">
                         <label>ADMIN المشرف</label>
                         @Html.DropDownList("EnforcementAdmin", null, htmlAttributes: new { @class = "form-control select2bs4" })

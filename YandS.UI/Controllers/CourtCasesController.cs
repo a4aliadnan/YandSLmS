@@ -306,6 +306,7 @@ namespace YandS.UI.Controllers
                     _ModalToSave.EnforcementAdmin = modal.EnforcementAdmin;
                     _ModalToSave.EnforcementBy = modal.ApealByWho;
                     _ModalToSave.EnforcementlevelId = FileStatusToSave;
+                    _ModalToSave.ArrestLevel = modal.ArrestLevel;
 
                     if (!string.IsNullOrEmpty(PartialViewName))
                     {
@@ -352,6 +353,11 @@ namespace YandS.UI.Controllers
                         }
                         else if (modal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString()) //ARREST APPLICATION طلب الحبس
                         {
+                            if (modal.ArrestLevel == "2")
+                            {
+                                _ModalToSave.AnnouncementTypeId = modal.AnnouncementTypeId;
+                                _ModalToSave.AnnouncementCompleteDt = modal.AnnouncementCompleteDt;
+                            }
                         }
                         else if (modal.EnforcementlevelId == OfficeFileStatus.ArrestOrder.ToString()) //ARREST ORDER قرار بالحبس
                         {
@@ -429,6 +435,7 @@ namespace YandS.UI.Controllers
                     db.Entry(_ModalToSave).Entity.EnforcementBy = modal.ApealByWho; //BASIC INFO 1
                     db.Entry(_ModalToSave).Entity.EnforcementAdmin = modal.EnforcementAdmin; //Common
                     db.Entry(_ModalToSave).Entity.EnforcementlevelId = FileStatusToSave; //Common
+                    db.Entry(_ModalToSave).Entity.ArrestLevel = modal.ArrestLevel; //Common
 
                     if (!string.IsNullOrEmpty(PartialViewName))
                     {
@@ -488,6 +495,11 @@ namespace YandS.UI.Controllers
                         }
                         else if (modal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString()) //ARREST APPLICATION طلب الحبس
                         {
+                            if (modal.ArrestLevel == "2")
+                            {
+                                _ModalToSave.AnnouncementTypeId = modal.AnnouncementTypeId;
+                                _ModalToSave.AnnouncementCompleteDt = modal.AnnouncementCompleteDt;
+                            }
                         }
                         else if (modal.EnforcementlevelId == OfficeFileStatus.ArrestOrder.ToString()) //ARREST ORDER قرار بالحبس
                         {
@@ -759,6 +771,7 @@ namespace YandS.UI.Controllers
                             ViewModal.CaseLevelName = "ENFORCEMENT COURT";
                             ViewModal.EnforcementAdmin = courtCasesEnforcement.EnforcementAdmin;
                             ViewModal.EnforcementlevelId = courtCases.OfficeFileStatus;
+                            ViewModal.ArrestLevel = courtCasesEnforcement.ArrestLevel;
 
                             if (!string.IsNullOrEmpty(courtCasesEnforcement.CourtLocationid))
                                 ViewModal.COURT = db.MasterSetup.Where(w => w.MstParentId == (int)MASTER_S.Location && w.Mst_Value == courtCasesEnforcement.CourtLocationid).FirstOrDefault().Mst_Desc;
@@ -831,6 +844,7 @@ namespace YandS.UI.Controllers
                                 ViewModal.CaseLevelName = "ENFORCEMENT COURT";
                                 ViewModal.EnforcementAdmin = courtCasesEnforcement.EnforcementAdmin;
                                 ViewModal.EnforcementlevelId = courtCases.OfficeFileStatus;
+                                ViewModal.ArrestLevel = courtCasesEnforcement.ArrestLevel;
 
                                 if (!string.IsNullOrEmpty(courtCasesEnforcement.CourtLocationid))
                                     ViewModal.COURT = db.MasterSetup.Where(w => w.MstParentId == (int)MASTER_S.Location && w.Mst_Value == courtCasesEnforcement.CourtLocationid).FirstOrDefault().Mst_Desc;
@@ -849,6 +863,7 @@ namespace YandS.UI.Controllers
                                 ViewModal.CaseLevelName = "ENFORCEMENT COURT";
                                 ViewModal.EnforcementAdmin = courtCasesEnforcement.EnforcementAdmin;
                                 ViewModal.EnforcementlevelId = courtCases.OfficeFileStatus;
+                                ViewModal.ArrestLevel = courtCasesEnforcement.ArrestLevel;
 
                                 if (!string.IsNullOrEmpty(courtCasesEnforcement.CourtLocationid))
                                     ViewModal.COURT = db.MasterSetup.Where(w => w.MstParentId == (int)MASTER_S.Location && w.Mst_Value == courtCasesEnforcement.CourtLocationid).FirstOrDefault().Mst_Desc;
@@ -1736,6 +1751,16 @@ namespace YandS.UI.Controllers
                         CourtLocation = request.Params["EnfCourtLocation"].ToString();
                         Governorate = request.Params["EnfGovernorate"].ToString();
                         ClientCode = request.Params["EnfClientCode"].ToString();
+
+                        break;
+                    #endregion
+
+                    #region "FOR = ENF-DEFTRANS2"
+                    case "ENF-DEFTRANS2":
+                        ClientCode = request.Params["ClientCode"].ToString();
+                        AgainstCode = request.Params["AgainstCode"].ToString();
+                        DateFrom = request.Params["DateFrom"].ToString() == "" ? DateTime.Now.AddYears(-100) : DateTime.ParseExact(request.Params["DateFrom"].ToString(), "dd/MM/yyyy", null);
+                        DateTo = request.Params["DateTo"].ToString() == "" ? DateTime.Now.AddYears(100) : DateTime.ParseExact(request.Params["DateTo"].ToString(), "dd/MM/yyyy", null);
 
                         break;
                     #endregion
@@ -3257,6 +3282,13 @@ namespace YandS.UI.Controllers
                         ViewBag.ENF_SEARCH_ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
                         ViewBag.ENF_SEARCH_EnforcementlevelId = new SelectList(Helper.GetAnnouncementDDLFileStatus(), "Mst_Value", "Mst_Desc", "0");
                     }
+
+                    if (PartialViewName == "DefendantTransfer")
+                    {
+
+                        ViewBag.ENF_SEARCH_ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
+                        ViewBag.ENF_SEARCH_AgainstCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.CaseAgainst), "Mst_Value", "Mst_Desc");
+                    }
                         
 
                     return PartialView(PartialViewName);
@@ -3469,6 +3501,13 @@ namespace YandS.UI.Controllers
                             ViewBag.LawyerId = new SelectList(Helper.GetSessionLawyers(true), "Mst_Value", "Mst_Desc", ViewModal.LawyerId);
                             ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                             ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+
+                            if (ViewModal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString())
+                                ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", ViewModal.ArrestLevel);
+                            else
+                                ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", "0");
+
+
                             string LawyerDoc = Helper.GetDEF_Lawyer_Doc(ViewModal.CaseId);
                             string AddressDoc = Helper.GetDEF_Address_Doc(ViewModal.CaseId);
 

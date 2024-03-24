@@ -293,6 +293,8 @@ namespace YandS.UI.Controllers
             DateTime DateTo = DateTime.Now;
             string ProcedureName = string.Empty;
             int MCTRecords = 0;
+            decimal TOTAL_LAWYER_FEE = 0;
+            decimal TOTAL_LF_VAT = 0;
             decimal TOTAL_VAT = 0;
             int SLLRecords = 0;
 
@@ -353,9 +355,11 @@ namespace YandS.UI.Controllers
                     var jsondata = dt.ToDictionary();
 
                     recordsTotal = !string.IsNullOrEmpty(Summarydt.Rows[0]["recordsTotal"].ToString()) ? int.Parse(Summarydt.Rows[0]["recordsTotal"].ToString()) : 0;
+                    TOTAL_LAWYER_FEE = !string.IsNullOrEmpty(Summarydt.Rows[0]["TOTAL_LAWYER_FEE"].ToString()) ? decimal.Parse(Summarydt.Rows[0]["TOTAL_LAWYER_FEE"].ToString()) : 0;
+                    TOTAL_LF_VAT = !string.IsNullOrEmpty(Summarydt.Rows[0]["TOTAL_LF_VAT"].ToString()) ? decimal.Parse(Summarydt.Rows[0]["TOTAL_LF_VAT"].ToString()) : 0;
                     TOTAL_VAT = !string.IsNullOrEmpty(Summarydt.Rows[0]["TOTAL_VAT"].ToString()) ? decimal.Parse(Summarydt.Rows[0]["TOTAL_VAT"].ToString()) : 0;
 
-                    return Json(new { data = jsondata, recordsTotal = recordsTotal, recordsFiltered = recordsTotal, TOTAL_VAT = TOTAL_VAT }, JsonRequestBehavior.AllowGet);
+                    return Json(new { data = jsondata, recordsTotal, recordsFiltered = recordsTotal, TOTAL_LAWYER_FEE, TOTAL_LF_VAT, TOTAL_VAT }, JsonRequestBehavior.AllowGet);
 
                 }
                 else
