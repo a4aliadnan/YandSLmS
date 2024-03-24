@@ -92,7 +92,7 @@ namespace YandS.UI.Controllers
                         string ExcelResult = string.Empty;
                         string InvoiceREFNO = string.Empty;
 
-                        if (p_modal.ClickedButtonName.In("btnNBORep", "btnBDRep", "btnUFRep", "btnODBShRep", "btnOMASCOShRep", "btnFABRep"))
+                        if (p_modal.ClickedButtonName.In("btnNBORep", "btnBDRep", "btnUFRep", "btnUFCRep", "btnODBShRep", "btnOMASCOShRep", "btnFABRep"))
                         {
                             if (p_modal.ClickedButtonName == "btnBDRep")
                             {
@@ -108,6 +108,11 @@ namespace YandS.UI.Controllers
                             {
                                 TemplateName = "UF_REPORT.xlsx";
                                 FileName = "UF_REPORT";
+                            }
+                            else if (p_modal.ClickedButtonName == "btnUFCRep")
+                            {
+                                TemplateName = "UFC_REPORT.xlsx";
+                                FileName = "UFC_REPORT";
                             }
                             else if (p_modal.ClickedButtonName == "btnFABRep")
                             {

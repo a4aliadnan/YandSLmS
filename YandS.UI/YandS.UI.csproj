@@ -4396,6 +4396,7 @@
     <Content Include="Views\Finance\_QuarterltVAT.cshtml" />
     <Content Include="Views\CourtCases\ClosureReasonModalPopup.cshtml" />
     <Content Include="Template\FAB REPORT.xlsx" />
+    <Content Include="Template\UFC_REPORT.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
