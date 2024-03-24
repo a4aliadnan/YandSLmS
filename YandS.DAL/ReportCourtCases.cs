@@ -706,6 +706,55 @@ Kindly debit the legal charges accounts of all of the above customers and credit
                         }
 
                     }
+                    else if (P_TemplateName == "FAB_REPORT")
+                    {
+
+                        int rowstart = 3;
+                        int colstart = 1;
+                        int rowend = rowstart + 1;
+                        int colend = ds.Tables[0].Columns.Count;
+                        MemoryStream ResultStream = new MemoryStream();
+
+                        using (ExcelPackage pck = new ExcelPackage(ResultStream, ms))
+                        {
+                            ExcelWorksheet ws = pck.Workbook.Worksheets.First();
+
+                            ws.Cells["A3"].LoadFromDataTable(ds.Tables[0], false);
+
+                            var modelRows = ds.Tables[0].Rows.Count + 2;
+                            string modelRange = "A3:L" + modelRows.ToString();
+                            var modelTable = ws.Cells[modelRange];
+
+                            // Assign borders
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+
+                            //int colNumber = 0;
+                            //foreach (DataColumn col in ds.Tables[0].Columns)
+                            //{
+                            //    colNumber++;
+                            //    if (col.DataType == typeof(DateTime))
+                            //    {
+                            //        ws.Column(colNumber).Style.Numberformat.Format = "dd/MM/yyyy";
+                            //    }
+                            //    else
+                            //    {
+                            //        ws.Column(colNumber).Style.WrapText = true;
+                            //    }
+                            //}
+                            ws.Cells[ws.Dimension.Address].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                            //ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                            //ws.Cells[ws.Dimension.Address]
+                            pck.SaveAs(ResultStream);
+                            ms = ResultStream;
+                            //pck.Save();
+                        }
+
+                    }
 
                 }
             }

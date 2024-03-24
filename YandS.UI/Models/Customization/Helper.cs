@@ -2723,6 +2723,11 @@ namespace YandS.UI
             RBACDbContext db = new RBACDbContext();
             return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.AnnouncementType && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
         }
+        public static List<MasterSetups> GetArrestLevel()
+        {
+            RBACDbContext db = new RBACDbContext();
+            return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ArrestLevel && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
+        }
         public static List<MasterSetups> GetInquiryResult(string[] FilterCode)
         {
             RBACDbContext db = new RBACDbContext();

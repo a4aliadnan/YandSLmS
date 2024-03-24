@@ -819,6 +819,10 @@
     <Compile Include="Migrations\202402172159145_AddedCourtApprovalColumn.Designer.cs">
       <DependentUpon>202402172159145_AddedCourtApprovalColumn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.cs" />
+    <Compile Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.Designer.cs">
+      <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\CaseInvoiceFeeCalculation.cs" />
     <Compile Include="Models\CaseInvoiceFee.cs" />
     <Compile Include="Models\CaseInvoice.cs" />
@@ -4390,6 +4394,7 @@
     <Content Include="Views\Finance\_ExpensesVAT.cshtml" />
     <Content Include="Views\Finance\_QuarterltVAT.cshtml" />
     <Content Include="Views\CourtCases\ClosureReasonModalPopup.cshtml" />
+    <Content Include="Template\FAB REPORT.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -4960,6 +4965,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202402172159145_AddedCourtApprovalColumn.resx">
       <DependentUpon>202402172159145_AddedCourtApprovalColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.resx">
+      <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

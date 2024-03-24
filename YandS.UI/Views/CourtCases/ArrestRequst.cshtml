@@ -48,6 +48,7 @@
                 { data: 'DefClientName', name: 'DefClientName', autoWidth: true },
                 { data: 'COURT', name: 'COURT', autoWidth: true },
                 { data: 'CourtRefNo', name: 'CourtRefNo', autoWidth: true },
+                { data: 'ArrestLevel', name: 'ArrestLevel', autoWidth: true },
                 { data: 'DaysCounter', name: 'DaysCounter', autoWidth: true },
                 { data: 'CourtDecision', name: 'CourtDecision', autoWidth: true },
                 {
@@ -78,7 +79,7 @@
                     targets: 3
                 },
                 {
-                    targets: 7, render: function (data) {
+                    targets: 8, render: function (data) {
                         if (data) {
                             return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
                         }
@@ -208,6 +209,7 @@
                     <th class="VMiddle text-center">NAME</th>
                     <th class="VMiddle text-center">COURT</th>
                     <th class="VMiddle text-center">ENFC NO.</th>
+                    <th class="VMiddle text-center">LEVEL<br />المرحلة</th>
                     <th class="VMiddle text-center">D.C UPDATE</th>
                     <th class="all VMiddle text-center">UPDATE</th>
                     <th style="width:30px !important" class="all"></th>

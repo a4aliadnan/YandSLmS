@@ -1,0 +1,18 @@
+namespace YandS.UI.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class addedNewColumnforArrrestAnn : DbMigration
+    {
+        public override void Up()
+        {
+            AddColumn("dbo.CourtCasesEnforcements", "ArrestLevel", c => c.String(maxLength: 1));
+        }
+        
+        public override void Down()
+        {
+            DropColumn("dbo.CourtCasesEnforcements", "ArrestLevel");
+        }
+    }
+}
