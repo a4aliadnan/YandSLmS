@@ -738,12 +738,7 @@
         }
         else {
             if ($("#MoneyWith").val() == "1") {
-                if ($("#TransferDate").val() == "") {
-                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER DATE";
-                    NotValid = true;
-                }
-                else {
-
+                if ($('#TransferDate').val() != "") {
                     var today = new Date();
 
                     var dd = String(today.getDate()).padStart(2, '0');
@@ -767,8 +762,7 @@
                     else if (parseFloat($('#Amount').val()) <= 0) {
                         ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
                         NotValid = true;
-                    }
-                }
+                    }                }
             }
             else if ($("#MoneyWith").val() == "2") {
                 if ($("#MoneyTrCompleteDate").val() == "") {
@@ -1220,6 +1214,30 @@
         $(".clsDisableInModify").removeClass("disableDIV");
     }
 
+    function ShowMoneyTransferFields() {
+        $("#div_MoneyTrRequestDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_TransferDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_Amount").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_MoneyTrCompleteDate").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#MoneyWith').val() == "1") {
+            $("#div_MoneyTrRequestDate").removeClass("AppHidden");
+            $("#div_TransferDate").removeClass("AppHidden");
+
+            if ($('#TransferDate').val() != "") {
+                $("#div_Amount").removeClass("AppHidden");
+                $("#div_MoneyTrCompleteDate").removeClass("AppHidden");
+            }
+        }
+        else if ($('#MoneyWith').val() == "2") {
+            $("#div_Amount").removeClass("AppHidden");
+            $("#div_MoneyTrCompleteDate").removeClass("AppHidden");
+        }
+    }
+    function TransferDateChanged(ev) {
+        $(this).datepicker('hide');
+        ShowMoneyTransferFields();
+    }
     $(document).ready(function () {
         console.log("Modify Enforcement --> INFO STAGE Partail View Document Page");
         var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
@@ -1294,7 +1312,8 @@
         $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
         $(".cls_EnfMainAll").removeClass("AppHidden").addClass("AppHidden");
         $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
-        $(".clsCourt").removeClass("AppHidden").addClass("AppHidden");
+
+        ShowMoneyTransferFields();
 
         if ($("#hidCurrentTableName").val() == "ENF-DEFTRANS") {
             $(".cls_MoneyTransfer").removeClass("AppHidden");
@@ -1572,6 +1591,12 @@
             format: "dd/mm/yyyy",
         }).change(dateChanged);
 
+        $("#TransferDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).change(TransferDateChanged);
+
         /*Pay Voucher*/
         $("#PVDetail_Amount").val("0");
         var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,3})?$/);
@@ -1644,19 +1669,7 @@
             LoadCourtByGovernorate($('#GovernorateId').val(), $('#CourtLocationid'));
         });
 
-        if ($('#MoneyWith').val() == "1")
-            $(".clsCourt").removeClass("AppHidden");
-        else if ($('#MoneyWith').val() == "2")
-            $(".clsClent").removeClass("AppHidden");
-
-        $('#MoneyWith').on("change", function () {
-            $(".clsCourt").removeClass("AppHidden").addClass("AppHidden");
-
-            if ($('#MoneyWith').val() == "1")
-                $(".clsCourt").removeClass("AppHidden");
-            else if ($('#MoneyWith').val() == "2")
-                $(".clsClent").removeClass("AppHidden");
-        });
+        $('#MoneyWith').on("change", function () { ShowMoneyTransferFields(); });
 
         var AllowedUsers = ["1", "2"];
         $(".AddNewMaster").prop("disabled", false);
@@ -1844,25 +1857,25 @@
                         @Html.DropDownList("MoneyWith", null, htmlAttributes: new { @class = "form-control select2bs4" })
                     </div>
                 </div>
-                <div class="col-sm-2 clsCourt">
+                <div id="div_MoneyTrRequestDate" class="col-sm-2">
                     <div class="form-group">
                         <label for="MoneyTrRequestDate">REQUEST DATE تاريخ الطلب</label>
                         @Html.EditorFor(model => model.MoneyTrRequestDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
                     </div>
                 </div>
-                <div class="col-sm-3 clsCourt">
+                <div id="div_TransferDate" class="col-sm-3">
                     <div class="form-group">
                         <label for="TransferDate">COURT TRANSFER DATE تاريخ تحويل المحكمة</label>
                         @Html.EditorFor(model => model.TransferDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
                     </div>
                 </div>
-                <div class="col-sm-2 clsCourt clsClent">
+                <div id="div_Amount" class="col-sm-2">
                     <div class="form-group">
                         <label for="Amount">AMOUNT</label>
                         @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
                     </div>
                 </div>
-                <div class="col-sm-3 clsCourt clsClent">
+                <div id="div_MoneyTrCompleteDate" class="col-sm-3">
                     <div class="form-group">
                         <label for="MoneyTrCompleteDate">TRANSFER COMPLETED  DATE تاريخ استلام الموكل للتحويل</label>
                         @Html.EditorFor(model => model.MoneyTrCompleteDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
