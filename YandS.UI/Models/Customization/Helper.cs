@@ -2723,6 +2723,11 @@ namespace YandS.UI
             RBACDbContext db = new RBACDbContext();
             return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.AnnouncementType && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
         }
+        public static List<MasterSetups> GetArrestLevel()
+        {
+            RBACDbContext db = new RBACDbContext();
+            return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ArrestLevel && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
+        }
         public static List<MasterSetups> GetInquiryResult(string[] FilterCode)
         {
             RBACDbContext db = new RBACDbContext();
@@ -4189,7 +4194,15 @@ namespace YandS.UI
                     {
                         var modal = (ToBeRegisterVM)objmodal;
                         PayVoucher pv = new PayVoucher();
-                        pv.PVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        string strPVLocation = string.Empty;
+
+                        if (pv.CaseId > 0)
+                            strPVLocation = getPVLocation(pv.CaseId ?? 0);
+                        else
+                            strPVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        pv.PVLocation = strPVLocation;
 
                         pv.Voucher_Date = DateTime.UtcNow.AddHours(4);
                         pv.Payment_Type = modal.PVDetail.Payment_Type;
@@ -4222,7 +4235,15 @@ namespace YandS.UI
                         var modal = (SessionsRollVM)objmodal;
 
                         PayVoucher pv = new PayVoucher();
-                        pv.PVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        string strPVLocation = string.Empty;
+
+                        if (pv.CaseId > 0)
+                            strPVLocation = getPVLocation(pv.CaseId ?? 0);
+                        else
+                            strPVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        pv.PVLocation = strPVLocation;
 
                         pv.Voucher_Date = DateTime.UtcNow.AddHours(4);
                         pv.Payment_Type = modal.Payment_Type;
@@ -4255,7 +4276,15 @@ namespace YandS.UI
                         var modal = (CaseRegistrationVM)objmodal;
 
                         PayVoucher pv = new PayVoucher();
-                        pv.PVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        string strPVLocation = string.Empty;
+
+                        if (pv.CaseId > 0)
+                            strPVLocation = getPVLocation(pv.CaseId ?? 0);
+                        else
+                            strPVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                        pv.PVLocation = strPVLocation;
 
                         pv.Voucher_Date = DateTime.UtcNow.AddHours(4);
                         pv.Payment_Type = modal.Payment_Type;
@@ -4293,6 +4322,25 @@ namespace YandS.UI
 
             return retResult;
         }
+        public static string getPVLocation(int CaseId)
+        {
+            string strResult = string.Empty;
+            try
+            {
+                using (var db = new RBACDbContext())
+                {
+                    CourtCases courtCases = db.CourtCase.Find(CaseId);
+                    strResult = courtCases.OfficeFileNo.Substring(0, 1) == "M" ? "MCT" : "SAL";
+                }
+            }
+            catch (Exception e)
+            {
+                strResult = e.Message;
+            }
+
+            return strResult;
+        }
+
         public static string ProcessResetYesNo(int CaseId, string ResetName)
         {
             string strResult = string.Empty;

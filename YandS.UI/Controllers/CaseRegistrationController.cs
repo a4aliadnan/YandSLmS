@@ -937,8 +937,15 @@ namespace YandS.UI.Controllers
                     
 
                     PayVoucher payVoucher = new PayVoucher();
-                    
-                    payVoucher.PVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                    string strPVLocation = string.Empty;
+
+                    if (modal.CaseId > 0)
+                        strPVLocation = Helper.getPVLocation(modal.CaseId);
+                    else
+                        strPVLocation = UserLocation.Substring(0, 3).ToUpper();
+
+                    payVoucher.PVLocation = strPVLocation;
 
                     payVoucher.Voucher_Date = DateTime.UtcNow.AddHours(4);
                     payVoucher.Payment_Type = "1";

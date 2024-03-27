@@ -112,6 +112,7 @@
         public decimal CorporateFee { get; set; }
         public string MoneyWithName { get; set; }
         public string CourtApproval { get; set; }
+        public string ArrestLevel { get; set; }
     }
 
     public class CourtCaseDTView

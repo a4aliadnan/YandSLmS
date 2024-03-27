@@ -673,7 +673,7 @@
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DEF_VisitDate { get; set; }
         public string CourtApproval { get; set; }
-
+        public string ArrestLevel { get; set; }
         #endregion
 
         #region CLOSING

@@ -55,7 +55,7 @@
         var p_Amt = $("#Amount").val() == "" ? 0 : parseFloat($("#Amount").val());
         var p_VarAmt = $("#VatAmount").val() == "" ? 0 : parseFloat($("#VatAmount").val());
 
-        var p_TtlAmt = p_Amt + p_VarAmt;
+        var p_TtlAmt = (p_Amt + p_VarAmt).toFixed(3);
 
         $("#TotalAmount").val(p_TtlAmt);
 
@@ -416,7 +416,7 @@
                 return false;
             }
             else {
-                if ($("#Payment_Head").val() == "10007" || $("#Payment_Head").val() == "10018")
+                if ($("#Payment_Head").val() == "10007")
                     $("#VoucherType").val("1");
                 else
                     $("#VoucherType").val("2");

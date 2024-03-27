@@ -82,7 +82,8 @@
         DisputeLevelandTypes = 1632,
         FileTypeClosure = 1690,
         MoneyWith = 1727,
-        PAYTONEW = 1898
+        PAYTONEW = 1898,
+        ArrestLevel = 2021
     }
     public enum Courts : ushort
     {

@@ -109,38 +109,6 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.6.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.4.0.0\lib\net451\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Owin.Security.Facebook, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.0.0\lib\net451\Microsoft.Owin.Security.Facebook.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.0.0\lib\net451\Microsoft.Owin.Security.Google.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.0.0\lib\net451\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.0\lib\net451\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.4.0.0\lib\net451\Microsoft.Owin.Security.Twitter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\netstandard\v4.0_2.0.0.0__cc7b13ffcd2ddd51\netstandard.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -815,6 +783,10 @@
     <Compile Include="Migrations\202402172159145_AddedCourtApprovalColumn.Designer.cs">
       <DependentUpon>202402172159145_AddedCourtApprovalColumn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.cs" />
+    <Compile Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.Designer.cs">
+      <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\CaseInvoiceFeeCalculation.cs" />
     <Compile Include="Models\CaseInvoiceFee.cs" />
     <Compile Include="Models\CaseInvoice.cs" />
@@ -1221,6 +1193,7 @@
     <Content Include="Content\Images\key.png" />
     <Content Include="Content\Images\login.png" />
     <Content Include="Content\Images\LogoS-removebg.png" />
+    <Content Include="Content\Images\LogoS-removebg3.png" />
     <Content Include="Content\Images\noentry.jpg" />
     <Content Include="Content\Images\pen.png" />
     <Content Include="Content\Images\phone.png" />
@@ -4394,9 +4367,14 @@
     <Content Include="Views\Finance\_ExpensesVAT.cshtml" />
     <Content Include="Views\Finance\_QuarterltVAT.cshtml" />
     <Content Include="Views\CourtCases\ClosureReasonModalPopup.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\Shared\EditorTemplates\Collection.cshtml" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+=======
+    <Content Include="Template\FAB REPORT.xlsx" />
+    <Content Include="Template\UFC_REPORT.xlsx" />
+>>>>>>> 4a439c15538a69b54a080107ba5f4e13ef1ac7ec
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -4954,6 +4932,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202402172159145_AddedCourtApprovalColumn.resx">
       <DependentUpon>202402172159145_AddedCourtApprovalColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.resx">
+      <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
