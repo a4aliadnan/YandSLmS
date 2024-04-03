@@ -1293,7 +1293,7 @@ namespace YandS.UI.Controllers
                 {
                     if (modal != null)
                         payVoucher = modal;
-                    var skipIDs = "1,2,3,13,25";
+                    var skipIDs = "1,2,3,25";
                     ViewBag.CourtType = new SelectList(GetListForInvoiceCaseLevel(0), "Mst_Value", "Mst_Desc");
                     ViewBag.Debit_Account = new SelectList(Helper.GetBankList(), "Mst_Value", "Mst_Desc");
                     ViewBag.Credit_Account = new SelectList(Helper.GetBankList(), "Mst_Value", "Mst_Desc");

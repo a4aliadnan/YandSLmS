@@ -14,6 +14,19 @@
             "destroy": true,
             "ordering": true,
             "pageLength": 25,
+            dom: "<'row'<'col-sm-1'l><'col-sm-1 text-right'B><'col-sm-10 text-right'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+                {
+                    extend: 'excel',
+                    title: 'CONTACT RESULT',
+                    text: 'Print',
+                    titleAttr: 'Export Excel',
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    exportOptions: { modifier: { page: 'all', search: 'none' } }
+                }
+            ],
             "lengthMenu": [[5, 10, 25, 50, 100, 1000, 99999], [5, 10, 25, 50, 100, 1000, 'ALL']],
             "ajax": {
                 "url": GetIndexDataURL,
