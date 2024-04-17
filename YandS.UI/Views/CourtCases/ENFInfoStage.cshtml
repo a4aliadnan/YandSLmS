@@ -261,6 +261,7 @@
                 break;
             case OfficeFileStatus.ArrestApplication:
                 $("#div_ArrestLevel").removeClass("AppHidden");
+                LoadUpdate($('#EnforcementlevelId').val());
                 return false;
                 break;
             case OfficeFileStatus.ArrestAnnouncement:
