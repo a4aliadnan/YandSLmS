@@ -3,6 +3,7 @@
     ViewBag.Title = "Y & S ASSOCIATES - CASE INVOICE CREATION";
 }
 <script>
+    var CollectionCount = 0;
     function round2Fixed(value) {
         value = +value;
 
@@ -618,7 +619,6 @@
         var InvoiceDetailURL = '@Url.Action("GetCaseInvoiceDetail", "CommonTask", new { area = string.Empty })';
         var SetCaseNumberURL = '@Url.Action("GetCaseNumber", "Finance", new { area = string.Empty })';
         var SetBeforeCourtURL = '@Url.Action("GetRefNumberCourt", "CommonTask", new { area = string.Empty })';
-        var CollectionCount = 0;
         var LoadFeeDetailURL = '@Url.Action("LoadFeeTypeDetail", "CommonTask", new { area = string.Empty })';
 
         function ProcessAddClient() {
@@ -833,6 +833,8 @@
             var Message = "";
             var ErrCount = 1;
 
+            console.log("CollectionCount");
+            console.log(CollectionCount);
 
             if (CollectionCount == 0) {
                 Swal.fire({
@@ -1364,16 +1366,16 @@
                 }
             }
 
-            $(".deleteRow").on("click", function () {
-                console.log("Invoice Modify  - deleteRow");
-                var FeeId = $(this).closest('.caseinvoicefeeRow').find(".clsFeeId").val();
+            //$(".deleteRow").on("click", function () {
+            //    console.log("Invoice Modify  - deleteRow");
+            //    var FeeId = $(this).closest('.caseinvoicefeeRow').find(".clsFeeId").val();
 
-                console.log("FeeId :: " + FeeId);
+            //    console.log("FeeId :: " + FeeId);
 
-                $(this).parents(".caseinvoicefeeRow:first").remove();
-                CollectionCount = CollectionCount - 1;
-                return false;
-            });
+            //    $(this).parents(".caseinvoicefeeRow:first").remove();
+            //    CollectionCount = CollectionCount - 1;
+            //    return false;
+            //});
 
             $(".clsFeeTypeId").on("change", function () {
                 console.log("FeeTypeId Change");
