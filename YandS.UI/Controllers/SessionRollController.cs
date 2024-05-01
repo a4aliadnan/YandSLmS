@@ -233,7 +233,7 @@ namespace YandS.UI.Controllers
 
                     ViewBag.CourtFollow = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", modal.CourtFollow);
                     ViewBag.CourtFollow_LawyerId = new SelectList(Helper.GetSessionLawyers(), "Mst_Value", "Mst_Desc", modal.CourtFollow_LawyerId);
-
+                    ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
                     #region ADDRESS
 
                     ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", modal.DEF_CallerName);
@@ -371,6 +371,7 @@ namespace YandS.UI.Controllers
                             ViewBag.PASCourtLocationid = new SelectList(Helper.GetCourtLocationList("3"), "Mst_Value", "Mst_Desc");
                             ViewBag.ApealByWho = new SelectList(Helper.GetByWho(true), "Mst_Value", "Mst_Desc");
                             ViewBag.CourtDepartment = new SelectList(Helper.GetOfficeFileStatus(OfficeFileFilterSUP), "Mst_Value", "Mst_Desc", modal.CourtDepartment);
+                            ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
                             if (modal.PartialViewName == "_SessionJudgementSupreme_CaseDetail")
                                 return PartialView("_CaseDetail_Modify", modal);
                             else
@@ -2287,6 +2288,7 @@ namespace YandS.UI.Controllers
 
                 ViewBag.CourtFollow = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", modal.CourtFollow);
                 ViewBag.CourtFollow_LawyerId = new SelectList(Helper.GetSessionLawyers(), "Mst_Value", "Mst_Desc", modal.CourtFollow_LawyerId);
+                ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
 
                 #region ADDRESS
 
@@ -2846,7 +2848,7 @@ namespace YandS.UI.Controllers
 
                 ViewBag.CourtFollow = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", modal.CourtFollow);
                 ViewBag.CourtFollow_LawyerId = new SelectList(Helper.GetSessionLawyers(), "Mst_Value", "Mst_Desc", modal.CourtFollow_LawyerId);
-
+                ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
                 #region ADDRESS
 
                 ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", modal.DEF_CallerName);

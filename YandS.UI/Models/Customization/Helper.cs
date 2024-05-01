@@ -4489,6 +4489,7 @@ namespace YandS.UI
                         objDTO.Amount = modal.TransferAmount ?? 0;
                         objDTO.MoneyTrRequestDate = modal.MoneyTrRequestDate;
                         objDTO.MoneyTrCompleteDate = modal.MoneyTrCompleteDate;
+                        objDTO.MoneyWith = modal.MoneyWith;
 
                     }
 

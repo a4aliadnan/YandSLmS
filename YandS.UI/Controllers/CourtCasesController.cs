@@ -4159,7 +4159,7 @@ namespace YandS.UI.Controllers
             ViewBag.TransportationSource = new SelectList(Helper.GetTransSourceSelect(), "Mst_Value", "Mst_Desc", _RetPartialView.TransportationSource);
             ViewBag.SessionClientId = new SelectList(Helper.GetSessionClients(), "Mst_Value", "Mst_Desc", _RetPartialView.SessionClientId);
             ViewBag.FollowerId = new SelectList(Helper.GetSessionFollowers(), "Mst_Value", "Mst_Desc", _RetPartialView.FollowerId);
-
+            ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
             ViewBag.UpdatedOn = CourtCases.UpdatedOn?.ToString("dd/MM/yyyy HH:mm:ss") ?? CourtCases.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
             return PartialView("_CourtPView", _RetPartialView);
 
@@ -4415,7 +4415,7 @@ namespace YandS.UI.Controllers
 
                 ViewBag.SessionClientId = new SelectList(Helper.GetSessionClients(), "Mst_Value", "Mst_Desc", courtCasesDetail.SessionClientId);
                 ViewBag.FollowerId = new SelectList(Helper.GetSessionFollowers(), "Mst_Value", "Mst_Desc", courtCasesDetail.FollowerId);
-
+                ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
                 Session["Message"] = new MessageVM
                 {
                     Category = "Success",
@@ -4444,7 +4444,7 @@ namespace YandS.UI.Controllers
 
             ViewBag.SessionClientId = new SelectList(Helper.GetSessionClients(), "Mst_Value", "Mst_Desc", courtCasesDetail.SessionClientId);
             ViewBag.FollowerId = new SelectList(Helper.GetSessionFollowers(), "Mst_Value", "Mst_Desc", courtCasesDetail.FollowerId);
-
+            ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc");
 
             Session["Message"] = new MessageVM
             {

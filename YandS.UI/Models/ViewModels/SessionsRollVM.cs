@@ -282,7 +282,7 @@
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? MoneyTrCompleteDate { get; set; }
         public string DataFor { get; set; }
-
+        public string MoneyWith { get; set; }
         #endregion
         [Display(Name = "JUDGMENT الحكم")]
         public string JudgementLevel { get; set; }

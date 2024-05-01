@@ -339,65 +339,77 @@
 
     }
     function ValidateMoneyTransfer() {
-        if ($("#MoneyTrRequestDate").val() == "") {
-            ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER REQUEST DATE" : ValidationMessage + "<br />" + "PLEASE ENTER REQUEST DATE";
+
+        if ($("#MoneyWith").val() == "0") {
+            ValidationMessage = ValidationMessage == "" ? "PLEASE SELECT MONEY WITH المبلغ لدى" : ValidationMessage + "<br />" + "PLEASE SELECT MONEY WITH المبلغ لدى";
             NotValid = true;
         }
         else {
+            if ($("#MoneyWith").val() == "1") {
+                if ($('#TransferDate').val() != "") {
+                    var today = new Date();
 
-            var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
 
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = today.getFullYear();
+                    today = dd + '/' + mm + '/' + yyyy;
 
-            today = dd + '/' + mm + '/' + yyyy;
+                    console.log(today);
+                    console.log($("#TransferDate").val());
 
-            console.log(today);
-            console.log($("#MoneyTrRequestDate").val());
+                    if (process($("#TransferDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
 
-            if (process($("#MoneyTrRequestDate").val()) > process(today)) {
-                ValidationMessage = ValidationMessage == "" ? "REQUEST DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "REQUEST DATE CANNOT BE GREATER THEN CURRENT DATE";
-                NotValid = true;
+                    if ($('#TransferAmount').val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                    else if (parseFloat($('#TransferAmount').val()) <= 0) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                }
             }
-        }
+            else if ($("#MoneyWith").val() == "2") {
+                if ($("#MoneyTrCompleteDate").val() == "") {
+                    ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER COMPLETE DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER COMPLETE DATE";
+                    NotValid = true;
+                }
+                else {
 
-        if ($("#TransferDate").val() == "") {
-            //ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER TRANSFER DATE" : ValidationMessage + "<br />" + "PLEASE ENTER TRANSFER DATE";
-            //NotValid = true;
-        }
-        else {
+                    var today = new Date();
 
-            var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
 
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = today.getFullYear();
+                    today = dd + '/' + mm + '/' + yyyy;
 
-            today = dd + '/' + mm + '/' + yyyy;
+                    console.log(today);
+                    console.log($("#MoneyTrCompleteDate").val());
 
-            console.log(today);
-            console.log($("#TransferDate").val());
+                    if (process($("#MoneyTrCompleteDate").val()) > process(today)) {
+                        ValidationMessage = ValidationMessage == "" ? "TRANSFER COMPLETE DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER COMPLETE DATE CANNOT BE GREATER THEN CURRENT DATE";
+                        NotValid = true;
+                    }
 
-            if (process($("#TransferDate").val()) > process(today)) {
-                ValidationMessage = ValidationMessage == "" ? "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE" : ValidationMessage + "<br />" + "TRANSFER DATE CANNOT BE GREATER THEN CURRENT DATE";
-                NotValid = true;
-            }
-
-            if ($('#TransferAmount').val() == "") {
-                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
-                NotValid = true;
-            }
-            else if (parseFloat($('#TransferAmount').val()) <= 0) {
-                ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
-                NotValid = true;
+                    if ($('#TransferAmount').val() == "") {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                    else if (parseFloat($('#TransferAmount').val()) <= 0) {
+                        ValidationMessage = ValidationMessage == "" ? "PLEASE ENTER VALID TRANSFER AMOUNT" : ValidationMessage + "<br />" + "PLEASE ENTER VALID TRANSFER AMOUNT";
+                        NotValid = true;
+                    }
+                }
             }
         }
 
         return NotValid;
     }
-
-
     function ShowSessionNoteBanner() {
         if (!$.trim($("#SessionNote_Remark").val())) {
             $("#DIV_NOTES_BANNER").removeClass("AppHidden").addClass("AppHidden");
