@@ -54,6 +54,30 @@
             }
         });
     }
+    function ShowMoneyTransferFields() {
+        $("#div_MoneyTrRequestDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_TransferDate").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_Amount").removeClass("AppHidden").addClass("AppHidden");
+        $("#div_MoneyTrCompleteDate").removeClass("AppHidden").addClass("AppHidden");
+
+        if ($('#MoneyWith').val() == "1") {
+            $("#div_MoneyTrRequestDate").removeClass("AppHidden");
+            $("#div_TransferDate").removeClass("AppHidden");
+
+            if ($('#TransferDate').val() != "") {
+                $("#div_Amount").removeClass("AppHidden");
+                $("#div_MoneyTrCompleteDate").removeClass("AppHidden");
+            }
+        }
+        else if ($('#MoneyWith').val() == "2") {
+            $("#div_Amount").removeClass("AppHidden");
+            $("#div_MoneyTrCompleteDate").removeClass("AppHidden");
+        }
+    }
+    function TransferDateChanged(ev) {
+        $(this).datepicker('hide');
+        ShowMoneyTransferFields();
+    }
 
     $(document).ready(function () {
         console.log("Session Common Task");
@@ -147,7 +171,7 @@
         
                 
         ShowDIV();
-
+        ShowMoneyTransferFields();
         $('#SessionNote_Remark').bind('input propertychange', function () {
             ShowSessionNoteBanner();
         });
@@ -164,6 +188,12 @@
             autoclose: true,
             format: "dd/mm/yyyy",
         }).change(dateChanged);
+
+        $("#TransferDate").datepicker({
+            todayBtn: 1,
+            autoclose: true,
+            format: "dd/mm/yyyy",
+        }).change(TransferDateChanged);
 
         $('#btnResetForm').on("click", function () {
             Swal.fire({
@@ -198,7 +228,7 @@
 
         $('.txtCalc').on("blur", function () { CalcTotal(); });
 
-
+        $('#MoneyWith').on("change", function () { ShowMoneyTransferFields(); });
         if (typeof PVDetailTable != 'undefined')
             PVDetailTable.destroy();
 
@@ -392,25 +422,32 @@
     <div style="padding-top:10px" class="row">
         @Html.HiddenFor(model => model.DefendentTransferId)
         @Html.HiddenFor(model => model.DataFor, new { @Value = "CREATE" })
-        <div class="col-sm-3">
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label>MONEY WITH المبلغ لدى</label>
+                @Html.DropDownList("MoneyWith", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div id="div_MoneyTrRequestDate" class="col-sm-2">
             <div class="form-group">
                 <label for="MoneyTrRequestDate">REQUEST DATE تاريخ الطلب</label>
                 @Html.EditorFor(model => model.MoneyTrRequestDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
             </div>
         </div>
-        <div class="col-sm-3">
+        <div id="div_TransferDate" class="col-sm-3">
             <div class="form-group">
                 <label for="TransferDate">COURT TRANSFER DATE تاريخ تحويل المحكمة</label>
                 @Html.EditorFor(model => model.TransferDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
             </div>
         </div>
-        <div class="col-sm-3">
+        <div id="div_Amount" class="col-sm-2">
             <div class="form-group">
                 <label for="TransferAmount">AMOUNT</label>
                 @Html.EditorFor(model => model.TransferAmount, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        <div class="col-sm-3">
+        <div id="div_MoneyTrCompleteDate" class="col-sm-3">
             <div class="form-group">
                 <label for="MoneyTrCompleteDate">TRANSFER COMPLETED  DATE تاريخ استلام الموكل للتحويل</label>
                 @Html.EditorFor(model => model.MoneyTrCompleteDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
