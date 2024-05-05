@@ -2677,6 +2677,7 @@ namespace YandS.UI.Controllers
                     ViewBag.ReOpenEnforcement = new SelectList(Helper.GetYesNoForSelect(), "Mst_Value", "Mst_Desc", ViewModal.ReOpenEnforcement);
                     ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                     ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                    ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                     ViewBag.ClientReply = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", ViewModal.ClientReply);
                     ViewBag.CourtFollow = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", ViewModal.CourtFollow);
@@ -2971,6 +2972,7 @@ namespace YandS.UI.Controllers
 
                         ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                         ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                        ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                         string LawyerDoc = Helper.GetDEF_Lawyer_Doc(ViewModal.CaseId);
                         string AddressDoc = Helper.GetDEF_Address_Doc(ViewModal.CaseId);
@@ -3177,6 +3179,7 @@ namespace YandS.UI.Controllers
                     else if (PartialViewName == "ContactResult")
                     {
                         ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc");
+                        ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
                     }
                     else if (PartialViewName == "EnfGeneral")
                     {
@@ -3501,6 +3504,7 @@ namespace YandS.UI.Controllers
                             ViewBag.LawyerId = new SelectList(Helper.GetSessionLawyers(true), "Mst_Value", "Mst_Desc", ViewModal.LawyerId);
                             ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                             ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                            ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                             if (ViewModal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString())
                                 ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", ViewModal.ArrestLevel);

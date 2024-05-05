@@ -6,12 +6,14 @@
     var GetPayVoucherCreatedListURL = '@Url.Action("GetPayVoucherCreatedList", "CommonTask", new { area = string.Empty })';
     var SubmitFormURL = '@Url.Action("TobeReg", "CourtCases", new { area = string.Empty })';
     var GetGetDefendentTransferDataURL = '@Url.Action("GetDefendentTransferData", "CommonTask", new { area = string.Empty })';
+    var GetDefendentContactURL = '@Url.Action("GetDetailTable", "CommonTask", new { area = string.Empty })';
     var DefendentTRansferDataTable;
     var PVDetailTable;
+    var DEFDetailTable;
     var objDTO = {};
     function LoadAnnouncementView() {
         var _Announcementparameters = "";
-        var AnnouncementViewName = "ENF_LVL_ANNOUNCEMENT_DDL";
+        var AnnouncementViewName = "CEL-ENF_LVL_ANNOUNCEMENT_DDL";
         var AnnouncementViewContainer = $("#div_Def_AnnType");
 
         _Announcementparameters = { ClassificationId: AnnouncementViewName, Mode: $("#HFCaseId").val() };
@@ -1682,6 +1684,39 @@
             $(".TransMaster").prop("disabled", true);
         }
 
+        if (typeof DEFDetailTable != 'undefined')
+            DEFDetailTable.destroy();
+
+        DEFDetailTable = $('#tblDEFDetail').DataTable({
+            lengthChange: false,
+            "dom": 't',
+            ajax: {
+                url: GetDefendentContactURL,
+                "dataSrc": "",
+                type: 'POST',
+                data: function (d) {
+                    d.CaseId = $("#CaseId").val();
+                }
+            },
+            "columns": [
+                { data: 'CaseLevel' },
+                { data: 'PaymentHeadName' },
+                { data: 'PaymentHeadDetailName' },
+                { data: 'PaymentToName' },
+                { data: 'PaymentToBenificryName' },
+                { data: 'TotalAmount' },
+                { data: 'PV_Status' },
+                { data: 'W_D_Date' },
+                { data: 'PV_Reason' }
+            ],
+            //"columnDefs": [{ 'orderable': false, "targets": "_all" }],
+            "order": [],
+            "columnDefs": [{
+                "targets": "_all",
+                "orderable": false
+            }]
+        });
+
     });
 
 </script>
@@ -1895,42 +1930,27 @@
                 </div>
                 <div class="card-body">
                     <div id="div_Def_AnnType" style="padding-top:10px" class="row">
-                        
+
                     </div>
                     <div class="row">
-                        <div class="col-sm-6">
-                            <div class="col-sm-12">
-                                <div class="row">
-                                    <label for="DEF_LawyerId">DEFENDANT LAWYER محامي الخصم</label>
-                                    <div class="input-group mb-3">
-                                        @Html.EditorFor(model => model.DEF_LawyerId, new { htmlAttributes = new { @class = "form-control" } })
-                                        <div class="input-group-append">
-                                            <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="upload" name="upload">
-                                                <label class="custom-file-label" for="upload">UPLOAD POA تحميل الوكالة</label>
-                                            </div>
-                                        </div>
-                                        <div id="ViewDEF_LawyerDocs" class="input-group-append @ViewBag.ViewDEF_LawyerDocs">
-                                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Lawyer_Docs/@ViewBag.DEF_Lawyer_Docs">VIEW</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="DEF_DateOfContact">DATE OF CONTACT تاريخ الاتصال</label>
+                                <label for="DEF_DateOfContact">DATE التاريخ</label>
                                 @Html.EditorFor(model => model.DEF_DateOfContact, new { htmlAttributes = new { @class = "form-control datepicker" } })
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="DEF_ContactType">CONTACT TYPE طريقة التواصل</label>
+                                @Html.DropDownList("DEF_ContactType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
                             <div class="form-group clsDateOfContactView">
-                                <label for="DEF_CallerName">CALLER NAME اسم المتصل</label>
+                                <label for="DEF_CallerName">NAME القائم بالعمل</label>
                                 @Html.DropDownList("DEF_CallerName", null, htmlAttributes: new { @class = "form-control select2bs4" })
                             </div>
                         </div>
-                    </div>
-                    <div class="row clsDateOfContactView">
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="DEF_MobileNo">MOBILE الهاتف</label>
@@ -1940,9 +1960,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                    </div>
+                    <div class="row clsDateOfContactView">
+                        <div class="col-sm-6">
                             <div class="form-group">
-                                <label for="DEF_Corresponding">NOTES  الملاحظات</label>
+                                <label for="DEF_Corresponding">RESULT النتيجة</label>
                                 <div class="form-group">
                                     @Html.TextAreaFor(model => model.DEF_Corresponding, 1, 200, new { @class = "form-control", @dir = "auto" })
                                 </div>
@@ -1972,7 +1994,42 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <label for="DEF_LawyerId">DEFENDANT LAWYER محامي الخصم</label>
+                                    <div class="input-group mb-3">
+                                        @Html.EditorFor(model => model.DEF_LawyerId, new { htmlAttributes = new { @class = "form-control" } })
+                                        <div class="input-group-append">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="upload" name="upload">
+                                                <label class="custom-file-label" for="upload">UPLOAD POA تحميل الوكالة</label>
+                                            </div>
+                                        </div>
+                                        <div id="ViewDEF_LawyerDocs" class="input-group-append @ViewBag.ViewDEF_LawyerDocs">
+                                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Lawyer_Docs/@ViewBag.DEF_Lawyer_Docs">VIEW</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="card-body">
+                    <table id="tblDEFDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>DATE التاريخ</th>
+                                <th>CONTACT TYPE طريقة التواصل</th>
+                                <th>NAME القائم بالعمل</th>
+                                <th>RESULT النتيجة</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>

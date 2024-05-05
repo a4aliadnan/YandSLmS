@@ -83,7 +83,8 @@
         FileTypeClosure = 1690,
         MoneyWith = 1727,
         PAYTONEW = 1898,
-        ArrestLevel = 2021
+        ArrestLevel = 2021,
+        DEFContactType = 2033
     }
     public enum Courts : ushort
     {

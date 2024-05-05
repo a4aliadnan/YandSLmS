@@ -273,6 +273,7 @@
         public ICollection<SessionsRoll> SessionRollId { get; set; }
         public ICollection<DecisionTranslation> TranslationId { get; set; }
         public ICollection<ClosurePartialDetail> PartDetailId { get; set; }
+        public ICollection<DefendentContact> DefendentContactId { get; set; }
 
         public CourtCases()
         {
@@ -672,6 +673,9 @@
         public string DEF_LawyerId { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DEF_VisitDate { get; set; }
+        [Display(Name = "CONTACT TYPE طريقة التواصل")]
+        public string DEF_ContactType { get; set; }
+
         public string CourtApproval { get; set; }
         public string ArrestLevel { get; set; }
         #endregion

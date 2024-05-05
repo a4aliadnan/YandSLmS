@@ -827,15 +827,21 @@
     <Compile Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.Designer.cs">
       <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202405042354557_createdDefContactTable.cs" />
+    <Compile Include="Migrations\202405042354557_createdDefContactTable.Designer.cs">
+      <DependentUpon>202405042354557_createdDefContactTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\CaseInvoiceFeeCalculation.cs" />
     <Compile Include="Models\CaseInvoiceFee.cs" />
     <Compile Include="Models\CaseInvoice.cs" />
     <Compile Include="Models\CaseInvoiceFeeCalculationConfiguration.cs" />
     <Compile Include="Models\ClosurePartialDetail.cs" />
     <Compile Include="Models\ClosurePartialDetailConfiguration.cs" />
+    <Compile Include="Models\DefendentContactConfiguration.cs" />
     <Compile Include="Models\DecisionTranslationConfiguration.cs" />
     <Compile Include="Models\DecisionTranslation.cs" />
     <Compile Include="Models\ClientAccess.cs" />
+    <Compile Include="Models\DefendentContact.cs" />
     <Compile Include="Models\DefendentTransfer.cs" />
     <Compile Include="Models\EMailMessage.cs" />
     <Compile Include="Models\SessionsRollConfiguration.cs" />
@@ -4974,6 +4980,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403222235478_addedNewColumnforArrrestAnn.resx">
       <DependentUpon>202403222235478_addedNewColumnforArrrestAnn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405042354557_createdDefContactTable.resx">
+      <DependentUpon>202405042354557_createdDefContactTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

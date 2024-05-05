@@ -127,6 +127,8 @@ namespace YandS.UI.Models
         public ICollection<DecisionTranslation> TranslationModifiedby { get; set; }
         public ICollection<ClosurePartialDetail> ClosurePartialCreatedby { get; set; }
         public ICollection<ClosurePartialDetail> ClosurePartialModifiedby { get; set; }
+        public ICollection<DefendentContact> DefendentContactCreatedby { get; set; }
+        public ICollection<DefendentContact> DefendentContactModifiedby { get; set; }
 
         #endregion
     }
@@ -199,6 +201,7 @@ namespace YandS.UI.Models
         public DbSet<ClientAccess> ClientAccess { get; set; }
         public DbSet<DecisionTranslation> DecisionTranslation { get; set; }
         public DbSet<ClosurePartialDetail> ClosurePartialDetail { get; set; }
+        public DbSet<DefendentContact> DefendentContact { get; set; }
         public RBACDbContext() : base("DefaultConnection")
         {
             Database.SetInitializer<RBACDbContext>(new RBACDatabaseInitializer());
@@ -271,6 +274,7 @@ namespace YandS.UI.Models
 
             modelBuilder.Configurations.Add(new DecisionTranslationConfiguration());
             modelBuilder.Configurations.Add(new ClosurePartialDetailConfiguration());
+            modelBuilder.Configurations.Add(new DefendentContactConfiguration());
         }
 
         public override int SaveChanges()

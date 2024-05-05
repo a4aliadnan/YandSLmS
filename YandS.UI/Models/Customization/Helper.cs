@@ -2891,6 +2891,12 @@ namespace YandS.UI
             RBACDbContext db = new RBACDbContext();
             return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.JudgementLevel && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
         }
+        public static List<MasterSetups> GetDEFContactType()
+        {
+            RBACDbContext db = new RBACDbContext();
+            return db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.DEFContactType && m.Active_Flag == true).OrderBy(o => o.DisplaySeq).ToList();
+        }
+
         public static int IsClientAccess(string UserName)
         {
             using (var context = new RBACDbContext())
