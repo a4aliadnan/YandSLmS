@@ -970,6 +970,9 @@ namespace YandS.UI.Controllers
             if (DataFor == "DEFDETL")
             {
                 ResultList = Helper.GetDetailTable(DataFor, 0, CaseId);
+
+                var jsondata = ResultList.ToDictionary();
+                return Json(new { data = jsondata }, JsonRequestBehavior.AllowGet);
             }
             else
             {

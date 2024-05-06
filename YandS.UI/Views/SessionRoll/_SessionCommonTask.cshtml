@@ -6,6 +6,7 @@
     var LoadPayForURL = '@Url.Action("LoadPayFor", "CommonTask", new { area = string.Empty })';
     var GetCaseDetailSRURL = '@Url.Action("GetCaseDetailByCaseId", "CommonTask", new { area = string.Empty })';
     var CreatePayVoucherURL = '@Url.Action("PayVoucherCreate", "SessionRoll", new { area = string.Empty })';
+    var GetDefendentContactURL = '@Url.Action("GetDetailTable", "CommonTask", new { area = string.Empty })';
     var PayForRemarks = "";
     var IsValidOfficeFileNo = true;
     var PVDetailTable;
@@ -16,9 +17,7 @@
             $(".clsDateOfContactView").removeClass("AppHidden");
             $('textarea').autoResize();
         }
-        else {
-            $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
-        }
+        
     }
     function CalcTotal() {
         var p_Amt = $("#Amount").val() == "" ? 0 : parseFloat($("#Amount").val());
@@ -78,6 +77,63 @@
         $(this).datepicker('hide');
         ShowMoneyTransferFields();
     }
+    function LoadDefDetailTable() {
+        console.log($("#CaseId").val());
+
+        if (typeof DEFDetailTable != 'undefined')
+            DEFDetailTable.destroy();
+
+        DEFDetailTable = $('#tblDEFDetail').DataTable({
+            lengthChange: false,
+            "dom": 't',
+            ajax: {
+                url: GetDefendentContactURL,
+                type: 'POST',
+                data: function (d) {
+                    d.CaseId = $("#CaseId").val();
+                    d.DataFor = "DEFDETL";
+                }
+            },
+            "columns": [
+                { data: 'DEF_DateOfContact' },
+                { data: 'DEF_ContactType' },
+                { data: 'DEF_CallerName' },
+                { data: 'DEF_Corresponding' }
+            ],
+            //"columnDefs": [{ 'orderable': false, "targets": "_all" }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: 0
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return data;//return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [1, 2]
+                },
+                {
+                    targets: 3, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ]
+        });
+    }
 
     $(document).ready(function () {
         console.log("Session Common Task");
@@ -104,8 +160,7 @@
             "#NotesDIV",
             "#AddressDIV",
             "#PVDIV",
-            ".clsLawerFollow",
-            ".clsDateOfContactView"
+            ".clsLawerFollow"
         ];
 
         $('.btn-Detail').on("click", function () {
@@ -153,6 +208,7 @@
                         break;
                     case "AddressDIV":
                         $("#Update_Addreass").val("Y");
+                        LoadDefDetailTable();
                         break;
                     case "PVDIV":
                         $("#Update_PV").val("Y");
@@ -162,14 +218,14 @@
 
             $('textarea').autoResize();
         });
-                
+
 
         var i;
         for (i = 0; i < DIV_TO_HIDE.length; ++i) {
             $(DIV_TO_HIDE[i]).removeClass("AppHidden").addClass("AppHidden");
         }
-        
-                
+
+
         ShowDIV();
         ShowMoneyTransferFields();
         $('#SessionNote_Remark').bind('input propertychange', function () {
@@ -484,12 +540,73 @@
         </div>
     </div>
     <div style="padding-top:10px" class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4 AppHidden">
             <div class="form-group">
                 @Html.LabelFor(model => model.AnnouncementTypeId)
                 @Html.DropDownList("AnnouncementTypeId", null, htmlAttributes: new { @class = "form-control select2bs4" })
             </div>
-        </div>    
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="DEF_DateOfContact">DATE التاريخ</label>
+                @Html.EditorFor(model => model.DEF_DateOfContact, new { htmlAttributes = new { @class = "form-control datepicker" } })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="DEF_ContactType">CONTACT TYPE طريقة التواصل</label>
+                @Html.DropDownList("DEF_ContactType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group clsDateOfContactView">
+                <label for="DEF_CallerName">NAME القائم بالعمل</label>
+                @Html.DropDownList("DEF_CallerName", null, htmlAttributes: new { @class = "form-control select2bs4" })
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="DEF_MobileNo">MOBILE الهاتف</label>
+                <div class="form-group">
+                    @Html.TextAreaFor(model => model.DEF_MobileNo, 1, 200, new { @class = "form-control", @dir = "auto" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clsDateOfContactView">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="DEF_Corresponding">NOTES  ملاحظات عن الاتصال</label>
+                <div class="form-group">
+                    @Html.TextAreaFor(model => model.DEF_Corresponding, 1, 200, new { @class = "form-control", @dir = "auto" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-4 AppHidden">
+                        <div class="form-group">
+                            <label for="DEF_VisitDate">VISIT DATE تاريخ مراجعته لمكتبنا</label>
+                            @Html.EditorFor(model => model.DEF_VisitDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-11" style="padding-top:30px;">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="uploadAddress" name="uploadAddress">
+                            <label class="custom-file-label" for="uploadAddress">ADDRESS FORM تحميل استمارة العناوين</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-1" style="padding-top:30px;">
+                        <div id="ViewDEF_LawyerDocs" class="input-group-append mb-6 @ViewBag.ViewDEF_AddressDocs">
+                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Address_Docs/@ViewBag.DEF_Address_Docs">VIEW</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
@@ -511,59 +628,19 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-2">
-            <div class="form-group">
-                <label for="DEF_DateOfContact">DATE OF CONTACT تاريخ الاتصال</label>
-                @Html.EditorFor(model => model.DEF_DateOfContact, new { htmlAttributes = new { @class = "form-control datepicker" } })
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group clsDateOfContactView">
-                <label for="DEF_CallerName">CALLER NAME اسم المتصل</label>
-                @Html.DropDownList("DEF_CallerName", null, htmlAttributes: new { @class = "form-control select2bs4" })
-            </div>
-        </div>
     </div>
-    <div class="row clsDateOfContactView">
-        <div class="col-sm-3">
-            <div class="form-group">
-                <label for="DEF_MobileNo">MOBILE الهاتف</label>
-                <div class="form-group">
-                    @Html.TextAreaFor(model => model.DEF_MobileNo, 1, 200, new { @class = "form-control", @dir = "auto" })
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="form-group">
-                <label for="DEF_Corresponding">NOTES  ملاحظات عن الاتصال</label>
-                <div class="form-group">
-                    @Html.TextAreaFor(model => model.DEF_Corresponding, 1, 200, new { @class = "form-control", @dir = "auto" })
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="DEF_VisitDate">VISIT DATE تاريخ مراجعته لمكتبنا</label>
-                            @Html.EditorFor(model => model.DEF_VisitDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
-                        </div>
-                    </div>
-                    <div class="col-sm-7" style="padding-top:30px;">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="uploadAddress" name="uploadAddress">
-                            <label class="custom-file-label" for="uploadAddress">ADDRESS FORM تحميل استمارة العناوين</label>
-                        </div>
-                    </div>
-                    <div class="col-sm-1" style="padding-top:30px;">
-                        <div id="ViewDEF_LawyerDocs" class="input-group-append mb-6 @ViewBag.ViewDEF_AddressDocs">
-                            <a target="_blank" class="btn btn-outline-warning" title="VIEW UPLOADED DOCUMENT" href="~/Uploads/DEF_Address_Docs/@ViewBag.DEF_Address_Docs">VIEW</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card-body">
+        <table id="tblDEFDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:6% !important" class="VMiddle text-center">DATE التاريخ</th>
+                    <th style="width:12% !important" class="VMiddle text-center">CONTACT TYPE طريقة التواصل</th>
+                    <th style="width:20% !important" class="VMiddle text-center">NAME القائم بالعمل</th>
+                    <th style="width:62% !important" class="VMiddle text-center">RESULT النتيجة</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 <div style="padding-top:10px" id="PVDIV" class="">

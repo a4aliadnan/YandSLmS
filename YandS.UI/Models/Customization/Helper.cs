@@ -5108,5 +5108,71 @@ namespace YandS.UI
             }
             return IsExists;
         }
+        public static void ProcessDefAddressDetail(object objmodal, string objName = null)
+        {
+            try
+            {
+                using (var db = new RBACDbContext())
+                {
+                    DefendentContact objToSave = new DefendentContact();
+
+                    if (string.IsNullOrEmpty(objName))
+                    {
+                        var modal = (ToBeRegisterVM)objmodal;
+                        objToSave.CaseId = modal.CaseId;
+                        objToSave.CaseLevelCode = modal.CaseLevelCode;
+                        objToSave.DEF_DateOfContact = modal.DEF_DateOfContact;
+                        objToSave.DEF_MobileNo = modal.DEF_MobileNo;
+                        objToSave.DEF_Corresponding = modal.DEF_Corresponding;
+                        objToSave.DEF_CallerName = modal.DEF_CallerName;
+                        objToSave.DEF_LawyerId = modal.DEF_LawyerId;
+                        objToSave.DEF_VisitDate = modal.DEF_VisitDate;
+                        objToSave.DEF_ContactType = modal.DEF_ContactType;
+
+                        db.DefendentContact.Add(objToSave);
+                        db.SaveChanges();
+                    }
+                    else if (objName == "CaseRegistrationVM")
+                    {
+                        var modal = (CaseRegistrationVM)objmodal;
+
+                        objToSave.CaseId = modal.CaseId;
+                        objToSave.CaseLevelCode = modal.CaseLevelCode;
+                        objToSave.DEF_DateOfContact = modal.DEF_DateOfContact;
+                        objToSave.DEF_MobileNo = modal.DEF_MobileNo;
+                        objToSave.DEF_Corresponding = modal.DEF_Corresponding;
+                        objToSave.DEF_CallerName = modal.DEF_CallerName;
+                        objToSave.DEF_LawyerId = modal.DEF_LawyerId;
+                        objToSave.DEF_VisitDate = modal.DEF_VisitDate;
+                        objToSave.DEF_ContactType = modal.DEF_ContactType;
+
+                        db.DefendentContact.Add(objToSave);
+                        db.SaveChanges();
+                    }
+                    else if (objName == "SessionsRollVM")
+                    {
+                        var modal = (SessionsRollVM)objmodal;
+
+                        objToSave.CaseId = modal.CaseId;
+                        objToSave.CaseLevelCode = modal.CaseLevelCode;
+                        objToSave.DEF_DateOfContact = modal.DEF_DateOfContact;
+                        objToSave.DEF_MobileNo = modal.DEF_MobileNo;
+                        objToSave.DEF_Corresponding = modal.DEF_Corresponding;
+                        objToSave.DEF_CallerName = modal.DEF_CallerName;
+                        objToSave.DEF_LawyerId = modal.DEF_LawyerId;
+                        objToSave.DEF_VisitDate = modal.DEF_VisitDate;
+                        objToSave.DEF_ContactType = modal.DEF_ContactType;
+
+                        db.DefendentContact.Add(objToSave);
+                        db.SaveChanges();
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
     }
 }

@@ -998,9 +998,7 @@
             $(".clsDateOfContactView").removeClass("AppHidden");
             $('textarea').autoResize();
         }
-        else {
-            $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
-        }
+        
     }
     function SetSum() {
         var sum = $('#DefendentTRansferHtmlTable').DataTable().column(1).data().sum();
@@ -1241,6 +1239,62 @@
         $(this).datepicker('hide');
         ShowMoneyTransferFields();
     }
+    function LoadDefDetailTable() {
+        if (typeof DEFDetailTable != 'undefined')
+            DEFDetailTable.destroy();
+        $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        DEFDetailTable = $('#tblDEFDetail').DataTable({
+            lengthChange: false,
+            "dom": 't',
+            ajax: {
+                url: GetDefendentContactURL,
+                type: 'POST',
+                data: function (d) {
+                    d.CaseId = $("#CaseId").val();
+                    d.DataFor = "DEFDETL";
+                }
+            },
+            "columns": [
+                { data: 'DEF_DateOfContact' },
+                { data: 'DEF_ContactType' },
+                { data: 'DEF_CallerName' },
+                { data: 'DEF_Corresponding' }
+            ],
+            //"columnDefs": [{ 'orderable': false, "targets": "_all" }],
+            "order": [],
+            "columnDefs": [
+                { 'orderable': false, 'targets': '_all' },
+                {
+                    render: function (data) {
+                        if (data)
+                            return moment(data).format('DD/MM/YYYY');
+                        else
+                            return "";
+                    },
+                    targets: 0
+                },
+                {
+                    render: function (data, type, full, meta) {
+                        if (data)
+                            return data;//return "<div class='text-wrap'>" + data + "</div>";
+                        else
+                            return "";
+                    },
+                    targets: [1, 2]
+                },
+                {
+                    targets: 3, render: function (data) {
+                        if (data) {
+                            return "<div dir = 'auto' class='text-right text-wrap'>" + data.replace(/(\r\n|\n|\r)/g, "<br />"); +"</div>";
+                        }
+                        else
+                            return "";
+                    }
+                }
+            ]
+        });
+    }
+
     $(document).ready(function () {
         console.log("Modify Enforcement --> INFO STAGE Partail View Document Page");
         var AllowedUsers = ["1", "2", "3", "4", "5", "6", "9"];
@@ -1312,7 +1366,7 @@
             }
         }
 
-        $(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
+        //$(".clsDateOfContactView").removeClass("AppHidden").addClass("AppHidden");
         $(".cls_EnfMainAll").removeClass("AppHidden").addClass("AppHidden");
         $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
 
@@ -1683,40 +1737,6 @@
             $(".EditMaster").prop("disabled", true);
             $(".TransMaster").prop("disabled", true);
         }
-
-        if (typeof DEFDetailTable != 'undefined')
-            DEFDetailTable.destroy();
-
-        DEFDetailTable = $('#tblDEFDetail').DataTable({
-            lengthChange: false,
-            "dom": 't',
-            ajax: {
-                url: GetDefendentContactURL,
-                "dataSrc": "",
-                type: 'POST',
-                data: function (d) {
-                    d.CaseId = $("#CaseId").val();
-                }
-            },
-            "columns": [
-                { data: 'CaseLevel' },
-                { data: 'PaymentHeadName' },
-                { data: 'PaymentHeadDetailName' },
-                { data: 'PaymentToName' },
-                { data: 'PaymentToBenificryName' },
-                { data: 'TotalAmount' },
-                { data: 'PV_Status' },
-                { data: 'W_D_Date' },
-                { data: 'PV_Reason' }
-            ],
-            //"columnDefs": [{ 'orderable': false, "targets": "_all" }],
-            "order": [],
-            "columnDefs": [{
-                "targets": "_all",
-                "orderable": false
-            }]
-        });
-
     });
 
 </script>
@@ -1929,7 +1949,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="div_Def_AnnType" style="padding-top:10px" class="row">
+                    <div id="div_Def_AnnType" style="padding-top:10px" class="row AppHidden">
 
                     </div>
                     <div class="row">
@@ -1973,13 +1993,13 @@
                         <div class="col-sm-6">
                             <div class="col-sm-12">
                                 <div class="row">
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-4 AppHidden">
                                         <div class="form-group">
                                             <label for="DEF_VisitDate">VISIT DATE تاريخ مراجعته لمكتبنا</label>
                                             @Html.EditorFor(model => model.DEF_VisitDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
                                         </div>
                                     </div>
-                                    <div class="col-sm-7" style="padding-top:30px;">
+                                    <div class="col-sm-11" style="padding-top:30px;">
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" id="uploadAddress" name="uploadAddress">
                                             <label class="custom-file-label" for="uploadAddress">ADDRESS FORM تحميل استمارة العناوين</label>
@@ -2020,10 +2040,10 @@
                     <table id="tblDEFDetail" class="table table-bordered table-striped dataTable dt-responsive nowrap" style="width:100%">
                         <thead>
                             <tr>
-                                <th>DATE التاريخ</th>
-                                <th>CONTACT TYPE طريقة التواصل</th>
-                                <th>NAME القائم بالعمل</th>
-                                <th>RESULT النتيجة</th>
+                                <th style="width:6% !important" class="VMiddle text-center">DATE التاريخ</th>
+                                <th style="width:12% !important" class="VMiddle text-center">CONTACT TYPE طريقة التواصل</th>
+                                <th style="width:20% !important" class="VMiddle text-center">NAME القائم بالعمل</th>
+                                <th style="width:62% !important" class="VMiddle text-center">RESULT النتيجة</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

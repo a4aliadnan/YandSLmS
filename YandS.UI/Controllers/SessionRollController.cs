@@ -238,7 +238,7 @@ namespace YandS.UI.Controllers
 
                     ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", modal.DEF_CallerName);
                     ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", modal.AnnouncementTypeId);
-
+                    ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
                     string LawyerDoc = Helper.GetDEF_Lawyer_Doc(modal.CaseId);
                     string AddressDoc = Helper.GetDEF_Address_Doc(modal.CaseId);
 
@@ -524,19 +524,7 @@ namespace YandS.UI.Controllers
                     }
                 }
 
-                courtEnforcementDetail = db.CourtCasesEnforcement.Where(w => w.CaseId == CaseId).FirstOrDefault();
-
-                if (courtEnforcementDetail != null)
-                {
-                    ModalToReturn.AnnouncementTypeId = courtEnforcementDetail.AnnouncementTypeId;
-                    ModalToReturn.DEF_DateOfContact = courtEnforcementDetail.DEF_DateOfContact;
-                    ModalToReturn.DEF_MobileNo = courtEnforcementDetail.DEF_MobileNo;
-                    ModalToReturn.DEF_Corresponding = courtEnforcementDetail.DEF_Corresponding;
-                    ModalToReturn.DEF_CallerName = courtEnforcementDetail.DEF_CallerName;
-                    ModalToReturn.DEF_LawyerId = courtEnforcementDetail.DEF_LawyerId;
-                    ModalToReturn.DEF_VisitDate = courtEnforcementDetail.DEF_VisitDate;
-
-                }
+               
 
                 if (ModalToReturn.PartialViewName == "_SessionJudgementPrimary")
                 {
@@ -1931,7 +1919,7 @@ namespace YandS.UI.Controllers
         }
         private void UpdateSessionDEFAddress(SessionsRollVM modal)
         {
-            Helper.UpdateSessionDEFAddress(modal);
+            Helper.ProcessDefAddressDetail(modal, "SessionsRollVM");
         }
         private int CreatePayVoucher(SessionsRollVM modal)
         {
@@ -2294,6 +2282,7 @@ namespace YandS.UI.Controllers
 
                 ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", modal.DEF_CallerName);
                 ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", modal.AnnouncementTypeId);
+                ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                 string LawyerDoc = Helper.GetDEF_Lawyer_Doc(modal.CaseId);
                 string AddressDoc = Helper.GetDEF_Address_Doc(modal.CaseId);
@@ -2853,7 +2842,7 @@ namespace YandS.UI.Controllers
 
                 ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", modal.DEF_CallerName);
                 ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", modal.AnnouncementTypeId);
-
+                ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
                 string LawyerDoc = Helper.GetDEF_Lawyer_Doc(modal.CaseId);
                 string AddressDoc = Helper.GetDEF_Address_Doc(modal.CaseId);
 

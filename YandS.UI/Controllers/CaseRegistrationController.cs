@@ -1076,7 +1076,8 @@ namespace YandS.UI.Controllers
         }
         private void UpdateSessionDEFAddress(CaseRegistrationVM modal)
         {
-            Helper.UpdateSessionDEFAddress(modal, "CaseRegistrationVM");
+            //Helper.UpdateSessionDEFAddress(modal, "CaseRegistrationVM");
+            Helper.ProcessDefAddressDetail(modal, "CaseRegistrationVM");
         }
         private void CreateCourtMoneyTransfer(CaseRegistrationVM modal)
         {

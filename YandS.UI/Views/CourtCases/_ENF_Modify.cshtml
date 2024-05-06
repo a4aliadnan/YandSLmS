@@ -74,6 +74,8 @@
                 $(".cls_EnfMainAll").removeClass("AppHidden").addClass("AppHidden");
                 $(".cls_" + $(this).attr("id").split('_')[1]).removeClass("AppHidden");
                 $("#SavePV_Data").val($(this).attr("id").split('_')[1]);
+                if (this.id == "btn_ENFAddressDetail")
+                    LoadDefDetailTable();
             }
 
             if (CallAjax)

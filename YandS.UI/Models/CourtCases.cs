@@ -879,7 +879,8 @@
         public string DEF_LawyerId { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DEF_VisitDate { get; set; }
-
+        [Display(Name = "CONTACT TYPE طريقة التواصل")]
+        public string DEF_ContactType { get; set; }
         #endregion
         public string SessionRollDefendentName { get; set; }
         public string Defendant { get; set; }
