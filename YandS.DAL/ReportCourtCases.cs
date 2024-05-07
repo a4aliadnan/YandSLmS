@@ -1094,7 +1094,9 @@ Kindly debit the legal charges accounts of all of the above customers and credit
                                                          new SqlParameter("@SessionRollId", SessionRollId),
                                                          new SqlParameter("@CaseId", CaseId)
                                                     };
-            return SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, "GetDetailTable", parameterList).Tables[0];
+            _result = SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, "GetDetailTable", parameterList).Tables[0];
+
+            return _result;
         }
 
         public DataTable ProcessDefendentTransfer(DefendentTransferDTO objDTO)

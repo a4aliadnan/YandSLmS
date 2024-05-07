@@ -189,7 +189,8 @@
         public string DEF_LawyerId { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DEF_VisitDate { get; set; }
-
+        [Display(Name = "CONTACT TYPE طريقة التواصل")]
+        public string DEF_ContactType { get; set; }
         #region Payment Voucher
         public int Voucher_No { get; set; }
 

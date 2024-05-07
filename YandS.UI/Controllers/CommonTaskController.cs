@@ -958,15 +958,30 @@ namespace YandS.UI.Controllers
             var request = HttpContext.Request;
             string DataFor = string.Empty;
             int SessionRollId = 0;
+            int CaseId = 0;
+
 
             try { DataFor = request.Params["DataFor"].ToString(); } catch (Exception e) { }
             try { SessionRollId = int.Parse(request.Params["SessionRollId"].ToString()); } catch (Exception e) { }
+            try { CaseId = int.Parse(request.Params["CaseId"].ToString()); } catch (Exception e) { }
 
-            var ResultList = Helper.GetDetailTable(DataFor, SessionRollId);
+            DataTable ResultList = new DataTable();
 
-            if (DataFor == "CASEHIST")
+            if (DataFor == "DEFDETL")
             {
-                return Json(ResultList.DataTableToList<CourtDecisionHistoryDTO>());
+                ResultList = Helper.GetDetailTable(DataFor, 0, CaseId);
+
+                var jsondata = ResultList.ToDictionary();
+                return Json(new { data = jsondata }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                ResultList = Helper.GetDetailTable(DataFor, SessionRollId);
+
+                if (DataFor == "CASEHIST")
+                {
+                    return Json(ResultList.DataTableToList<CourtDecisionHistoryDTO>());
+                }
             }
 
             return Json(ResultList);

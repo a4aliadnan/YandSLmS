@@ -314,16 +314,8 @@ namespace YandS.UI.Controllers
                         if (modal.UpdatePV_Type == "ENF_UPDATE")
                             _ModalToSave.LawyerId = modal.LawyerId;
 
-                        _ModalToSave.DEF_Corresponding = modal.DEF_Corresponding; //Common for all
-                        _ModalToSave.DEF_DateOfContact = modal.DEF_DateOfContact; //Common for all
-                        _ModalToSave.DEF_MobileNo = modal.DEF_MobileNo; //Common for all
-                        _ModalToSave.DEF_MobileNo2 = modal.DEF_MobileNo2; //Common for all
-                        _ModalToSave.DEF_MobileNo3 = modal.DEF_MobileNo3; //Common for all
-                        _ModalToSave.DEF_MobileNo4 = modal.DEF_MobileNo4; //Common for all
-                        _ModalToSave.DEF_MobileNo5 = modal.DEF_MobileNo5; //Common for all
-                        _ModalToSave.DEF_CallerName = modal.DEF_CallerName; //Common for all
-                        _ModalToSave.DEF_LawyerId = modal.DEF_LawyerId; //Common for all
-                        _ModalToSave.DEF_VisitDate = modal.DEF_VisitDate; //Common for all
+                        if (modal.Update_Addreass == "Y")
+                            ProcessDefAddressDetail(modal);
 
                         if (modal.EnforcementlevelId.In(OfficeFileStatus.Announcement.ToString(), OfficeFileStatus.ArrestApplication.ToString(), OfficeFileStatus.ArrestAnnouncement.ToString())) //ANNOUNCEMENT الإعلان
                         {
@@ -444,18 +436,8 @@ namespace YandS.UI.Controllers
                         if (modal.UpdatePV_Type == "ENF_UPDATE")
                             db.Entry(_ModalToSave).Entity.LawyerId = modal.LawyerId; //Common for all
 
-                        db.Entry(_ModalToSave).Entity.DEF_Corresponding = modal.DEF_Corresponding; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_DateOfContact = modal.DEF_DateOfContact; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_MobileNo = modal.DEF_MobileNo; //Common for all
-
-                        db.Entry(_ModalToSave).Entity.DEF_MobileNo2 = modal.DEF_MobileNo2; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_MobileNo3 = modal.DEF_MobileNo3; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_MobileNo4 = modal.DEF_MobileNo4; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_MobileNo5 = modal.DEF_MobileNo5; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_CallerName = modal.DEF_CallerName; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_LawyerId = modal.DEF_LawyerId; //Common for all
-                        db.Entry(_ModalToSave).Entity.DEF_VisitDate = modal.DEF_VisitDate; //Common for all
-
+                        if (modal.Update_Addreass == "Y")
+                            ProcessDefAddressDetail(modal);
 
                         if (modal.EnforcementlevelId.In(OfficeFileStatus.Announcement.ToString(), OfficeFileStatus.ArrestApplication.ToString(), OfficeFileStatus.ArrestAnnouncement.ToString())) //ANNOUNCEMENT الإعلان
                         {
@@ -873,9 +855,6 @@ namespace YandS.UI.Controllers
 
                                 ViewModal.EnforcementActionDate = courtCasesEnforcement.ActionDate;
                                 ViewModal.LawyerId = courtCasesEnforcement.LawyerId ?? "0";
-                                ViewModal.DEF_Corresponding = courtCasesEnforcement.DEF_Corresponding;
-                                ViewModal.DEF_DateOfContact = courtCasesEnforcement.DEF_DateOfContact;
-                                ViewModal.DEF_MobileNo = courtCasesEnforcement.DEF_MobileNo;
 
                                 ViewModal.AnnouncementTypeId = courtCasesEnforcement.AnnouncementTypeId;
                                 ViewModal.AnnouncementCompleteDt = courtCasesEnforcement.AnnouncementCompleteDt;
@@ -926,6 +905,10 @@ namespace YandS.UI.Controllers
 
                                 ViewModal.MoneyTrRequestDate = courtCasesEnforcement.MoneyTrRequestDate;
 
+                                /*
+                                ViewModal.DEF_Corresponding = courtCasesEnforcement.DEF_Corresponding;
+                                ViewModal.DEF_DateOfContact = courtCasesEnforcement.DEF_DateOfContact;
+                                ViewModal.DEF_MobileNo = courtCasesEnforcement.DEF_MobileNo;
                                 ViewModal.DEF_MobileNo2 = courtCasesEnforcement.DEF_MobileNo2;
                                 ViewModal.DEF_MobileNo3 = courtCasesEnforcement.DEF_MobileNo3;
                                 ViewModal.DEF_MobileNo4 = courtCasesEnforcement.DEF_MobileNo4;
@@ -933,6 +916,7 @@ namespace YandS.UI.Controllers
                                 ViewModal.DEF_CallerName = courtCasesEnforcement.DEF_CallerName;
                                 ViewModal.DEF_LawyerId = courtCasesEnforcement.DEF_LawyerId;
                                 ViewModal.DEF_VisitDate = courtCasesEnforcement.DEF_VisitDate;
+                                */
                             }
                         }
                     }
@@ -1373,6 +1357,10 @@ namespace YandS.UI.Controllers
             }
 
             return retValue;
+        }
+        private void ProcessDefAddressDetail(ToBeRegisterVM modal)
+        {
+            Helper.ProcessDefAddressDetail(modal);
         }
 
         #endregion
@@ -2677,11 +2665,19 @@ namespace YandS.UI.Controllers
                     ViewBag.ReOpenEnforcement = new SelectList(Helper.GetYesNoForSelect(), "Mst_Value", "Mst_Desc", ViewModal.ReOpenEnforcement);
                     ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                     ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                    ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                     ViewBag.ClientReply = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", ViewModal.ClientReply);
                     ViewBag.CourtFollow = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", ViewModal.CourtFollow);
                     ViewBag.TransportationSource = new SelectList(Helper.GetTransSourceSelect(), "Mst_Value", "Mst_Desc", ViewModal.TransportationSource);
                     ViewBag.Translation = new SelectList(Helper.GetYesForSelect(), "Mst_Value", "Mst_Desc", ViewModal.Translation);
+
+                    if (ViewModal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString())
+                        ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", ViewModal.ArrestLevel);
+                    else
+                        ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", "0");
+
+                    ViewBag.MoneyWith = new SelectList(Helper.GetMoneyWith(), "Mst_Value", "Mst_Desc", ViewModal.MoneyWith);
 
                     if (ViewModal.UpdatePV_Type == "ENF_UPDATE_SESSION")
                     {
@@ -2971,6 +2967,7 @@ namespace YandS.UI.Controllers
 
                         ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                         ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                        ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                         string LawyerDoc = Helper.GetDEF_Lawyer_Doc(ViewModal.CaseId);
                         string AddressDoc = Helper.GetDEF_Address_Doc(ViewModal.CaseId);
@@ -3177,6 +3174,7 @@ namespace YandS.UI.Controllers
                     else if (PartialViewName == "ContactResult")
                     {
                         ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc");
+                        ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
                     }
                     else if (PartialViewName == "EnfGeneral")
                     {
@@ -3501,6 +3499,7 @@ namespace YandS.UI.Controllers
                             ViewBag.LawyerId = new SelectList(Helper.GetSessionLawyers(true), "Mst_Value", "Mst_Desc", ViewModal.LawyerId);
                             ViewBag.DEF_CallerName = new SelectList(Helper.GetCallerNames(), "Mst_Value", "Mst_Desc", ViewModal.DEF_CallerName);
                             ViewBag.AnnouncementTypeId = new SelectList(Helper.GetAnnouncementType(), "Mst_Value", "Mst_Desc", ViewModal.AnnouncementTypeId);
+                            ViewBag.DEF_ContactType = new SelectList(Helper.GetDEFContactType(), "Mst_Value", "Mst_Desc");
 
                             if (ViewModal.EnforcementlevelId == OfficeFileStatus.ArrestApplication.ToString())
                                 ViewBag.ArrestLevel = new SelectList(Helper.GetArrestLevel(), "Mst_Value", "Mst_Desc", ViewModal.ArrestLevel);
