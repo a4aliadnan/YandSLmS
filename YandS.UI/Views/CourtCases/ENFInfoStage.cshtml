@@ -1243,6 +1243,7 @@
         if (typeof DEFDetailTable != 'undefined')
             DEFDetailTable.destroy();
         $("#div_Def_AnnType").removeClass("AppHidden").addClass("AppHidden");
+        $("#Update_Addreass").val("Y");
         DEFDetailTable = $('#tblDEFDetail').DataTable({
             lengthChange: false,
             "dom": 't',
@@ -1759,6 +1760,7 @@
     @Html.HiddenFor(model => model.DEF_MobileNo5)
     @Html.HiddenFor(model => model.SavePV_Data)
     @Html.HiddenFor(model => model.SessionRollId)
+    @Html.HiddenFor(model => model.Update_Addreass)
     <input type="hidden" id="hidUpdatedOn" value="@ViewBag.UpdatedOn" />
 
     <div class="card cls_EnfMainAll cls_ENFDetail">

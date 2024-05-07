@@ -675,7 +675,7 @@
         public DateTime? DEF_VisitDate { get; set; }
         [Display(Name = "CONTACT TYPE طريقة التواصل")]
         public string DEF_ContactType { get; set; }
-
+        public string Update_Addreass { get; set; }
         public string CourtApproval { get; set; }
         public string ArrestLevel { get; set; }
         #endregion

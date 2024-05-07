@@ -314,7 +314,8 @@ namespace YandS.UI.Controllers
                         if (modal.UpdatePV_Type == "ENF_UPDATE")
                             _ModalToSave.LawyerId = modal.LawyerId;
 
-                        ProcessDefAddressDetail(modal);
+                        if (modal.Update_Addreass == "Y")
+                            ProcessDefAddressDetail(modal);
 
                         if (modal.EnforcementlevelId.In(OfficeFileStatus.Announcement.ToString(), OfficeFileStatus.ArrestApplication.ToString(), OfficeFileStatus.ArrestAnnouncement.ToString())) //ANNOUNCEMENT الإعلان
                         {
@@ -435,7 +436,8 @@ namespace YandS.UI.Controllers
                         if (modal.UpdatePV_Type == "ENF_UPDATE")
                             db.Entry(_ModalToSave).Entity.LawyerId = modal.LawyerId; //Common for all
 
-                        ProcessDefAddressDetail(modal);
+                        if (modal.Update_Addreass == "Y")
+                            ProcessDefAddressDetail(modal);
 
                         if (modal.EnforcementlevelId.In(OfficeFileStatus.Announcement.ToString(), OfficeFileStatus.ArrestApplication.ToString(), OfficeFileStatus.ArrestAnnouncement.ToString())) //ANNOUNCEMENT الإعلان
                         {

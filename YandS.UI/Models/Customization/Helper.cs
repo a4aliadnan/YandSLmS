@@ -5154,7 +5154,7 @@ namespace YandS.UI
                         var modal = (SessionsRollVM)objmodal;
 
                         objToSave.CaseId = modal.CaseId;
-                        objToSave.CaseLevelCode = modal.CaseLevelCode;
+                        objToSave.CaseLevelCode = modal.SessionLevel;
                         objToSave.DEF_DateOfContact = modal.DEF_DateOfContact;
                         objToSave.DEF_MobileNo = modal.DEF_MobileNo;
                         objToSave.DEF_Corresponding = modal.DEF_Corresponding;
