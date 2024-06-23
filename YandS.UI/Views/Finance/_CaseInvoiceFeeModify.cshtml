@@ -3,15 +3,7 @@
     $(document).ready(function () {
         //var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,4})?$/);
         //$(".dlsDigits").regexMask(IsDigitmask);
-
-        $(".deleteRow").on("click", function () {
-            console.log("Partial View  - deleteRow");
-
-            $(this).parents(".caseinvoicefeeRow:first").remove();
-            CollectionCount = CollectionCount - 1;
-            return false;
-        });
-
+        
         $(".clsFeeTypeId").on("change", function () {
             console.log("FeeTypeId Change");
             //console.log(this.value);
