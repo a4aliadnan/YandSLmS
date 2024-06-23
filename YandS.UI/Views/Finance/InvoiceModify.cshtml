@@ -4,6 +4,7 @@
 }
 <script>
     var CollectionCount = 0;
+
     function round2Fixed(value) {
         value = +value;
 
@@ -19,6 +20,13 @@
         return (+(value[0] + 'e' + (value[1] ? (+value[1] - 3) : -3))).toFixed(3);
     }
 
+    function DeleteRow(row) {
+        console.log("Partial View  - deleteRow");
+        console.log("CollectionCount ::" + CollectionCount);
+        $(row).parents(".caseinvoicefeeRow:first").remove();
+        CollectionCount = CollectionCount - 1;
+        console.log("CollectionCount ::" + CollectionCount);
+    }
 </script>
 <div class="content-wrapper">
     <section class="content-header">
@@ -936,11 +944,27 @@
         });
 
         $(document).ready(function () {
+            $.fn.regexMask = function (mask) {
+                $(this).keypress(function (event) {
+                    if (!event.charCode) return true;
+                    var part1 = this.value.substring(0, this.selectionStart);
+                    var part2 = this.value.substring(this.selectionEnd, this.value.length);
+                    if (!mask.test(part1 + String.fromCharCode(event.charCode) + part2))
+                        return false;
+                });
+            };
+
             var IsDigitmask = new RegExp(/^\d*\.?(?:\d{1,4})?$/);
             $(".dlsDigits").regexMask(IsDigitmask);
             //if ($("#ExpectedFees").val() != "") {
             //    $("#ExpectedFees").prop("readonly", true);
             //}
+
+            $(".deleteRow").on("click", function () {
+                DeleteRow(this);
+                return false;
+            });
+
 
             CollectionCount = $("#hidCollectionCount").val();
             if ($("#hidViewType").val() != "") {
@@ -1376,6 +1400,7 @@
             //    CollectionCount = CollectionCount - 1;
             //    return false;
             //});
+            console.log("CollectionCount ::" + CollectionCount);
 
             $(".clsFeeTypeId").on("change", function () {
                 console.log("FeeTypeId Change");
