@@ -1035,6 +1035,11 @@
         public string ClosingNotes { get; set; }
         public string TransportationFee { get; set; }
         public string Translation { get; set; }
+        [Display(Name = "A/C CONTRACT NO")]
+        public string AccountContractNo { get; set; }
+        [Display(Name = "CLIENT FILE NO")]
+        public string ClientFileNo { get; set; }
+
     }
     public class CourtStatusVM
     {

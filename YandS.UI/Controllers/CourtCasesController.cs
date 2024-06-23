@@ -2175,6 +2175,8 @@ namespace YandS.UI.Controllers
                 ViewModal.ClaimAmount = courtCases.ClaimAmount;
                 ViewModal.SpecialInstructions = courtCases.SpecialInstructions;
                 ViewModal.ClosingNotes = courtCases.ClosingNotes;
+                ViewModal.AccountContractNo = courtCases.AccountContractNo;
+                ViewModal.ClientFileNo = courtCases.ClientFileNo;
 
                 var Invoices = db.CaseInvoice.Where(w => w.CaseId == CaseId && w.IsLastInvoice == true).FirstOrDefault();
 
@@ -2216,6 +2218,8 @@ namespace YandS.UI.Controllers
                 db.Entry(courtCases).Entity.ClosingNotes = modal.ClosingNotes;
                 db.Entry(courtCases).Entity.TransportationFee = modal.TransportationFee;
                 db.Entry(courtCases).Entity.Translation = modal.Translation;
+                db.Entry(courtCases).Entity.AccountContractNo = modal.AccountContractNo;
+                db.Entry(courtCases).Entity.ClientFileNo = modal.ClientFileNo;
 
                 db.Entry(courtCases).State = EntityState.Modified;
                 db.SaveChanges();
