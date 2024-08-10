@@ -189,7 +189,7 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Twilio.Api">
-      <HintPath>..\..\lib\YandS.UI\bin\Twilio.Api.dll</HintPath>
+      <HintPath>..\..\..\Resources\Twilio.Api.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
