@@ -1180,6 +1180,13 @@ namespace YandS.UI.Controllers
                 Helper.CreateTranslation(RegModal, "ToBeRegisterVM");
                 db.Entry(courtCases).Entity.UpdateBoxDate = DateTime.UtcNow.AddHours(4);
                 db.Entry(courtCases).Entity.UpdateBoxBy = User.Identity.GetUserId();
+
+                string englishText = Helper.GetTranslatedText(courtCases.CourtDecision);
+
+                if (!string.IsNullOrEmpty(englishText))
+                {
+                    db.Entry(courtCases).Entity.CourtDecision = courtCases.CourtDecision + Environment.NewLine + englishText;
+                }
             }
 
             if (courtCases.CaseLevelCode.In("3", "4", "5", "6"))
@@ -1203,6 +1210,18 @@ namespace YandS.UI.Controllers
             if (RegModal.Translation == "1")
             {
                 Helper.CreateTranslation(RegModal, "ToBeRegisterVM");
+                bool containsEnglishCharacters = System.Text.RegularExpressions.Regex.IsMatch(courtCases.CourtDecision, @"[a-zA-Z]");
+
+                if (!containsEnglishCharacters)
+                {
+
+                    string englishText = Helper.GetTranslatedText(courtCases.CourtDecision);
+
+                    if (!string.IsNullOrEmpty(englishText))
+                    {
+                        Helper.UpdateTranslation(RegModal, "ToBeRegisterVM", englishText);
+                    }
+                }
             }
 
             if (RegModal.CaseLevelCode == "1")

@@ -4425,7 +4425,7 @@ namespace YandS.UI
                         courtCases = db.CourtCase.Find(modal.CaseId);
                         CurrentCourtDecision = modal.CourtDecision;
                     }
-                    
+
                     decisionTranslation = db.DecisionTranslation.Where(w => w.CaseId == courtCases.CaseId && !w.TranslationDone).OrderByDescending(o => o.TranslationId).FirstOrDefault();
 
                     if (decisionTranslation == null)
@@ -4443,6 +4443,66 @@ namespace YandS.UI
                             db.SaveChanges();
                         }
                     }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+        public static void UpdateTranslation(object objmodal, string objName, string englishText)
+        {
+            try
+            {
+                CourtCases courtCases = new CourtCases();
+                string CurrentCourtDecision = string.Empty;
+
+                using (var db = new RBACDbContext())
+                {
+                    if (objName == "FinanceVM")
+                    {
+                        var modal = (FinanceVM)objmodal;
+                        courtCases = db.CourtCase.Find(modal.CaseId);
+                    }
+                    else if (objName == "ToBeRegisterVM")
+                    {
+                        var modal = (ToBeRegisterVM)objmodal;
+                        courtCases = db.CourtCase.Find(modal.CaseId);
+                        CurrentCourtDecision = modal.CourtDecision;
+                    }
+                    else if (objName == "CaseRegistrationVM")
+                    {
+                        var modal = (CaseRegistrationVM)objmodal;
+                        courtCases = db.CourtCase.Find(modal.CaseId);
+                        CurrentCourtDecision = modal.CourtDecision;
+                    }
+                    else if (objName == "CourtCasesDetailVM")
+                    {
+                        var modal = (CourtCasesDetailVM)objmodal;
+                        courtCases = db.CourtCase.Find(modal.CaseId);
+                        CurrentCourtDecision = modal.CourtDecision;
+                    }
+                    else
+                    {
+                        var modal = (SessionsRollVM)objmodal;
+                        courtCases = db.CourtCase.Find(modal.CaseId);
+                        CurrentCourtDecision = modal.CourtDecision;
+                    }
+
+
+                    DecisionTranslation decisionTranslation = db.DecisionTranslation.Where(w => w.CaseId == courtCases.CaseId && !w.TranslationDone).OrderByDescending(o => o.TranslationId).FirstOrDefault();
+
+                    db.Entry(courtCases).Entity.CourtDecision = courtCases.CourtDecision + Environment.NewLine + englishText;
+                    db.Entry(courtCases).Entity.UpdateBoxDate = DateTime.UtcNow.AddHours(4);
+                    db.Entry(courtCases).Entity.UpdateBoxBy = HttpContext.Current.User.Identity.GetUserId();
+                    db.Entry(courtCases).State = EntityState.Modified;
+
+                    db.Entry(decisionTranslation).Entity.CourtDecision = courtCases.CourtDecision;
+                    db.Entry(decisionTranslation).Entity.CourtDecisionTranslated = englishText;
+                    db.Entry(decisionTranslation).Entity.TranslationDone = true;
+                    db.Entry(decisionTranslation).State = EntityState.Modified;
+
+                    db.SaveChanges();
                 }
             }
             catch (Exception e)
@@ -4652,11 +4712,10 @@ namespace YandS.UI
             try
             {
                 var client = TranslationClient.Create(Google.Apis.Auth.OAuth2.GoogleCredential.FromFile(Path.Combine(GetTemplateRoot, @"virtual-sylph-389717-f865ac5800e8.json")));
-                
+
                 TranslationResult translationResult = client.TranslateText(textToTranslate, textToLang, textFromLang, TranslationModel.NeuralMachineTranslation);
 
                 translatedTextReturn = translationResult.TranslatedText;
-                
             }
             catch(Exception e)
             {
