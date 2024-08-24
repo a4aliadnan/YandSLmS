@@ -1885,6 +1885,10 @@ namespace YandS.UI.Controllers
                         courtCases.OfficeFileStatus = RegModal.OfficeFileStatus;
                     }
 
+                    //As per Request from YandS Arsalan for All Cases of United Finance by default Translation will be YES
+                    if(RegModal.ClientCode == "170")
+                        courtCases.Translation = "1";
+
                     db.CourtCase.Add(courtCases);
                     db.SaveChanges();
 
