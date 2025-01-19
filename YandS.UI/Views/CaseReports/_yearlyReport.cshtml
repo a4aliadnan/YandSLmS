@@ -1,0 +1,115 @@
+﻿<script type="text/javascript">
+    function ProcessClientCodeChange() {
+        if ($('#ClientCode').val() == "10") {
+            $(".ClientODB").removeClass("AppHidden");
+        }
+        else if ($('#ClientCode').val() == "23") {
+            $(".ClientOMASCO").removeClass("AppHidden");
+        }
+        else {
+            $(".ClientODB").removeClass("AppHidden").addClass("AppHidden");
+            $('#ClientCaseType').val("0").trigger('change');
+            $('#ODBBankBranch').val("0").trigger('change');
+            $('#LoanManager').val("0").trigger('change');
+        }
+    }
+
+    $(document).ready(function () {
+        console.log("yearlyReport Partial View Document Ready ");
+        console.log($('#hidUserName').val());
+        $('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            todayBtn: "linked",
+            clearBtn: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+        $('.select2bs4').select2({ theme: 'bootstrap4' });
+
+        $('.btnGenerateReport').on("click", function () {
+            $('#ClickedButtonName').val(this.id);
+            var form = document.getElementById("frm_CourtCasesReports");
+            form.submit();
+        });
+
+        $("#DIV_TO_HIDE").addClass("AppHidden");
+        $('#ClientCode').on("change", function () {
+            ProcessClientCodeChange();
+        });
+    });
+</script>
+@model YandS.DAL.RepCaseParameterForm
+<div class="card">
+    <div style="padding-top:10px;" class="row beforeCourtActive">
+        <div class="col-sm-12 text-center"><h3>YEARLY REPORT</h3></div>
+    </div>
+    <div class="card-body">
+        @*@Html.HiddenFor(model => model.CaseStatus, new { @Value = "1" })
+        @Html.HiddenFor(model => model.CaseTypeCode, new { @Value = "0" })*@
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location)
+                    @Html.DropDownList("Location", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AgainstCode)
+                    @Html.DropDownList("AgainstCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group ClientOMASCO ClientODB AppHidden">
+                    @Html.LabelFor(model => model.ClientCaseType)
+                    @Html.DropDownList("ClientCaseType", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClientCode)
+                    @Html.DropDownList("ClientCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group AppHidden">
+                    @Html.LabelFor(model => model.CaseLevelCode)
+                    @Html.DropDownList("CaseLevelCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CourtLocationid)
+                    @Html.DropDownList("CourtLocationid", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group ClientODB AppHidden">
+                    @Html.LabelFor(model => model.ODBBankBranch)
+                    @Html.DropDownList("ODBBankBranch", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="EnforcementlevelId">FILE STATUS حالة الملف</label>
+                    @Html.DropDownList("EnforcementlevelId", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+                <div class="form-group ClientODB AppHidden">
+                    @Html.LabelFor(model => model.LoanManager)
+                    @Html.DropDownList("LoanManager", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+        <div id="DIV_TO_HIDE">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CaseStatus)
+                    @Html.DropDownList("CaseStatus", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CaseTypeCode)
+                    @Html.DropDownList("CaseTypeCode", null, htmlAttributes: new { @class = "form-control select2bs4" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="button" id="btnYrlyRep" class="btn btn-success btnGenerateReport"><i class="fas fa-file-archive"></i> YEARLY REPORT</button>
+        @if (User.Identity.Name.ToUpper() == "ADMIN")
+        {
+        <button type="button" id="btnProcessTranslate" class="btn btn-success btnGenerateReport"><i class="fas fa-file-archive"></i> PROCESS TRANSLATE</button>
+        }
+    </div>
+</div>

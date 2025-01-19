@@ -202,6 +202,7 @@ namespace YandS.UI.Models
         public DbSet<DecisionTranslation> DecisionTranslation { get; set; }
         public DbSet<ClosurePartialDetail> ClosurePartialDetail { get; set; }
         public DbSet<DefendentContact> DefendentContact { get; set; }
+        public DbSet<EnglishDecision> EnglishDecision { get; set; }
         public RBACDbContext() : base("DefaultConnection")
         {
             Database.SetInitializer<RBACDbContext>(new RBACDatabaseInitializer());

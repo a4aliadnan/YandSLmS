@@ -1520,6 +1520,15 @@ namespace YandS.UI.Controllers
                     ViewBag.CreateBtnText = "MODIFY CASE";
                 }
             }
+
+            //int CaseId = 3877;
+            //var  courtCasesList = db.CourtCase.Where(w=>w.CaseStatus == "1").ToList();
+
+            //foreach (var objDTO in courtCasesList)
+            //{
+
+            //    Helper.UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, "CREATE");
+            //}
             /*
             try
             {

@@ -39,6 +39,24 @@
         border: 1px solid #fff2cc;
     }
 
+    .yearlyReport {
+        background-color: #ffffff !important;
+        color: #c00000 !important;
+        border: 1px solid #41719c;
+    }
+
+        .yearlyReport:hover {
+            background-color: #dae3f3 !important;
+            color: #000000 !important;
+            border: 1px solid #fff2cc;
+        }
+
+    .yearlyReportActive {
+        background-color: #dae3f3 !important;
+        color: #000000 !important;
+        border: 1px solid #fff2cc;
+    }
+
     .enforcement {
         background-color: #ffffff !important;
         color: #c00000 !important;
@@ -186,6 +204,9 @@
                     <button type="button" id="_enforcement" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg enforcement navButton">ENFORCEMENT</button>
                 </div>
                 <div class="col">
+                    <button type="button" id="_yearlyReport" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg yearlyReport navButton">YEARLY REPORT</button>
+                </div>
+                <div class="col AppHidden">
                     <button type="button" id="_consultants" style="font-size: 1.25rem !important;" class="btn btn-block btn-lg consultants navButton" disabled>CONSULTANTS</button>
                 </div>
                 <div class="col">
@@ -218,7 +239,7 @@
     <input type="hidden" id="txtDataTableFilter" value="CASEREP" />
     <input type="hidden" id="txtCaseLevel" value="1" />
     <input type="hidden" id="txtViewToLoad" value="@ViewBag.ViewToLoad" />
-
+    <input type="hidden" id="hidUserName" value="@User.Identity.Name" />
 </div>
 
 @section pagespecific {
