@@ -30,7 +30,7 @@ namespace YandS.UI.Controllers
             string PartialViewName = "";
             if (ModelState.IsValid)
             {
-                
+
                 try
                 {
                     string MIMETYPE = string.Empty;
@@ -61,132 +61,158 @@ namespace YandS.UI.Controllers
                         p_modal.JudgmentDateTo = DateTime.ParseExact("01-01-9999", "dd-MM-yyyy", null);
                     }
 
+                    if (p_modal.ClickedButtonName == "btnProcessTranslate")
+                    {
+                        //int CaseId = 3877;
+                        var courtCasesList = db.CourtCase.ToList();
 
-                    ReportCourtCases objDAL = new ReportCourtCases();
-
-                    var RetResult = objDAL.getCourtCaseDetail(p_modal);
-
-                    if (RetResult.Tables[0].Rows.Count > 0)
+                        foreach (var objDTO in courtCasesList)
+                        {
+                            if (!string.IsNullOrEmpty(objDTO.CourtDecision))
+                                Helper.UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, "CREATE");
+                        }
+                    }
+                    else
                     {
 
-                        if (p_modal.ReportFormat == "EXCEL")
+                        ReportCourtCases objDAL = new ReportCourtCases();
+
+                        var RetResult = objDAL.getCourtCaseDetail(p_modal);
+
+                        if (RetResult.Tables[0].Rows.Count > 0)
                         {
-                            MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                            FileExt = ".xlsx";
-                        }
-                        else if (p_modal.ReportFormat == "PDF")
-                        {
-                            MIMETYPE = "application/pdf";
-                            FileExt = ".pdf";
-                        }
-                        else if (p_modal.ReportFormat == "WORD")
-                        {
-                            MIMETYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                            FileExt = ".docx";
-                        }
 
-                        MemoryStream ResultStream = new MemoryStream();
+                            if (p_modal.ReportFormat == "EXCEL")
+                            {
+                                MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                                FileExt = ".xlsx";
+                            }
+                            else if (p_modal.ReportFormat == "PDF")
+                            {
+                                MIMETYPE = "application/pdf";
+                                FileExt = ".pdf";
+                            }
+                            else if (p_modal.ReportFormat == "WORD")
+                            {
+                                MIMETYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                                FileExt = ".docx";
+                            }
 
-                        string TemplateName = string.Empty;
-                        string FileName = string.Empty;
-                        string ExcelResult = string.Empty;
-                        string InvoiceREFNO = string.Empty;
+                            MemoryStream ResultStream = new MemoryStream();
 
-                        if (p_modal.ClickedButtonName.In("btnNBORep", "btnBDRep", "btnUFRep", "btnUFCRep", "btnODBShRep", "btnOMASCOShRep", "btnFABRep"))
-                        {
-                            if (p_modal.ClickedButtonName == "btnBDRep")
-                            {
-                                TemplateName = "BD_REPORT.xlsx";
-                                FileName = "BD_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnNBORep")
-                            {
-                                TemplateName = "NBO_REPORT.xlsx";
-                                FileName = "NBO_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnUFRep")
-                            {
-                                TemplateName = "UF_REPORT.xlsx";
-                                FileName = "UF_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnUFCRep")
-                            {
-                                TemplateName = "UFC_REPORT.xlsx";
-                                FileName = "UFC_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnFABRep")
-                            {
-                                TemplateName = "FAB_REPORT.xlsx";
-                                FileName = "FAB_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnODBShRep")
-                            {
-                                TemplateName = "ODB_REPORT.xlsx";
-                                FileName = "ODB_REPORT";
-                            }
-                            else if (p_modal.ClickedButtonName == "btnOMASCOShRep")
-                            {
-                                TemplateName = "OMASCO_REPORT.xlsx";
-                                FileName = "OMASCO_REPORT";
-                            }
-                            TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
+                            string TemplateName = string.Empty;
+                            string FileName = string.Empty;
+                            string ExcelResult = string.Empty;
+                            string InvoiceREFNO = string.Empty;
+                            string ClientName = string.Empty;
 
-                            using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
-                                file.CopyTo(ResultStream);
+                            if (p_modal.ClickedButtonName.In("btnNBORep", "btnBDRep", "btnUFRep", "btnUFCRep", "btnODBShRep", "btnOMASCOShRep", "btnFABRep", "btnYrlyRep"))
+                            {
+                                if (p_modal.ClickedButtonName == "btnBDRep")
+                                {
+                                    TemplateName = "BD_REPORT.xlsx";
+                                    FileName = "BD_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnNBORep")
+                                {
+                                    TemplateName = "NBO_REPORT.xlsx";
+                                    FileName = "NBO_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnUFRep")
+                                {
+                                    TemplateName = "UF_REPORT.xlsx";
+                                    FileName = "UF_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnUFCRep")
+                                {
+                                    TemplateName = "UFC_REPORT.xlsx";
+                                    FileName = "UFC_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnFABRep")
+                                {
+                                    TemplateName = "FAB_REPORT.xlsx";
+                                    FileName = "FAB_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnODBShRep")
+                                {
+                                    TemplateName = "ODB_REPORT.xlsx";
+                                    FileName = "ODB_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnOMASCOShRep")
+                                {
+                                    TemplateName = "OMASCO_REPORT.xlsx";
+                                    FileName = "OMASCO_REPORT";
+                                }
+                                else if (p_modal.ClickedButtonName == "btnYrlyRep")
+                                {
+                                    TemplateName = "YearlyReport.xlsx";
+                                    FileName = "YEARLY_REPORT";
+                                    ClientName = ExtensionMethods.IsNull(p_modal.ClientCode, "0") == "0" ? "" : db.MasterSetup.Where(w => w.MstParentId == (int)MASTER_S.Client && w.Mst_Value == p_modal.ClientCode).FirstOrDefault().Mst_Desc;
 
-                            ExcelResult = objDAL.GenerateExcelStream(FileName, "Court Case Detail Report", RetResult, ref ResultStream);
+                                }
+                                TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
+
+                                using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
+                                    file.CopyTo(ResultStream);
+
+                                if (p_modal.ClickedButtonName == "btnYrlyRep")
+                                    ExcelResult = objDAL.GenerateExcelStream(FileName, "Court Case Detail Report", RetResult, ref ResultStream, ClientName);
+                                else
+                                    ExcelResult = objDAL.GenerateExcelStream(FileName, "Court Case Detail Report", RetResult, ref ResultStream);
+
+                            }
+                            else
+                            {
+                                if (p_modal.PartialViewName == "_beforeCourt")
+                                {
+                                    if (p_modal.ClickedButtonName == "btnENRep")
+                                    {
+                                        TemplateName = "ShortDataEN.xlsx";
+                                        TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
+
+                                        using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
+                                            file.CopyTo(ResultStream);
+
+                                        ExcelResult = objDAL.GenerateExcelStream("ShortDataEN", "Court Case Detail Report", RetResult, ref ResultStream);
+
+                                    }
+                                    else if (p_modal.ClickedButtonName == "btnARRep")
+                                    {
+                                        TemplateName = "ShortDataAR.xlsx";
+                                        TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
+
+                                        using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
+                                            file.CopyTo(ResultStream);
+
+                                        ExcelResult = objDAL.GenerateExcelStream("ShortDataAR", "Court Case Detail Report", RetResult, ref ResultStream);
+
+                                    }
+                                }
+                                else
+                                {
+
+                                    ExcelResult = objDAL.GenerateExcelStream("", "Court Case Detail Report", RetResult, ref ResultStream);
+                                }
+                            }
+
+                            byte[] fileContents = null;
+                            using (ResultStream)
+                            {
+                                fileContents = ResultStream.ToArray();
+                            }
+
+                            return File(fileContents, MIMETYPE, "ExcelReport.xlsx");
 
                         }
                         else
                         {
-                            if (p_modal.PartialViewName == "_beforeCourt")
+                            Session["Message"] = new MessageVM
                             {
-                                if (p_modal.ClickedButtonName == "btnENRep")
-                                {
-                                    TemplateName = "ShortDataEN.xlsx";
-                                    TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
-
-                                    using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
-                                        file.CopyTo(ResultStream);
-
-                                    ExcelResult = objDAL.GenerateExcelStream("ShortDataEN", "Court Case Detail Report", RetResult, ref ResultStream);
-
-                                }
-                                else if(p_modal.ClickedButtonName == "btnARRep")
-                                {
-                                    TemplateName = "ShortDataAR.xlsx";
-                                    TemplateName = Path.Combine(Helper.GetTemplateRoot, TemplateName);
-
-                                    using (FileStream file = new FileStream(TemplateName, FileMode.Open, FileAccess.Read))
-                                        file.CopyTo(ResultStream);
-
-                                    ExcelResult = objDAL.GenerateExcelStream("ShortDataAR", "Court Case Detail Report", RetResult, ref ResultStream);
-
-                                }
-                            }
-                            else
-                                ExcelResult = objDAL.GenerateExcelStream("", "Court Case Detail Report", RetResult, ref ResultStream);
-
+                                Category = "Error",
+                                Message = "NO DATA FOUND FOR SELECTED CRITERIA"
+                            };
                         }
-
-                        byte[] fileContents = null;
-                        using (ResultStream)
-                        {
-                            fileContents = ResultStream.ToArray();
-                        }
-
-                        return File(fileContents, MIMETYPE, "ExcelReport.xlsx");
-
                     }
-                    else
-                    {
-                        Session["Message"] = new MessageVM
-                        {
-                            Category = "Error",
-                            Message = "NO DATA FOUND FOR SELECTED CRITERIA"
-                        };
-                    }
-
                 }
                 catch (Exception ex)
                 {
@@ -214,6 +240,21 @@ namespace YandS.UI.Controllers
                         ViewBag.ODBBankBranch = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ODBBankBranch), "Mst_Value", "Mst_Desc");
                         ViewBag.LoanManager = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.LoanManager), "Mst_Value", "Mst_Desc");
 
+                    }
+                    else if (PartialViewName == "_yearlyReport")
+                    {
+                        ViewBag.Location = this.ListLocation();
+                        ViewBag.ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
+                        ViewBag.AgainstCode = new SelectList(Helper.GetCaseAgainst(), "Mst_Value", "Mst_Desc");
+                        ViewBag.CaseLevelCode = new SelectList(Helper.GetCaseLevelList("A"), "Mst_Value", "Mst_Desc");
+                        //ViewBag.EnforcementlevelId = new SelectList(Helper.GetCurEnfcLevel(), "Mst_Value", "Mst_Desc");
+                        ViewBag.EnforcementlevelId = new SelectList(Helper.GetOfficeFileStatus(), "Mst_Value", "Mst_Desc");
+                        ViewBag.CourtLocationid = new SelectList(Helper.GetCourtLocationList("1"), "Mst_Value", "Mst_Desc");
+                        ViewBag.CaseTypeCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.CaseType), "Mst_Value", "Mst_Desc");
+                        ViewBag.CaseStatus = new SelectList(Helper.GetStatusCodeList(false, StatusCodes), "Mst_Value", "Mst_Desc", "1");
+                        ViewBag.ClientCaseType = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ClientCaseType).OrderBy(o => o.DisplaySeq), "Mst_Value", "Mst_Desc", "0");
+                        ViewBag.ODBBankBranch = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ODBBankBranch), "Mst_Value", "Mst_Desc", "0");
+                        ViewBag.LoanManager = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.LoanManager), "Mst_Value", "Mst_Desc", "0");
                     }
                     else if (PartialViewName == "_litigation")
                     {
@@ -313,6 +354,21 @@ namespace YandS.UI.Controllers
                 ViewBag.ODBBankBranch = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ODBBankBranch), "Mst_Value", "Mst_Desc");
                 ViewBag.LoanManager = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.LoanManager), "Mst_Value", "Mst_Desc");
             }
+            else if (PartialViewName == "_yearlyReport")
+            {
+                ViewBag.Location = this.ListLocation();
+                ViewBag.ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
+                ViewBag.AgainstCode = new SelectList(Helper.GetCaseAgainst(), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseLevelCode = new SelectList(Helper.GetCaseLevelList("A"), "Mst_Value", "Mst_Desc");
+                //ViewBag.EnforcementlevelId = new SelectList(Helper.GetCurEnfcLevel(), "Mst_Value", "Mst_Desc");
+                ViewBag.EnforcementlevelId = new SelectList(Helper.GetOfficeFileStatus(), "Mst_Value", "Mst_Desc");
+                ViewBag.CourtLocationid = new SelectList(Helper.GetCourtLocationList("1"), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseTypeCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.CaseType), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseStatus = new SelectList(Helper.GetStatusCodeList(false, StatusCodes), "Mst_Value", "Mst_Desc", "1");
+                ViewBag.ClientCaseType = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ClientCaseType).OrderBy(o => o.DisplaySeq), "Mst_Value", "Mst_Desc", "0");
+                ViewBag.ODBBankBranch = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ODBBankBranch), "Mst_Value", "Mst_Desc", "0");
+                ViewBag.LoanManager = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.LoanManager), "Mst_Value", "Mst_Desc", "0");
+            }
             else if (PartialViewName == "_litigation")
             {
                 StatusCodes = new[] { "1" };
@@ -411,6 +467,21 @@ namespace YandS.UI.Controllers
             var modal = new RepCaseParameterForm();
 
             if (PartialViewName == "_beforeCourt")
+            {
+                ViewBag.Location = this.ListLocation();
+                ViewBag.ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");
+                ViewBag.AgainstCode = new SelectList(Helper.GetCaseAgainst(), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseLevelCode = new SelectList(Helper.GetCaseLevelList("A"), "Mst_Value", "Mst_Desc");
+                //ViewBag.EnforcementlevelId = new SelectList(Helper.GetCurEnfcLevel(), "Mst_Value", "Mst_Desc");
+                ViewBag.EnforcementlevelId = new SelectList(Helper.GetOfficeFileStatus(), "Mst_Value", "Mst_Desc");
+                ViewBag.CourtLocationid = new SelectList(Helper.GetCourtLocationList("1"), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseTypeCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.CaseType), "Mst_Value", "Mst_Desc");
+                ViewBag.CaseStatus = new SelectList(Helper.GetStatusCodeList(false, StatusCodes), "Mst_Value", "Mst_Desc", "1");
+                ViewBag.ClientCaseType = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ClientCaseType).OrderBy(o => o.DisplaySeq), "Mst_Value", "Mst_Desc", "0");
+                ViewBag.ODBBankBranch = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.ODBBankBranch), "Mst_Value", "Mst_Desc", "0");
+                ViewBag.LoanManager = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.LoanManager), "Mst_Value", "Mst_Desc", "0");
+            }
+            else if (PartialViewName == "_yearlyReport")
             {
                 ViewBag.Location = this.ListLocation();
                 ViewBag.ClientCode = new SelectList(db.MasterSetup.Where(m => m.MstParentId == (int)MASTER_S.Client), "Mst_Value", "Mst_Desc");

@@ -804,6 +804,47 @@ Kindly debit the legal charges accounts of all of the above customers and credit
                         }
 
                     }
+                    else if (P_TemplateName == "YEARLY_REPORT")
+                    {
+
+                        int rowstart = 3;
+                        int colstart = 1;
+                        int rowend = rowstart + 1;
+                        int colend = ds.Tables[0].Columns.Count;
+                        MemoryStream ResultStream = new MemoryStream();
+
+                        using (ExcelPackage pck = new ExcelPackage(ResultStream, ms))
+                        {
+                            var wb = pck.Workbook; //Not workSHEET
+
+                            var namedCellClient = wb.Names["CLIENTNAME"];
+
+                            namedCellClient.Value = InvoiceRefNo;
+
+                            ExcelWorksheet ws = pck.Workbook.Worksheets.First();
+
+                            ws.Cells["A4"].LoadFromDataTable(ds.Tables[0], false);
+
+                            var modelRows = ds.Tables[0].Rows.Count + 2;
+                            string modelRange = "A4:G" + modelRows.ToString();
+                            var modelTable = ws.Cells[modelRange];
+
+                            // Assign borders
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                                                                                   
+                            ws.Cells[ws.Dimension.Address].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                            //ws.Cells[ws.Dimension.Address].AutoFitColumns
+                            //ws.Cells[ws.Dimension.Address]
+                            pck.SaveAs(ResultStream);
+                            ms = ResultStream;
+                            //pck.Save();
+                        }
+
+                    }
 
                 }
             }

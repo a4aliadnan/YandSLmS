@@ -2382,6 +2382,8 @@ namespace YandS.UI
                         string ProcessFlag = _result.Rows[0]["ProcessFlag"].ToString();
                         string ProcessMessage = _result.Rows[0]["ProcessMessage"].ToString();
 
+                        UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, objDTO.DataFor);
+
                     }
                 }
             }
@@ -2428,7 +2430,7 @@ namespace YandS.UI
 
                             string ProcessFlag = _result.Rows[0]["ProcessFlag"].ToString();
                             string ProcessMessage = _result.Rows[0]["ProcessMessage"].ToString();
-
+                            UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, objDTO.DataFor);
                         }
                     }
 
@@ -2477,7 +2479,7 @@ namespace YandS.UI
 
                             string ProcessFlag = _result.Rows[0]["ProcessFlag"].ToString();
                             string ProcessMessage = _result.Rows[0]["ProcessMessage"].ToString();
-
+                            UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, objDTO.DataFor);
                         }
                     }
                 }
@@ -2525,6 +2527,7 @@ namespace YandS.UI
 
                             string ProcessFlag = _result.Rows[0]["ProcessFlag"].ToString();
                             string ProcessMessage = _result.Rows[0]["ProcessMessage"].ToString();
+                            UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, objDTO.DataFor);
                         }
                     }
                 }
@@ -2572,7 +2575,7 @@ namespace YandS.UI
 
                             string ProcessFlag = _result.Rows[0]["ProcessFlag"].ToString();
                             string ProcessMessage = _result.Rows[0]["ProcessMessage"].ToString();
-
+                            UpdateEnglishDecision(objDTO.CaseId, objDTO.CurrentHearingDate, objDTO.CourtDecision, objDTO.DataFor);
                         }
                     }
                 }
@@ -5233,5 +5236,45 @@ namespace YandS.UI
 
             }
         }
+        public static void UpdateEnglishDecision(int CaseId, DateTime? CurrentHearingDate, string CourtDecision, string DataFor)
+        {
+            try
+            {
+                string englishText = GetTranslatedText(CourtDecision);
+
+                using (var db = new RBACDbContext())
+                {
+                    EnglishDecision objToSave = new EnglishDecision();
+
+                    objToSave = db.EnglishDecision.Where(w => w.CaseId == CaseId).FirstOrDefault();
+
+                    if (objToSave == null)
+                    {
+                        objToSave = new EnglishDecision();
+                        objToSave.CaseId = CaseId;
+                        objToSave.CurrentHearingDate = CurrentHearingDate;
+                        objToSave.CourtDecision = englishText;
+
+                        db.EnglishDecision.Add(objToSave);
+                    }
+                    else
+                    {
+                        db.Entry(objToSave).Entity.CurrentHearingDate = CurrentHearingDate;
+                        db.Entry(objToSave).Entity.CourtDecision = englishText;
+                        db.Entry(objToSave).State = EntityState.Modified;
+                    }
+
+
+                    db.SaveChanges();
+
+                    
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
     }
 }
